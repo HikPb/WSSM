@@ -1,0 +1,1 @@
+$('ul.nav-2-level.collapse').onclick().addClass('in');
