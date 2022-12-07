@@ -20,7 +20,6 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void save(Product product) {
-		// TODO Auto-generated method stub
 		productRepository.save(product);
 	}
 
@@ -32,7 +31,6 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void delete(String id) {
-		// TODO Auto-generated method stub
 		productRepository.deleteById(id);
 		
 	}
@@ -45,13 +43,11 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<Product> getAll() {
-		// TODO Auto-generated method stub
 		return productRepository.findAll();
 	}
 
 	@Override
 	public Page<Product> getAll(Pageable paging) {
-		// TODO Auto-generated method stub
 		return productRepository.findAll(paging);
 	}
 
@@ -63,9 +59,14 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Optional<Product> getByProductId(String productId) {
-		// TODO Auto-generated method stub
 		return productRepository.findById(productId);
 	}
-	
 
+	@Override
+	public void update(Product product) {
+		if(productRepository.existsById(product.getProductId())) {
+			productRepository.save(product);
+		}
+		
+	}
 }

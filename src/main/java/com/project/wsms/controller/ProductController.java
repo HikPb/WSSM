@@ -1,22 +1,20 @@
 package com.project.wsms.controller;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.project.wsms.collection.Product;
 import com.project.wsms.service.ProductService;
@@ -28,60 +26,64 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 	
-//	@GetMapping
-//	public List<Product> findProducts(){
-//		return productService.getAll();
-//	}
-
 	@GetMapping
-	public String getAll(Model model, @RequestParam(required = false) String keyword,
-      @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
-		try {
-		  List<Product> products = new ArrayList<Product>();
-		  Pageable paging = PageRequest.of(page - 1, size);
-		
-		  Page<Product> pageProducts;
-		  if (keyword == null) {
-		    pageProducts = productService.getAll(paging);
-		  } else {
-		    pageProducts = productService.getByProductNameStartingWith(keyword, paging);
-		    model.addAttribute("keyword", keyword);
-		  }
-		
-		  products = pageProducts.getContent();
-		  model.addAttribute("products", products);
-		  model.addAttribute("currentPage", pageProducts.getNumber() + 1);
-		  model.addAttribute("totalItems", pageProducts.getTotalElements());
-		  model.addAttribute("totalPages", pageProducts.getTotalPages());
-		  model.addAttribute("pageSize", size);
-		  } catch (Exception e) {
-			  model.addAttribute("message", e.getMessage());
-		  }
-
+	public String getAllProduct(Model model) {
+		model.addAttribute("products", productService.getAll());
+		model.addAttribute("pageTitle", "QUẢN LÝ SẢN PHẨM");
 		return "products/products";
-  }
+	}
 
-	  @GetMapping("/products/create")
+//	@GetMapping
+//	public String getAll(Model model, @RequestParam(required = false) String keyword,
+//      @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+//		try {
+//		  List<Product> products = new ArrayList<Product>();
+//		  Pageable paging = PageRequest.of(page - 1, size);
+//		
+//		  Page<Product> pageProducts;
+//		  if (keyword == null) {
+//		    pageProducts = productService.getAll(paging);
+//		  } else {
+//		    pageProducts = productService.getByProductNameStartingWith(keyword, paging);
+//		    model.addAttribute("keyword", keyword);
+//		  }
+//		
+//		  products = pageProducts.getContent();
+//		  model.addAttribute("products", products);
+//		  model.addAttribute("currentPage", pageProducts.getNumber() + 1);
+//		  model.addAttribute("totalItems", pageProducts.getTotalElements());
+//		  model.addAttribute("totalPages", pageProducts.getTotalPages());
+//		  model.addAttribute("pageSize", size);
+//		  } catch (Exception e) {
+//			  model.addAttribute("message", e.getMessage());
+//		  }
+//
+//		return "products/products";
+//  }
+
+	  @GetMapping("/create")
 	  public String addProduct(Model model) {
-	    Product product = new Product();
-	    model.addAttribute("product", product);
-	    model.addAttribute("pageTitle", "Create Product");
-
+	    model.addAttribute("product", new Product());
 	    return "products/product_form";
 	  }
-//
-//	  @PostMapping("/products/save")
-//	  public String saveProduct(Product product, RedirectAttributes redirectAttributes) {
-//	    try {
-//	      productService.save(product);
-//
-//	      redirectAttributes.addFlashAttribute("message", "The new product has been saved successfully!");
-//	    } catch (Exception e) {
-//	      redirectAttributes.addAttribute("message", e.getMessage());
-//	    }
-//
-//	    return "redirect:/products";
-//	  }
+
+	  @ModelAttribute("product")
+	  public Product newProduct() {
+	      return new Product();
+	  }
+	  @PostMapping("/create")
+	  public String saveProduct(@ModelAttribute("product") Product product, RedirectAttributes redirectAttributes) {
+	    try {
+	    	product.setIsSell(true);
+	    	product.setCreated_at(LocalDateTime.now());
+	    	productService.save(product);
+	    	redirectAttributes.addFlashAttribute("message", "The new product has been saved successfully!");
+	    } catch (Exception e) {
+	    	redirectAttributes.addAttribute("message", e.getMessage());
+	    }
+
+	    	return "redirect:/products";
+	  }
 //
 //	  @GetMapping("/products/{id}")
 //	  public String editProduct(@PathVariable("id") String id, Model model, RedirectAttributes redirectAttributes) {
@@ -99,19 +101,31 @@ public class ProductController {
 //	    }
 //	  }
 //
-//	  @GetMapping("/products/delete/{id}")
-//	  public String deleteProduct(@PathVariable("id") String id, Model model, RedirectAttributes redirectAttributes) {
-//	    try {
-//	      productService.delete(id);
-//
-//	      redirectAttributes.addFlashAttribute("message", "The Product with id=" + id + " has been deleted successfully!");
-//	    } catch (Exception e) {
-//	      redirectAttributes.addFlashAttribute("message", e.getMessage());
-//	    }
-//
-//	    return "redirect:/products";
-//	  }
+	  @GetMapping("/delete/{id}")
+	  public String deleteProduct(@PathVariable("id") String id, Model model, RedirectAttributes redirectAttributes) {
+	    try {
+	      productService.delete(id);
+	      System.out.println("Delete Sucess");
+	      redirectAttributes.addFlashAttribute("message", "The Product with id=" + id + " has been deleted successfully!");
+	    } catch (Exception e) {
+	      redirectAttributes.addFlashAttribute("message", e.getMessage());
+	    }
 
+	    return "redirect:/products";
+	  }
+
+	  @RequestMapping(value="/update", method = {RequestMethod.PUT, RequestMethod.GET})
+	  public String update(Product product) {
+		  Product uproduct = productService.getByProductId(product.getProductId()).get();
+		  uproduct.setProductName(product.getProductName());
+		  uproduct.setCateId(product.getCateId());
+		  uproduct.setBarcode(product.getBarcode());
+		  uproduct.setImportPrice(product.getImportPrice());
+		  uproduct.setSellPrice(product.getSellPrice());
+		  productService.update(uproduct);
+		  return "redirect:/products";
+	  }
+	  
 //	  @GetMapping("/products/{id}/published/{status}")
 //	  public String updateProductPublishedStatus(@PathVariable("id") String id, @PathVariable("status") boolean published,
 //	      Model model, RedirectAttributes redirectAttributes) {
@@ -128,18 +142,22 @@ public class ProductController {
 //
 //	    return "redirect:/products";
 //	  }
-	@PostMapping
-    public void save(@RequestBody Product product) {
-        productService.save(product);
-    }
 
-	@GetMapping("/{id}")
-    public Optional<Product> getByProductId(@PathVariable String id) {
-        return productService.getByProductId(id);
-    }
+	  @PostMapping("/api")
+	  @ResponseBody
+	  public List<Product> findProducts(){
+		  return productService.getAll();
+	  }
+	  
+	  @GetMapping("/api/{id}")
+	  @ResponseBody
+	  public Product getOne(@PathVariable String id) {
+		  Product product = productService.getByProductId(id).get();
+		  return product;
+	    }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id) {
-        productService.delete(id);
-    }
+//    @DeleteMapping("/{id}")
+//    public void delete(@PathVariable String id) {
+//        productService.delete(id);
+//    }
 }

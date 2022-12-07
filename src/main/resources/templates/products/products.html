@@ -1,272 +1,198 @@
-
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
-  <title>Products</title>
-
-  <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css} "/>
-  <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/6.2.0/css/all.min.css} "/>
-  <link th:rel="stylesheet" th:href="@{/webjars/metisMenu/3.0.7/metisMenu.min.css} "/>
-  <link th:rel="stylesheet" th:href="@{/css/main.min.css} "/>
-
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>[[${pageTitle}]]</title>
+    <!-- GLOBAL MAINLY STYLES-->
+    <link rel="shortcut icon" href="#"/>
+    <link th:rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"/>
+    <link th:rel="stylesheet" href="https://cdn.datatables.net/select/1.5.0/css/select.dataTables.min.css"/>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link th:rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.dataTables.min.css"/>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/6.2.0/css/all.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/metisMenu/3.0.7/metisMenu.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/css/main.min.css} "/>
 </head>
+    
+
 
 <body class="fixed-navbar">
-  <div th:replace="fragments/header :: header"></div>
-  <div th:replace="fragments/sidebar :: sidebar"></div>
+  <div class="page-wrapper">
+    <!-- HEADER AND SIDEBAR -->
+    <div th:replace="fragments/header :: header"></div>
+    <div th:replace="fragments/sidebar :: sidebar"></div>
 
-  
-
-  <div class="content-wrapper">
-
-    <!-- START TOOLBAR -->
-  <div class="tools-container">
-    <div>
-      <div style="display: inline-block;">
-        <button type="button" class="btn-tools" id="btnCreate">
-          <span><i class="fa-solid fa-plus"></i></span>
-        </button>
-      </div>
-      
-      <button type="button" class="btn-tools" id="btnClear">
-        <i class="fa-solid fa-rotate"></i>
-        <span>Tải lại</span>
-      </button>
-      
-      <div id="action-tools" style="display: inline-block;">
-        <span id="product_category">
+    <!-- PAGE CONTENT -->
+    <div class="content-wrapper">
+      <!-- START TOOLBAR -->
+      <div class="tools-container">
+        <div>
+          <div style="display: inline-block;">
+            <button type="button" class="btn-tools" id="btnCreate">
+              <span><i class="fa-solid fa-plus"></i></span>
+            </button>
+          </div>
+          
+          <button type="button" class="btn-tools" id="btnClear">
+            <i class="fa-solid fa-rotate"></i>
+            <span>Tải lại</span>
+          </button>
+          
+          <div id="action-tools" style="display: inline-block;">
+            <span id="import_excel" style="display: inline-block;">
               <div style="display: inline-block;">
                 <button type="button" class="btn-tools">
-                  <i class="fa-solid fa-tags"></i>
-                  <span>Danh mục SP</span>
+                  <i class="fa-solid fa-file-import"></i>
+                  <span>Nhập excel</span>
+                </button>
+              </div>
+            </span>
+            
+            <span id="product_category">
+                  <div style="display: inline-block;">
+                    <button type="button" class="btn-tools">
+                      <i class="fa-solid fa-tags"></i>
+                      <span>Danh mục SP</span>
+                    </button>
+                </div>
+            </span>
+            
+            <!-- <span id="export_excel" style="display: inline-block;">
+              <button type="button" class="btn-tools">
+                <i class="fa-solid fa-file-export"></i>
+                <span>Xuất excel</span>
+              </button>
+            </span> -->
+            
+            <span id="multi_delete" style="display: inline-block;">
+              <div style="display: inline-block;">
+                <button type="button" class="btn-tools">
+                  <i class="fa-solid fa-trash"></i>
+                  <span>Xóa</span>
+                </button>
+              </div>
+            </span>
+          </div>
+      
+          <div class="filter">
+              <div>
+                <button id="btn-filter" tabindex="0" type="button" class="btn-tools">
+                  <i class="fa-solid fa-filter"></i>
+                  <span>Thêm lọc</span>
+                  </span>
                 </button>
             </div>
-        </span>
-        
-        <span id="export_excel" style="display: inline-block;">
-          <button type="button" class="btn-tools">
-            <i class="fa-solid fa-file-export"></i>
-            <span>Xuất excel</span>
-          </button>
-        </span>
-        
-        <span id="import_excel" style="display: inline-block;">
-          <div style="display: inline-block;">
-            <button type="button" class="btn-tools">
-              <i class="fa-solid fa-file-import"></i>
-              <span>Nhập excel</span>
-            </button>
           </div>
-        </span>
-        
-        <span id="multi_delete" style="display: inline-block;">
-          <div style="display: inline-block;">
-            <button type="button" class="btn-tools">
-              <i class="fa-solid fa-trash"></i>
-              <span>Xóa</span>
-            </button>
+        </div>
+      </div>
+      <!-- END TOOLBAR -->
+  
+      <div th:if="${message!=null}" class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="p-toast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <strong class="me-auto">Thông báo</strong>
+            <small></small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
           </div>
-        </span>
+          <div class="toast-body">
+            [[${message}]]
+          </div>
+        </div>
       </div>
   
-      <div class="filter">
-          <div>
-            <button id="btn-filter" tabindex="0" type="button" class="btn-tools">
-              <i class="fa-solid fa-filter"></i>
-              <span>Thêm lọc</span>
-              </span>
+      <div class="table-container"> 
+        <table class="table table-hover table-responsive-xl" id="productTable">
+          <thead class="thead-light">
+            <tr>
+              <th style="text-align: center"><input type="checkbox" id="select_all" /></th>
+              <th>Is Sell</th>
+              <th>Id</th>
+              <th>Tên sản phẩm</th>
+              <th>Barcode</th>
+              <th>Danh mục</th>
+              <th>Giá nhập</th>
+              <th>Giá bán</th>
+              <th>Ngày tạo</th>
+              <th></th>
+              <!-- <th>Actions</th> -->
+            </tr>
+          </thead>
+          <!-- <tbody>
+            <tr th:each="product : ${products}">
+              <td></td>
+              <td>[[${product.productId}]]</td>
+              <td>[[${product.productName}]]</td>
+              <td>[[${product.cateId}]]</td>
+              <td>
+                <a th:if="${product.isSell == true}" class="fa-regular fa-square-check"
+                  th:href="@{'/products/' + ${product.productId} + '/isSell/false'}" title="Disable this product"></a>
+                <a th:if="${product.isSell == false}" class="fa-regular fa-square icon-dark"
+                  th:href="@{'/products/' + ${product.productId} + '/isSell/true'}" title="Enable this product"></a>
+              </td>
+              <td>
+                <button  data-bs-toggle="modal" 
+                th:href="@{'/products/api/'+${product.productId}}"
+                title="Edit this product" 
+                class="fa-regular fa-pen-to-square icon-dark btn-edit">
+                </button>
+                &nbsp;
+                
+                <button th:productId="${product.productId}" th:productName="${product.productName}" id="btnDelete"
+                  title="Delete this product" class="fa-regular fa-trash-can icon-dark btn-delete"></button>
+              </td>
+            </tr>
+          </tbody> -->
+        </table>
+      </div>
+    </div>
+
+    <div class="modal fade" id="confirmModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Xác nhận</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
             </button>
-        </div>
-      </div>
-
-    </div>
-    
-  </div>
-  <!-- END TOOLBAR -->
-
-    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
-      role="alert">
-      [[${message}]]
-      <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-
-    <div class="my-3">
-      <form th:action="@{/products}" id="searchForm">
-        <div class="row d-flex">
-          <div class="col-md-6 mt-2">
-            <div class="search">
-              <i class="fa fa-search"></i>
-              <input id="keyword" type="search" name="keyword" th:value="${keyword}" required class="form-control"
-                placeholder="Enter keyword">
-              <button type="submit" class="btn btn-secondary">Search</button>
-            </div>
           </div>
-          <div class="col-md-3 input-group mt-2">
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="pageSize">Items per page:</label>
-            </div>
-            <select form="searchForm" name="size" th:value="${pageSize}" onchange="changePageSize()" class="size-select"
-              id="pageSize">
-              <option th:each="s : ${ {10, 15, 20} }" th:value="${s}" th:text="${s}" th:selected="${s == pageSize}"></option>
-            </select>
+  
+          <div class="modal-body">
+            <span id="confirmText"></span>
           </div>
-        </div>
-      </form>
-    </div>
-
-    <div th:if="${products.size() > 0}"> 
-      <table class="table table-hover table-responsive-xl" id="productTable">
-        <thead class="thead-light">
-          <tr>
-            <th scope="col"><input type="checkbox" class="custom-control-input"></th>
-            <th scope="col">Id</th>
-            <th scope="col">Name</th>
-            <th scope="col">Category</th>
-            <th scope="col">Is Sell</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="product : ${products}" data-toggle="modal" data-id=${product.productId} data-target="#productModal">
-            <th>
-              <input type="checkbox" class="custom-control-input">
-            </th>
-            <th scope="row">[[${product.productId}]]</th>
-            <td>[[${product.productName}]]</td>
-            <td>[[${product.cateId}]]</td>
-            <td>[[${product.isSell}]]</td>
-            <td>
-              <a th:if="${product.isSell == true}" class="fa-regular fa-square-check"
-                th:href="@{'/products/' + ${product.productId} + '/isSell/false'}" title="Disable this product"></a>
-              <a th:if="${product.isSell == false}" class="fa-regular fa-square icon-dark"
-                th:href="@{'/products/' + ${product.productId} + '/isSell/true'}" title="Enable this product"></a>
-            </td>
-            <td>
-              <a th:href="@{'/products/' + ${product.productId}}" title="Edit this product"
-                class="fa-regular fa-pen-to-square icon-dark"></a>
-              &nbsp;
-              <a th:href="@{'/products/delete/' + ${product.productId}}" th:productName="${product.productName}" id="btnDelete"
-                title="Delete this product" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div th:unless="${products.size() > 0}">
-      <span>No products found!</span>
-    </div>
-
-    <nav aria-label="Pagination" th:if="${totalPages > 0}">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-          <a th:replace="fragments/paging :: paging(1, '<<', 'First Page')"></a>
-        </li>
-        <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
-          <a th:replace="fragments/paging :: paging(${currentPage - 1}, 'Prev', 'Previous Page')"></a>
-        </li>
-        <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
-          <a class="page-link" href="#">...</a>
-        </li>
-        <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
-          th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
-          <a th:replace="fragments/paging :: paging(${page}, ${page}, 'Page ' + ${page})"></a>
-        </li>
-        <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
-          <a class="page-link" href="#">...</a>
-        </li>
-        <li class="page-item font-weight-bold" th:classappend="${currentPage == totalPages} ? 'disabled'">
-          <a th:replace="fragments/paging :: paging(${currentPage + 1},'Next', 'Next Page')"></a>
-        </li>
-        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-          <a th:replace="fragments/paging :: paging(${totalPages}, '>>', 'Last Page')"></a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-
-  <div class="modal fade text-center" id="confirmModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Delete Confirmation</h5>
-          <button type="button" class="close" data-dismiss="modal">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <span id="confirmText"></span>
-        </div>
-
-        <div class="modal-footer">
-          <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+  
+          <div class="modal-footer">
+            <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+          </div>
         </div>
       </div>
     </div>
+
+    <div th:replace="products/product-form :: modal"></div>
+    <!-- FOOTER -->
+    <div th:replace="fragments/footer :: footer"></div>
   </div>
-
-  <div id="productModal" class="modal hide fade" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-         <h3>Test</h3>
-
-    </div>
-    <div id="orderDetails" class="modal-body"></div>
-    <div id="orderItems" class="modal-body"></div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    </div>
-
-  <div th:replace="fragments/footer :: footer"></div>
-
-  <script th:src="@{/webjars/jquery/3.6.1/jquery.min.js}"></script>
-	<script th:src="@{/webjars/popper.js/2.9.3/umd/popper.min.js}"></script>
-	<script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.min.js}"></script>
-	<script th:src="@{/webjars/metisMenu/3.0.7/metisMenu.min.js}"></script>
-	<script th:src="@{/webjars/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js}"></script>
+  
+  <!-- SCRIPT -->
+  <script th:src="@{/webjars/jquery/3.6.1/jquery.js}"></script>
+  <script th:src="@{/webjars/popper.js/2.9.3/umd/popper.min.js}"></script>
+  <script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.min.js}"></script>
+  <script th:src="@{/webjars/metisMenu/3.0.7/metisMenu.min.js}"></script>
+  <script th:src="@{/webjars/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js}"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/select/1.5.0/js/dataTables.select.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js"></script>
+  
   <script th:src="@{/js/app.min.js}"></script>
-	<script th:src="@{/js/sidebar.js}"></script>
-
-  <script type="text/javascript">
-    $(document).ready(function () {
-      $(".btn-delete").on("click", function (e) {
-        e.preventDefault();
-        link = $(this);
-
-        productName = link.attr("productName");
-        $("#yesBtn").attr("href", link.attr("href"));
-        $("#confirmText").html("Do you want to delete the product\<strong\>" + productName + "\<\/strong\>?");
-        $("#confirmModal").modal();
-      });
-
-      $("#btnClear").on("click", function (e) {
-        e.preventDefault();
-        $("#keyword").text("");
-        window.location = "[[@{/products}]]";
-      });
-
-      $('#productModal').modal({
-        keyboard: true,
-        backdrop: "static",
-        show:false,
-        
-      }).on('show', function(){
-          var getIdFromRow = $(event.target).closest('tr').data('id');
-        //make your ajax call populate items or what even you need
-        $(this).find('#productModal').html($('<b> Order Id selected: ' + getIdFromRow  + '</b>'))
-      });
-    });
-
-    function changePageSize() {
-      $("#searchForm").submit();
-    }
-  </script>
+  <script th:src="@{/js/product.js}"></script>
 </body>
+
+</html>

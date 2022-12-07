@@ -11,16 +11,14 @@ import com.project.wsms.collection.Product;
 public interface ProductService {
 
 	public void save(Product product);
+	
+	public void update(Product product);
 
     public List<Product> getAll();
 
     public void delete(String productId);
 
-//    public List<Product> getProductByBarcode(String barcode);
-
 	public Page<Product> getAll(Pageable paging);
-
-//	public List<Product> getProductByName(String productName);
 	
 	public Page<Product> getByProductNameStartingWith(String productName, Pageable paging);
 	

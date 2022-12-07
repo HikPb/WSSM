@@ -9,7 +9,7 @@ public class DashboardController {
 
 	@GetMapping("/overview")
 	public String overview(Model model) {
-	
+		model.addAttribute("pageTitle", "TỔNG QUAN");
 		return "overview";
 	}
 		
