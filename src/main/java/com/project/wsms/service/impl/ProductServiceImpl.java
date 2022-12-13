@@ -69,4 +69,11 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 	}
+
+	@Override
+	public void updateIsSell(String productId, Boolean isSell) {
+		Product product = productRepository.findById(productId).get();
+		product.setIsSell(isSell);
+		productRepository.save(product);
+	}
 }

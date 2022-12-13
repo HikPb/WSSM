@@ -13,6 +13,8 @@ public interface ProductService {
 	public void save(Product product);
 	
 	public void update(Product product);
+	
+	public void updateIsSell(String productId, Boolean isSell);
 
     public List<Product> getAll();
 

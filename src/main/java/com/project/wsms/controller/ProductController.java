@@ -126,22 +126,23 @@ public class ProductController {
 		  return "redirect:/products";
 	  }
 	  
-//	  @GetMapping("/products/{id}/published/{status}")
-//	  public String updateProductPublishedStatus(@PathVariable("id") String id, @PathVariable("status") boolean published,
-//	      Model model, RedirectAttributes redirectAttributes) {
-//	    try {
-//	      ProductRepository.updatePublishedStatus(id, published);
-//
-//	      String status = published ? "published" : "disabled";
-//	      String message = "The Product id=" + id + " has been " + status;
-//
-//	      redirectAttributes.addFlashAttribute("message", message);
-//	    } catch (Exception e) {
-//	      redirectAttributes.addFlashAttribute("message", e.getMessage());
-//	    }
-//
-//	    return "redirect:/products";
-//	  }
+	  @PostMapping("/{id}/issell/{isSell}")
+	  @ResponseBody
+	  public String updateProductIsSell(@PathVariable("id") String id, @PathVariable("isSell") boolean isSell,
+	      Model model, RedirectAttributes redirectAttributes) {
+	    try {
+	      productService.updateIsSell(id, isSell);
+
+	      String status = isSell ? "mở" : "tắt";
+	      String message = "Sản phẩm id=" + id + " đã được " + status;
+
+	      redirectAttributes.addFlashAttribute("message", message);
+	    } catch (Exception e) {
+	      redirectAttributes.addFlashAttribute("message", e.getMessage());
+	    }
+
+	    return "redirect:/products";
+	  }
 
 	  @PostMapping("/api")
 	  @ResponseBody
@@ -154,7 +155,7 @@ public class ProductController {
 	  public Product getOne(@PathVariable String id) {
 		  Product product = productService.getByProductId(id).get();
 		  return product;
-	    }
+	  }
 
 //    @DeleteMapping("/{id}")
 //    public void delete(@PathVariable String id) {

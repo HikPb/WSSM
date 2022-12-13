@@ -25,10 +25,10 @@ $(document).ready(function () {
                 orderable: false,
                 render: function(data, type, row){
                 if(data == true){
-                    return `<label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>`
+                    return `<label class="switch"><input class="issell" data="`+data +`" type="checkbox" checked><span class="slider round"></span></label>`
                 }
                 if(data == false){
-                    return `<label class="switch"><input type="checkbox"><span class="slider round"></span></label>`
+                    return `<label class="switch"><input class="issell" data="`+data +`"type="checkbox"><span class="slider round"></span></label>`
                 }
             }},
             { 
@@ -156,6 +156,34 @@ $(document).ready(function () {
         $("#product-modal-edit").modal("show");
     });
 
+    $("#productTable").on("click", 'tbody tr .issell', function (e) {
+        e.preventDefault();
+        data = table.row($(this).parents('tr')).data();
+        // if(data["isSell"]=true){
+        //     $(this).prop('checked', false); 
+        // }else{
+        //     $(this).prop('checked', true);
+        // }
+        url = "products/"+data["productId"]+"/issell/"+!data["isSell"];
+        $.ajax({
+            url: url,
+            method: "POST",
+            // data: {
+            //     id: data["productId"],
+            //     isSell: data["isSell"]
+            // },
+            success: function (data) {  
+                table.ajax.reload(null, false);
+        
+            },  
+            error: function (err) {  
+                alert(err);  
+            } 
+        });
+
+        
+      });
+
     $("#btnCreate").on("click", function(e){
         e.preventDefault();
         $("#product-modal").modal("show");
@@ -203,7 +231,7 @@ $(document).ready(function () {
         e.preventDefault();
         data = table.row($(this).parents('tr')).data();
         href = "products/delete/"+data["productId"]+"";
-        console.log(href);
+        console.log(data);
         // link = $(this);
         // href = "products/delete/"+link.attr("productId")+"";
         $("#yesBtn").attr("href", href);
@@ -232,7 +260,7 @@ $(document).ready(function () {
 
     $("#btnClear").on("click", function (e) {
       e.preventDefault();
-      table.ajax.reload()
+      table.ajax.reload(null, false)
     //   window.location="/products"
     });
   });
