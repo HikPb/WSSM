@@ -35,4 +35,9 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 	public void delete(String cateId) {
 		cateRepository.deleteById(cateId);	
 	}
+
+	@Override
+	public List<ProductCategory> getByKeyword(String key) {
+		return cateRepository.findByKeyword(key);
+	}
 }

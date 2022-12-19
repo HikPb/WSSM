@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="#" />
     <link th:rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" />
     <link th:rel="stylesheet" href="https://cdn.datatables.net/select/1.5.0/css/select.dataTables.min.css" />
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link th:rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" />
     <link th:rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.dataTables.min.css" />
     <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css} " />
     <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/6.2.0/css/all.min.css} " />
@@ -109,45 +109,17 @@
                     <thead class="thead-light">
                         <tr>
                             <th style="text-align: center"><input type="checkbox" id="select_all" /></th>
-                            <th>ID</th>
-                            <th>ĐVVC</th>
-                            <th>Khách hàng</th>
-                            <th>SĐT</th>
-                            <th>Ghi chú</th>
-                            <th>Địa chỉ</th>
-                            <th>Sản phẩm</th>
+                            <th>Is Sell</th>
+                            <th>Id</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Barcode</th>
+                            <th>Danh mục</th>
+                            <th>Giá nhập</th>
+                            <th>Giá bán</th>
                             <th>Ngày tạo</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-
-                            <!-- <th>Actions</th> -->
+                            <th></th>
                         </tr>
                     </thead>
-                    <!-- <tbody>
-            <tr th:each="product : ${products}">
-              <td></td>
-              <td>[[${product.productId}]]</td>
-              <td>[[${product.productName}]]</td>
-              <td>[[${product.cateId}]]</td>
-              <td>
-                <a th:if="${product.isSell == true}" class="fa-regular fa-square-check"
-                  th:href="@{'/products/' + ${product.productId} + '/isSell/false'}" title="Disable this product"></a>
-                <a th:if="${product.isSell == false}" class="fa-regular fa-square icon-dark"
-                  th:href="@{'/products/' + ${product.productId} + '/isSell/true'}" title="Enable this product"></a>
-              </td>
-              <td>
-                <button  data-bs-toggle="modal" 
-                th:href="@{'/products/api/'+${product.productId}}"
-                title="Edit this product" 
-                class="fa-regular fa-pen-to-square icon-dark btn-edit">
-                </button>
-                &nbsp;
-                
-                <button th:productId="${product.productId}" th:productName="${product.productName}" id="btnDelete"
-                  title="Delete this product" class="fa-regular fa-trash-can icon-dark btn-delete"></button>
-              </td>
-            </tr>
-          </tbody> -->
                 </table>
             </div>
         </div>
@@ -174,7 +146,7 @@
             </div>
         </div>
 
-        <div th:replace="products/product-form :: modal"></div>
+        <div th:replace="products/check-quantity :: modal"></div>
         <!-- FOOTER -->
         <div th:replace="fragments/footer :: footer"></div>
     </div>
@@ -185,7 +157,8 @@
     <script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.min.js}"></script>
     <script th:src="@{/webjars/metisMenu/3.0.7/metisMenu.min.js}"></script>
     <script th:src="@{/webjars/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js}"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <!-- <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/select/1.5.0/js/dataTables.select.min.js"></script>
@@ -195,7 +168,7 @@
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js"></script>
 
     <script th:src="@{/js/app.min.js}"></script>
-    <script th:src="@{/js/order.js}"></script>
+    <script th:src="@{/js/product.js}"></script>
 </body>
 
 </html>

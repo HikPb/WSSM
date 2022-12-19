@@ -36,8 +36,17 @@ public class RestApiController {
 		return new ResponseEntity<List<ProductCategory>>(listCategory, HttpStatus.OK);
 	}
 	
+	@GetMapping("/category/search")
+	public ResponseEntity<List<ProductCategory>> searchCategory(@RequestParam("key") String key){
+		List<ProductCategory> listCategory= categoryService.getByKeyword(key);
+		if(listCategory.isEmpty()) {
+			return new ResponseEntity<List<ProductCategory>>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<List<ProductCategory>>(listCategory, HttpStatus.OK);
+	}
+	
 	@GetMapping("/category/{id}")
-	public ProductCategory findCategory(@PathVariable("id") String id) {
+	public ProductCategory findByCategoryId(@PathVariable("id") String id) {
 		ProductCategory category= categoryService.getOne(id).get();
 		if(category == null) {
 			ResponseEntity.notFound().build();

@@ -2166,7 +2166,7 @@ body.fullscreen-mode {
 
 .nav-pills,
 .nav-tabs {
-    margin-bottom: 15px
+    /* margin-bottom: 15px */
 }
 
 .nav-pills .nav-link,
@@ -2809,9 +2809,18 @@ body.fullscreen-mode {
     border-radius: 200px
 }
 
+.box-input-group{
+    display: flex;
+    align-items: center;
+    background-color: #f8f8f8;
+    margin-bottom: 5px;
+    padding: 5px 0px;
+    
+}
+
 .input-group-addon {
     color: #5d6064;
-    color: #71808f;
+    margin: 5px;
     -webkit-border-radius: 2px !important;
     border-radius: 2px !important
 }
@@ -2834,11 +2843,11 @@ body.fullscreen-mode {
 
 .input-group-icon .input-icon {
     position: absolute;
-    left: 0;
-    top: 0;
+    left: 6px;
+    top: 8px;
     height: 33px;
     line-height: 33px;
-    width: 34px;
+    /* width: 34px; */
     text-align: center
 }
 
@@ -4703,7 +4712,7 @@ body.fixed-layout.sidebar-mini .content-wrapper {
     -webkit-transition: margin .2s ease-in-out;
     -o-transition: margin .2s ease-in-out;
     transition: margin .2s ease-in-out;
-    min-height: 1200px
+    /* min-height: 1200px */
 }
 
 .page-header {

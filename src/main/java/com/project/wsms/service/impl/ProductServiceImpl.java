@@ -76,4 +76,10 @@ public class ProductServiceImpl implements ProductService {
 		product.setIsSell(isSell);
 		productRepository.save(product);
 	}
+
+	@Override
+	public List<Product> getByProductKeyword(String keyword) {
+		
+		return productRepository.findByKeyword(keyword);
+	}
 }

@@ -190,24 +190,25 @@ $(document).ready(function () {
         
     });
 
-    $("#cate-create").autocomplete({  
-        source: function (request, response) {  
-            $.ajax({  
-                url: "/api/category",  
-                method: "get",  
-                contentType: "application/json;charset=utf-8", 
-                // data : {
-                //     q : request.term
-                // },   
-                success: function (data) {  
-                    console.log(data);
-					response(data);  
-                },  
-                error: function (err) {  
-                    alert(err);  
-                }  
-            });  
-        }  
+    $("#cate-create").autocomplete({ 
+        source: [ "c++", "java", "php", "coldfusion", "javascript", "asp", "ruby" ]
+        // source: function (request, response) {  
+        //     $.ajax({  
+        //         url: "api/category/search/",  
+        //         method: "get",  
+        //         contentType: "application/json;charset=utf-8", 
+        //         data : {
+        //             key : request.term,
+        //         },   
+        //         success: function (data) {  
+        //             console.log(data);
+		// 			response(data);  
+        //         },  
+        //         error: function (err) {  
+        //             alert(err);  
+        //         }  
+        //     });  
+        // }  
     });  
 
 

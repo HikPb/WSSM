@@ -9,6 +9,8 @@ public interface ProductCategoryService{
 	
 	public List<ProductCategory> getAll();
 	
+	public List<ProductCategory> getByKeyword(String key);
+	
 	public ProductCategory save(ProductCategory category);
 
     public Optional<ProductCategory> getOne(String cateId);

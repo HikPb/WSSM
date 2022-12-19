@@ -25,7 +25,7 @@ public class OrderController {
 	@GetMapping
 	public String getAllOrder(Model model) {
 		model.addAttribute("orders", orderService.getAll());
-		model.addAttribute("pageTitle", "QUẢN LÝ SẢN PHẨM");
+		model.addAttribute("pageTitle", "QUẢN LÝ ĐƠN HÀNG");
 		return "orders/orders";
 	}
 
