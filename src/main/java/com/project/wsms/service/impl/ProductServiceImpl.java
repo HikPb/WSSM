@@ -82,4 +82,9 @@ public class ProductServiceImpl implements ProductService {
 		
 		return productRepository.findByKeyword(keyword);
 	}
+
+	@Override
+	public boolean existsById(String productId) {
+		return productRepository.existsById(productId);
+	}
 }

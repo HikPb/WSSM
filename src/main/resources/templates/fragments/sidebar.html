@@ -2,13 +2,13 @@
     <div id="sidebar-collapse">
         <ul class="side-menu metismenu">
             <li>
-                <a href="overview"><i class="sidebar-item-icon fa fa-th-large"></i>
+                <a th:href="@{/overview}"><i class="sidebar-item-icon fa fa-th-large"></i>
                     <span class="nav-label">TỔNG QUAN</span>
                 </a>
             </li>
             <li class="heading">CHỨC NĂNG</li>
             <li>
-                <a href="icons">
+                <a th:href="@{/order/new}">
                     <i class="sidebar-item-icon fa-solid fa-shop"></i>
                     <span class="nav-label">Bán hàng</span>
                 </a>
@@ -19,7 +19,7 @@
                     <span class="nav-label">Đơn hàng</span><i class="fa fa-angle-left arrow"></i></a>
                 <ul class="nav-2-level">
                     <li>
-                        <a href="order-management.html">Quản lý đơn hàng</a>
+                        <a th:href="@{/order}">Quản lý đơn hàng</a>
                     </li>
                     <li>
                         <a href="exchange.html">Trả hàng</a>
@@ -33,22 +33,10 @@
                     <span class="nav-label">Sản phẩm</span><i class="fa fa-angle-left arrow"></i></a>
                 <ul class="nav-2-level">
                     <li>
-                        <a href="products">Quản lý sản phẩm</a>
+                        <a th:href="@{/products}">Quản lý sản phẩm</a>
                     </li>
                     <li>
-                        <a href="form_advanced.html">Kiểm hàng</a>
-                    </li>
-                    <li>
-                        <a href="form_masks.html">Nhập hàng</a>
-                    </li>
-                    <li>
-                        <a href="form_validation.html">Xuất hàng</a>
-                    </li>
-                    <li>
-                        <a href="text_editors.html">Chuyển kho</a>
-                    </li>
-                    <li>
-                        <a href="text_editors.html">Quản lý nhà cung cấp</a>
+                        <a href="#">Nhà cung cấp sản phẩm</a>
                     </li>
                 </ul>
             </li>
@@ -58,10 +46,19 @@
                     <span class="nav-label">Kho hàng</span><i class="fa fa-angle-left arrow"></i></a>
                 <ul class="nav-2-level">
                     <li>
-                        <a href="charts_flot.html">Thống kê đơn hàng</a>
+                        <a th:href="@{/warehouse}">Quản lý kho hàng</a>
                     </li>
                     <li>
-                        <a href="charts_morris.html">Thống kê doanh số</a>
+                        <a th:href="@{/products/checkquantity}">Kiểm hàng</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/products/import}">Nhập hàng</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/products/export}">Xuất hàng</a>
+                    </li>
+                    <li>
+                        <a href="#">Chuyển kho</a>
                     </li>
                 </ul>
             </li>

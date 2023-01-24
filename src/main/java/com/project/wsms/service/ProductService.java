@@ -15,6 +15,8 @@ public interface ProductService {
 	public void update(Product product);
 	
 	public void updateIsSell(String productId, Boolean isSell);
+	
+	public boolean existsById(String productId);
 
     public List<Product> getAll();
 

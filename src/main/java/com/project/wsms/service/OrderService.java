@@ -7,7 +7,7 @@ import com.project.wsms.collection.Order;
 
 public interface OrderService{
 
-public void save(Order order);
+	public void save(Order order);
 	
 	public void update(Order order);
 	

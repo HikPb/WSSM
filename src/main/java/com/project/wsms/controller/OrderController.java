@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.project.wsms.collection.Order;
 import com.project.wsms.service.OrderService;
 
+@Controller
 @RequestMapping("/order")
 public class OrderController {
 	@Autowired
@@ -26,14 +28,15 @@ public class OrderController {
 	public String getAllOrder(Model model) {
 		model.addAttribute("orders", orderService.getAll());
 		model.addAttribute("pageTitle", "QUẢN LÝ ĐƠN HÀNG");
-		return "orders/orders";
+		return "orders/order";
 	}
 
 
-	  @GetMapping("/create")
-	  public String addOrder(Model model) {
-	    model.addAttribute("order", new Order());
-	    return "orders/order_form";
+	  @GetMapping("/new")
+	  public String newOrder(Model model) {
+	    //model.addAttribute("order", new Order());
+		model.addAttribute("pageTitle", "TẠO ĐƠN HÀNG");
+	    return "orders/new-order";
 	  }
 
 	  @ModelAttribute("order")
@@ -44,7 +47,7 @@ public class OrderController {
 	  public String saveOrder(@ModelAttribute("order") Order order, RedirectAttributes redirectAttributes) {
 	    try {
 //	    	order.setIsSell(true);
-	    	order.setOrderTime(LocalDateTime.now());
+	    	order.setCreated_at(LocalDateTime.now());
 	    	orderService.save(order);
 	    	redirectAttributes.addFlashAttribute("message", "The new order has been saved successfully!");
 	    } catch (Exception e) {

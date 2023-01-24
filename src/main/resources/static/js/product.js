@@ -6,12 +6,12 @@ $(document).ready(function () {
         ajax: {
             url: "/products/api",
             dataSrc: '',
-            type: "POST",
+            type: "GET",
             dataType: "json",
             contentType: "application/json",
-            data: function (d) {
-                    return JSON.stringify(d);
-            }
+            // data: function (d) {
+            //         return JSON.stringify(d);
+            // }
             },
         columns: [
             {
@@ -44,7 +44,7 @@ $(document).ready(function () {
                 className: 'td-data'
             },
             { 
-                data: 'cateId', 
+                data: 'barcode', 
                 className: 'td-data'
             },
             { 
@@ -104,7 +104,7 @@ $(document).ready(function () {
             titleAttr: 'Print',
             className: 'btn-tools',
             exportOptions: {
-                columns: ':visible'
+                columns: [2,3,4,5,6,7]
             }
             },  
             {
@@ -159,19 +159,10 @@ $(document).ready(function () {
     $("#productTable").on("click", 'tbody tr .issell', function (e) {
         e.preventDefault();
         data = table.row($(this).parents('tr')).data();
-        // if(data["isSell"]=true){
-        //     $(this).prop('checked', false); 
-        // }else{
-        //     $(this).prop('checked', true);
-        // }
-        url = "products/"+data["productId"]+"/issell/"+!data["isSell"];
+        url = "products/api/"+data["productId"]+"/"+!data["isSell"];
         $.ajax({
             url: url,
             method: "POST",
-            // data: {
-            //     id: data["productId"],
-            //     isSell: data["isSell"]
-            // },
             success: function (data) {  
                 table.ajax.reload(null, false);
         
@@ -231,7 +222,7 @@ $(document).ready(function () {
     $("#productTable tbody").on("click", ".btn-delete", function (e) {
         e.preventDefault();
         data = table.row($(this).parents('tr')).data();
-        href = "products/delete/"+data["productId"]+"";
+        href = "products/api/"+data["productId"]+"";
         console.log(data);
         // link = $(this);
         // href = "products/delete/"+link.attr("productId")+"";

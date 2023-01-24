@@ -7,6 +7,7 @@ $(document).ready(function () {
             url: 'products/api/search/',
             type: 'GET',
             dataType: 'json',
+            dropdownParent: $('#test1'),
             data: function (params) {
                 var query = {
                   keyword: params.term,
@@ -14,19 +15,27 @@ $(document).ready(function () {
                 return query;
             },
             processResults: function (data, params) {
-                // return {
-                //     results: data
-                // };
-                console.log(data)
+                var rs= [];
+                data['data'].forEach( d =>{
+                    var rsObj = {
+                        id: d['productId'],
+                        text: d['productName']
+                      }
+                    rs.push(rsObj)
+                })
                 return {
-                    results: $.map(data, function (item) {
-                        return {
-                            id: item.id,
-                            text: item.productName,
-                            
-                        };
-                    })
+                    results: rs
                 };
+                
+                // return {
+                //     results: $.map(data.data, function (item) {
+                //         return {
+                //             id: item.productId,
+                //             text: item.productName,
+                            
+                //         };
+                //     })
+                // };
             }
         }
     });
@@ -39,10 +48,13 @@ $(document).ready(function () {
                 keyword : $(this).val()
             },
 			beforeSend: function() {
-				$("#pr-select2").css("background", "#FFF url(LoaderIcon.gif) no-repeat 165px");
+				$("#pr-select2").css("background", "#FFF");
 			},
 			success: function(data) {
-                console.log(data)
+                $.each(function(key,value){
+
+
+                })
 				$("#suggesstion-box").show();
 				$("#suggesstion-box").html("Xin");
 				$("#pr-select2").css("background", "#FFF");
@@ -58,27 +70,39 @@ $(document).ready(function () {
 
     // Select address
     $(".ad-select-0").select2({
+        width: 'resolve',
         placeholder: "Chọn địa chỉ",
         allowClear: true
     });
     
     $(".ad-select-1").select2({
+        width: 'resolve',
         placeholder: "Tỉnh thành phố",
         allowClear: true
     });
     
     $(".ad-select-2").select2({
+        width: 'resolve',
         placeholder: "Quận huyện",
         allowClear: true
     });
     
     $(".ad-select-3").select2({
+        width: 'resolve',
         placeholder: "Phuong xa",
+        allowClear: true
+    });
+
+    $(".deli-select").select2({
+        width: 'resolve',
+        minimumResultsForSearch: Infinity,
+        placeholder: "ĐVVC",
         allowClear: true
     });
     
     // Select warehouse
     $(".wh-select").select2({
+        width: '80px',
         placeholder: "Kho mặc định",
         allowClear: true
     });
@@ -96,5 +120,9 @@ $(document).ready(function () {
     $('#date_2').datepicker({
         dateFormat: 'dd-mm-yy',
         calendarWeeks: true,
+    });
+
+    $('#testbtn').on('click', function(e) {
+        $('#test').append("<div th:replace="+"fragments/footer :: footer"+"></div>")
     });
 });

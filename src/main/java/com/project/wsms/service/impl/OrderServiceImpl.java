@@ -3,10 +3,13 @@ package com.project.wsms.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
 import com.project.wsms.collection.Order;
 import com.project.wsms.repository.OrderRepository;
 import com.project.wsms.service.OrderService;
 
+@Service
 public class OrderServiceImpl implements OrderService {
 
 	private OrderRepository orderRepository;

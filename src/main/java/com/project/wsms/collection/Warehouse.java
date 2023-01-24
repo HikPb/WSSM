@@ -1,5 +1,7 @@
 package com.project.wsms.collection;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -17,5 +19,7 @@ public class Warehouse {
 	private String warePhone;
 	@Field(value = "Warehouse address")
 	private String wareAddress;
+	
+	private List<String> listImportId;
 	
 }

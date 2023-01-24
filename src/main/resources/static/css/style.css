@@ -961,8 +961,8 @@
 }
 
 .boxes-model section div.box-meta {
-    font-weight: 500;
-    font-size: 15px;
+    font-weight: 600;
+    font-size: 16px;
     display: flex;
     align-items: center
 }
@@ -974,7 +974,8 @@
 
 .boxes-model section div.box-icon {
     display: flex;
-    align-items: center
+    align-items: center;
+    padding: 8px;
 }
 
 .boxes-model section div.box-icon .anticon {
