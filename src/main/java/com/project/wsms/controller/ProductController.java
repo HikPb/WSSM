@@ -196,25 +196,4 @@ public class ProductController {
 			);
 	}
 
-	
-
-	
-	// VIEW KIỂM KHO
-	@GetMapping("checkquantity")
-	public String getAllCheckQuantity(Model model) {
-		// model.addAttribute("products", productService.getAll());
-		model.addAttribute("pageTitle", "KIỂM KHO");
-		return "products/check-quantity";
-	}
-
-	
-
-	// VIEW XUẤT KHO
-
-	@GetMapping("/export")
-	public String getAllExportProduct(Model model) {
-		// model.addAttribute("products", productService.getAll());
-		model.addAttribute("pageTitle", "XUẤT KHO");
-		return "products/export-product";
-	}
 }

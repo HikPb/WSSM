@@ -22,7 +22,7 @@ import com.project.wsms.collection.ResponseObject;
 import com.project.wsms.service.ImportProductService;
 
 @Controller
-@RequestMapping("/products/import")
+@RequestMapping("/import")
 public class ImportProductController {
 
 	@Autowired
@@ -33,7 +33,7 @@ public class ImportProductController {
 	public String getAllImportProduct(Model model) {
 		// model.addAttribute("products", ipService.getAll());
 		model.addAttribute("pageTitle", "NHẬP KHO");
-		return "products/import-product";
+		return "warehouse/import";
 	}
 	
 	@GetMapping("/api")

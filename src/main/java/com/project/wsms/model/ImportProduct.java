@@ -1,10 +1,11 @@
 package com.project.wsms.collection;
 
-import java.util.List;
+import java.time.LocalDateTime;
+
+import javax.persistence.Table;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -17,14 +18,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@Document(collection = "categories")
-public class ProductCategory {
-	@Id
-	private String cateId;
-	private List<String> listProductId;
-	@Field(value = "Category")
-	private String cateName;
+@Table(name = "import")
+public class ImportProduct {
 	
-
+	@Id
+	private String importId;
+	private String warehouseId;
+	private String supplierId;
+	private String note;
+	private Integer status;
+	private LocalDateTime created_at;
+	private LocalDateTime expected_at;
+	private LocalDateTime updated_at;
 }
