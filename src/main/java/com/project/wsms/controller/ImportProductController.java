@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.project.wsms.collection.ImportProduct;
-import com.project.wsms.collection.ResponseObject;
+import com.project.wsms.model.ImportProduct;
+import com.project.wsms.model.ResponseObject;
 import com.project.wsms.service.ImportProductService;
 
 @Controller

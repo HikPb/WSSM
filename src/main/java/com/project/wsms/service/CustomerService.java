@@ -2,7 +2,7 @@ package com.project.wsms.service;
 
 import java.util.List;
 
-import com.project.wsms.collection.Customer;
+import com.project.wsms.model.Customer;
 
 public interface CustomerService {
 

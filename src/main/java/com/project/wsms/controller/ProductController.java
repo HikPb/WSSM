@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.project.wsms.collection.Product;
-import com.project.wsms.collection.ResponseObject;
+import com.project.wsms.model.Product;
+import com.project.wsms.model.ResponseObject;
 import com.project.wsms.service.ProductService;
 
 @Controller

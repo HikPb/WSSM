@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.project.wsms.collection.Customer;
+import com.project.wsms.model.Customer;
 import com.project.wsms.repository.CustomerRepository;
 import com.project.wsms.service.CustomerService;
 

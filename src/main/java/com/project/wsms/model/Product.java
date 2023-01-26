@@ -1,4 +1,4 @@
-package com.project.wsms.collection;
+package com.project.wsms.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

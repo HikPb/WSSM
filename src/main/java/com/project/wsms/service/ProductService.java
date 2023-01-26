@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.project.wsms.collection.Product;
+import com.project.wsms.model.Product;
 
 public interface ProductService {
 

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.project.wsms.collection.Customer;
+import com.project.wsms.model.Customer;
 @Repository
 public interface CustomerRepository extends MongoRepository<Customer, String> {
 //	List<Customer> findCustomerByName(String name);

@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.project.wsms.collection.Product;
+import com.project.wsms.model.Product;
 
 @Repository
 public interface ProductRepository extends MongoRepository<Product, String>{

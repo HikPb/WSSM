@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.project.wsms.collection.ImportProduct;
-import com.project.wsms.collection.Order;
+import com.project.wsms.model.ImportProduct;
+import com.project.wsms.model.Order;
 import com.project.wsms.repository.ImportProductRepository;
 import com.project.wsms.service.ImportProductService;
 

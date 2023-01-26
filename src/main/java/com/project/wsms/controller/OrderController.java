@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.project.wsms.collection.Order;
+import com.project.wsms.model.Order;
 import com.project.wsms.service.OrderService;
 
 @Controller

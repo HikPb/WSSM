@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.project.wsms.collection.ProductCategory;
+import com.project.wsms.model.ProductCategory;
 @Repository
 public interface ProductCategoryRepository extends MongoRepository<ProductCategory, String>{
 

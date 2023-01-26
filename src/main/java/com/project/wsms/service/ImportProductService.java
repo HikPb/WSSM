@@ -3,7 +3,7 @@ package com.project.wsms.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.project.wsms.collection.ImportProduct;
+import com.project.wsms.model.ImportProduct;
 
 public interface ImportProductService {
 	
