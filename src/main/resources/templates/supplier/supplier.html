@@ -41,31 +41,6 @@
                 </button>
 
                 <div id="action-tools" style="display: inline-block;">
-                    <span id="import_excel" style="display: inline-block;">
-                        <div style="display: inline-block;">
-                            <button type="button" class="btn-tools">
-                                <i class="fa-solid fa-file-import"></i>
-                                <span>Nhập excel</span>
-                            </button>
-                        </div>
-                    </span>
-
-                    <span id="product_category">
-                        <div style="display: inline-block;">
-                            <button type="button" class="btn-tools">
-                                <i class="fa-solid fa-tags"></i>
-                                <span>Danh mục SP</span>
-                            </button>
-                        </div>
-                    </span>
-
-                    <!-- <span id="export_excel" style="display: inline-block;">
-          <button type="button" class="btn-tools">
-            <i class="fa-solid fa-file-export"></i>
-            <span>Xuất excel</span>
-          </button>
-        </span> -->
-
                     <span id="multi_delete" style="display: inline-block;">
                         <div style="display: inline-block;">
                             <button type="button" class="btn-tools">
@@ -98,10 +73,9 @@
                         <tr>
                             <th style="text-align: center"><input type="checkbox" id="select_all" /></th>
                             <th>Id</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Barcode</th>
-                            <th>Danh mục</th>
-                            <th>Khối lượng</th>
+                            <th>Tên NCC</th>
+                            <th>Số điện thoại</th>
+                            <th>Địa chỉ</th>
                             <th>Ngày tạo</th>
                             <th>Cập nhật cuối</th>
                             <th></th>
@@ -132,7 +106,7 @@
                 </div>
             </div>
         </div>
-        <div th:replace="~{products/product-form.html :: modal}"></div>
+        <div th:replace="~{supplier/supplier-form.html :: modal}"></div>
         
         <!-- FOOTER -->
         <div th:replace="~{fragments/footer.html :: footer}"></div>
@@ -154,7 +128,7 @@
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js"></script>
 
     <script th:src="@{/js/app.min.js}"></script>
-    <script th:src="@{/js/product.js}"></script>
+    <!-- <script th:src="@{/js/supplier.js}"></script> -->
 </body>
 
 </html>

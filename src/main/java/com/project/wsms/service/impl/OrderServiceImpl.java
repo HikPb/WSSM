@@ -29,17 +29,12 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public void delete(String orderId) {
+	public void delete(Integer orderId) {
 		orderRepository.deleteById(orderId);	
 	}
 
-//	@Override
-//	public Page<Order> getAll(Pageable paging) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 	@Override
-	public Optional<Order> getByOrderId(String orderId) {
+	public Optional<Order> getById(Integer orderId) {
 		return orderRepository.findById(orderId);
 	}
 

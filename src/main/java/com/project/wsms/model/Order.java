@@ -1,39 +1,61 @@
 package com.project.wsms.model;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
-import org.apache.logging.log4j.message.StringFormattedMessage;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Entity
 @Builder
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "orders")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Order {
-
+@Table(name = "orders")
+public class Order extends AuditModel{
+	private static final long serialVersionUID = 1L;
+	
 	@Id
-	private String orderId;
-	private String cusId;
-//	private String sessionId;
-//	private String token;
-	private String employeeId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "cus_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+	@JsonIgnore
+	private Customer customer;
+	
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "emp_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+	@JsonIgnore
+	private Employee employee;
 	
 	private Integer status;
-	private List<String> listOrderDetailId;
+	
 	private String deliveryUnitId;
 	
-	private Integer totalOrderWeight;
+	private Integer totalWeight;
 	private Integer shippingFee; //tien ship
 	private Integer totalDiscount; // tong tien giam gia
 	private Integer receivedMoney; // tien da thanh toan truoc, dat coc vv
@@ -44,12 +66,19 @@ public class Order {
 	
 	private String receiverName;
 	private String receiverPhone;
-	private Address orderAddress;
 	
+	@Column(name = "address", nullable = true)
+	private String address;
+	
+	@OneToMany(mappedBy="order")
+	private Set<OrderItem> orderItems;
+	
+	public void addItem(OrderItem item) {
+		this.orderItems.add(item);
+	}
+	
+	@Lob
 	private String internalNote;
-	private String printedNote;
-	
-	private LocalDateTime created_at;
-	private LocalDateTime updated_at;
-	
+	@Lob
+	private String printedNote;	
 }

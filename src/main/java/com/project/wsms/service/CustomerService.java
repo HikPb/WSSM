@@ -1,16 +1,24 @@
 package com.project.wsms.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.project.wsms.model.Customer;
 
 public interface CustomerService {
 
-//    public String save(Customer customer);
-//
-//    public List<Customer> getCustomerByName(String name);
-//
-//    public void delete(String id);
-//
-//    public List<Customer> getCustomerByPhone(String phone);
+    public Customer save(Customer customer);
+    
+    public void delete(Integer id);
+    
+    public List<Customer> getAll();
+
+    public List<Customer> getByName(String name);
+    
+    public List<Customer> getByPhone(String phone);
+	
+	public boolean existsById(Integer id);
+
+    public Optional<Customer> getById(Integer id);
+
 }

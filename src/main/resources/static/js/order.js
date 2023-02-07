@@ -4,7 +4,7 @@ $(document).ready(function () {
         minimumInputLength: 3,
         allowClear: true,
         ajax: {
-            url: 'products/api/search/',
+            url: '/api/products/search',
             type: 'GET',
             dataType: 'json',
             dropdownParent: $('#test1'),
@@ -43,7 +43,7 @@ $(document).ready(function () {
     $("#pr-select2").keyup(function() {
 		$.ajax({
 			type: "GET",
-			url: "products/api/search/",
+			url: "/api/products/search",
 			data: {
                 keyword : $(this).val()
             },
@@ -108,7 +108,7 @@ $(document).ready(function () {
     });
     
     // Bootstrap datepicker
-    $('#date_1').datepicker({
+    /*$('#date_1').datepicker({
         todayBtn: "linked",
         dateFormat: 'dd-mm-yy',
         keyboardNavigation: false,
@@ -120,7 +120,7 @@ $(document).ready(function () {
     $('#date_2').datepicker({
         dateFormat: 'dd-mm-yy',
         calendarWeeks: true,
-    });
+    });*/
 
     $('#testbtn').on('click', function(e) {
         $('#test').append("<div th:replace="+"fragments/footer :: footer"+"></div>")

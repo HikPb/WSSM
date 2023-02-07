@@ -14,19 +14,19 @@ public interface ProductService {
 	
 	public void update(Product product);
 	
-	public void updateIsSell(String productId, Boolean isSell);
+	public void updateIsSell(Integer productId, Boolean isSell);
 	
-	public boolean existsById(String productId);
+	public boolean existsById(Integer productId);
 
     public List<Product> getAll();
 
-    public void delete(String productId);
+    public void delete(Integer productId);
 
 	public Page<Product> getAll(Pageable paging);
 	
 	public Page<Product> getByProductNameStartingWith(String productName, Pageable paging);
 	
-	public Optional<Product> getByProductId(String productId);
+	public Optional<Product> getByProductId(Integer productId);
 	
 	public List<Product> getByProductKeyword(String keyword);
 

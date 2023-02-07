@@ -1,6 +1,5 @@
 package com.project.wsms.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.project.wsms.model.ImportProduct;
+import com.project.wsms.model.Import;
 import com.project.wsms.model.ResponseObject;
-import com.project.wsms.service.ImportProductService;
+import com.project.wsms.service.ImportService;
 
 @Controller
 @RequestMapping("/import")
-public class ImportProductController {
+public class ImportController {
 
 	@Autowired
-	private ImportProductService ipService;
+	private ImportService ipService;
 	
 	// VIEW NHẬP KHO
 	@GetMapping
@@ -38,13 +37,13 @@ public class ImportProductController {
 	
 	@GetMapping("/api")
 	@ResponseBody
-	public List<ImportProduct> findImportForms() {
+	public List<Import> findImportForms() {
 		return ipService.getAll();
 	}
 
 	@GetMapping("/api/{id}")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> getOne(@PathVariable String id) {
+	public ResponseEntity<ResponseObject> getOne(@PathVariable Integer id) {
 		Boolean exists = ipService.existsById(id);
 		if (exists) {
 			return new ResponseEntity<ResponseObject>(
@@ -74,10 +73,8 @@ public class ImportProductController {
 //	}
 	
 	@PostMapping("/api/new")
-	public ResponseEntity<ResponseObject> createIpForm(@RequestBody ImportProduct ipForm) {
+	public ResponseEntity<ResponseObject> createIpForm(@RequestBody Import ipForm) {
 		try {
-			ipForm.setCreated_at(LocalDateTime.now());
-			ipForm.setUpdated_at(LocalDateTime.now());
 			ipService.save(ipForm);
 			return new ResponseEntity<ResponseObject>(
 					new ResponseObject("ok", "Create new successfully", ipForm), 
@@ -113,7 +110,7 @@ public class ImportProductController {
 
 	@DeleteMapping("/api/{id}")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> deleteProduct(@PathVariable("id") String id) {
+	public ResponseEntity<ResponseObject> deleteProduct(@PathVariable("id") Integer id) {
 		Boolean exists = ipService.existsById(id);
 		if (exists) {
 			ipService.delete(id);
@@ -128,12 +125,12 @@ public class ImportProductController {
 
 	@PutMapping("/api/{id}")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> updateOne(@RequestBody ImportProduct ipForm, @PathVariable String id) {
-		ImportProduct update = ipService.getById(id)
+	public ResponseEntity<ResponseObject> updateOne(@RequestBody Import ipForm, @PathVariable Integer id) {
+		Import update = ipService.getById(id)
 		.map( p-> {
-			p.setWarehouseId(ipForm.getWarehouseId());
-			p.setSupplierId(ipForm.getSupplierId());
-			p.setUpdated_at(LocalDateTime.now());
+//			p.setWarehouseId(ipForm.getWarehouseId());
+//			p.setSupplierId(ipForm.getSupplierId());
+//			p.setUpdated_at(LocalDateTime.now());
 			ipService.update(p);
 			return p;
 

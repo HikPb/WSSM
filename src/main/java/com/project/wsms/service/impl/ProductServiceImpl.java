@@ -9,15 +9,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.project.wsms.model.Product;
+import com.project.wsms.repository.CategoryRepository;
 import com.project.wsms.repository.ProductRepository;
 import com.project.wsms.service.ProductService;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private ProductRepository productRepository;
+	
+	@Autowired CategoryRepository categoryRepository;
 
+	@Transactional
 	@Override
 	public void save(Product product) {
 		productRepository.save(product);
@@ -30,7 +36,7 @@ public class ProductServiceImpl implements ProductService {
 //	}
 
 	@Override
-	public void delete(String id) {
+	public void delete(Integer id) {
 		productRepository.deleteById(id);
 		
 	}
@@ -58,22 +64,22 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Optional<Product> getByProductId(String productId) {
+	public Optional<Product> getByProductId(Integer productId) {
 		return productRepository.findById(productId);
 	}
 
 	@Override
 	public void update(Product product) {
-		if(productRepository.existsById(product.getProductId())) {
+		if(productRepository.existsById(product.getId())) {
 			productRepository.save(product);
 		}
 		
 	}
 
 	@Override
-	public void updateIsSell(String productId, Boolean isSell) {
+	public void updateIsSell(Integer productId, Boolean isSell) {
 		Product product = productRepository.findById(productId).get();
-		product.setIsSell(isSell);
+		//product.setIsSell(isSell);
 		productRepository.save(product);
 	}
 
@@ -84,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public boolean existsById(String productId) {
+	public boolean existsById(Integer productId) {
 		return productRepository.existsById(productId);
 	}
 }

@@ -149,7 +149,7 @@ $(document).ready(function () {
         $("#ep-create-modal").modal("show");
         
     });
-
+	$("#cate-create").autocomplete("option", "appendTo", ".modal-body")
     $("#cate-create").autocomplete({ 
         source: [ "c++", "java", "php", "coldfusion", "javascript", "asp", "ruby" ]
         // source: function (request, response) {  

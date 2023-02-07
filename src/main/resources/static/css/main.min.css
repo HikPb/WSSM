@@ -3235,6 +3235,12 @@ body.fullscreen-mode {
 
 .modal-body {
     background-color: #ededed;
+    padding: 5px;
+}
+
+.steps-container{
+	background-color: #fff;
+	padding: 15px;
 }
 .m-box {
     padding: 15px 20px 20px 20px;
@@ -4597,6 +4603,14 @@ body:not(.fixed-layout).sidebar-mini .content-wrapper {
     margin-left: 60px
 }
 
+body:not(.fixed-layout).sidebar-mini .tools-container {
+    margin-left: -160px
+}
+
+body:not(.fixed-layout).sidebar-mini .box-order-status {
+    margin-left: -160px
+}
+
 body:not(.fixed-layout).sidebar-mini .page-sidebar {
     width: 60px
 }
@@ -4792,7 +4806,7 @@ body.fixed-navbar .header {
 
 body.fixed-layout .content-wrapper,
 body.fixed-navbar .content-wrapper {
-    padding-top: 56px
+    padding-top: 112px
 }
 
 body.fixed-layout .page-sidebar {
@@ -5253,10 +5267,18 @@ table.dataTable {
     padding: 8px 10px;
     margin-bottom: 10px;
     background-color: white;
-    border: rgba(255, 255, 255, .4);
+    border: 3px solid rgb(209 183 183 / 40%);
     display: block;
-    
+    position: fixed;
+    z-index: 1001;
+    left: 230px;
+    right: 10px;
+    top: 56px;  
+    -webkit-transition: margin .2s ease-in-out;
+    -o-transition: margin .2s ease-in-out;
+    transition: margin .2s ease-in-out;
 }
+    
 
 .tools-container button {
     margin-right: 8px;
@@ -5373,3 +5395,57 @@ table.dataTable {
   .slider.round:before {
     border-radius: 50%;
   }
+  
+  .ui-autocomplete-multiselect.ui-state-default {
+    display: flex;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 3px 3px;
+    padding-bottom: 0px;
+    overflow: hidden;
+    cursor: text;
+    margin: 0px auto;
+}
+
+.ui-autocomplete-multiselect .ui-autocomplete-multiselect-item .ui-icon {
+    float: right;
+    cursor: pointer;
+}
+
+.ui-autocomplete-multiselect .ui-autocomplete-multiselect-item {
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 1px 3px;
+    margin-right: 2px;
+    margin-bottom: 3px;
+    color: #333;
+    background-color: #f6f6f6;
+}
+
+.ui-autocomplete-multiselect input {
+    display: inline-block;
+    border: none;
+    outline: none;
+    height: auto;
+    margin: 2px;
+    overflow: visible;
+    margin-bottom: 5px;
+    text-align: left;
+    width: 100% !important;
+}
+
+.ui-autocomplete-multiselect.ui-state-active {
+    outline: none;
+    border: 1px solid #7ea4c7;
+    -moz-box-shadow: 0 0 5px rgba(50,150,255,0.5);
+    -webkit-box-shadow: 0 0 5px rgba(50,150,255,0.5);
+    -khtml-box-shadow: 0 0 5px rgba(50,150,255,0.5);
+    box-shadow: 0 0 5px rgba(50,150,255,0.5);
+}
+
+.ui-autocomplete {
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}

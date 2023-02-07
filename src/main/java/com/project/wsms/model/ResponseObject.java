@@ -1,8 +1,9 @@
 package com.project.wsms.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter @Setter
 public class ResponseObject {
 	private String status;
 	private String message;

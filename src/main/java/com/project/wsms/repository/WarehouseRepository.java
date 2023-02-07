@@ -1,10 +1,11 @@
 package com.project.wsms.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.project.wsms.model.Warehouse;
-@Repository
-public interface WarehouseRepository extends MongoRepository<Warehouse, String> {
 
+public interface WarehouseRepository extends JpaRepository<Warehouse, Integer> {
+	List<Warehouse> findByNameContains(String name);
 }

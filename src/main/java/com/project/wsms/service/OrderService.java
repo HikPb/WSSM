@@ -15,10 +15,10 @@ public interface OrderService{
 
     public List<Order> getAll();
 
-    public void delete(String orderId);
+    public void delete(Integer orderId);
 
 //	public Page<Order> getAll(Pageable paging);
 	
 	
-	public Optional<Order> getByOrderId(String orderId);
+	public Optional<Order> getById(Integer orderId);
 }

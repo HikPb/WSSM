@@ -47,7 +47,7 @@ public class OrderController {
 	  public String saveOrder(@ModelAttribute("order") Order order, RedirectAttributes redirectAttributes) {
 	    try {
 //	    	order.setIsSell(true);
-	    	order.setCreated_at(LocalDateTime.now());
+	    	//order.setCreated_at(LocalDateTime.now());
 	    	orderService.save(order);
 	    	redirectAttributes.addFlashAttribute("message", "The new order has been saved successfully!");
 	    } catch (Exception e) {
@@ -74,7 +74,7 @@ public class OrderController {
 //	  }
 //
 	  @GetMapping("/delete/{id}")
-	  public String deleteOrder(@PathVariable("id") String id, Model model, RedirectAttributes redirectAttributes) {
+	  public String deleteOrder(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
 	    try {
 	      orderService.delete(id);
 	      System.out.println("Delete Sucess");
@@ -88,7 +88,7 @@ public class OrderController {
 
 	  @RequestMapping(value="/update", method = {RequestMethod.PUT, RequestMethod.GET})
 	  public String update(Order order) {
-		  Order uorder = orderService.getByOrderId(order.getOrderId()).get();
+		  Order uorder = orderService.getById(order.getId()).get();
 //		  uorder.setOrderName(order.getOrderName());
 //		  uorder.setCateId(order.getCateId());
 //		  uorder.setBarcode(order.getBarcode());
@@ -107,8 +107,8 @@ public class OrderController {
 	  
 	  @GetMapping("/api/{id}")
 	  @ResponseBody
-	  public Order getOne(@PathVariable String id) {
-		  Order order = orderService.getByOrderId(id).get();
+	  public Order getOne(@PathVariable Integer id) {
+		  Order order = orderService.getById(id).get();
 		  return order;
 	  }
 }

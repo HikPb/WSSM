@@ -1,11 +1,9 @@
 package com.project.wsms.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.project.wsms.model.Order;
 
-@Repository
-public interface OrderRepository extends MongoRepository<Order, String> {
+public interface OrderRepository extends JpaRepository<Order, Integer> {
 
 }

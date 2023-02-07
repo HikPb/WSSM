@@ -25,25 +25,22 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "warehouses")
-public class Warehouse extends AuditModel{
+@Table(name = "suppliers")
+public class Supplier extends AuditModel {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	@Column(name = "name", nullable = false)
-	private String name;
-	@Column(name = "phone", nullable = false)
-	private String phone;
-	
-	@Column(name = "address", nullable = true)
+	@Column(name = "sup_name", nullable = false)
+	private String supName;
+	@Column(name = "sup_phone", nullable = false)
+	private String supPhone;
+	@Column(name = "sup_address", nullable = true)
 	private String address;
-	
 	@JsonIgnore
-	@OneToMany(mappedBy="warehouse")
+	@OneToMany(mappedBy="supplier")
 	private List<Item> items;
-	
 	
 	/*
 	 * @JsonManagedReference public List<Item> getItems () { return this.items; }
@@ -52,4 +49,5 @@ public class Warehouse extends AuditModel{
 	public void addItem(Item item) {
 		this.items.add(item);
 	}
+
 }
