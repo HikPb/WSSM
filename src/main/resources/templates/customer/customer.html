@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>[[${pageTitle}]]</title>
+    <!-- GLOBAL MAINLY STYLES-->
+    <link rel="shortcut icon" href="#" />
+    <th:block th:include="fragments/assets :: assets"></th:block>
+</head>
+
+
+
+<body class="fixed-navbar">
+    <div class="page-wrapper">
+        <!-- HEADER AND SIDEBAR -->
+        <div th:replace="~{fragments/header.html :: header}"></div>
+        <div th:replace="~{fragments/sidebar.html :: sidebar}"></div>
+
+		<!-- START TOOLBAR -->
+        <div class="tools-container">
+            <div>
+                <div style="display: inline-block;">
+                    <button type="button" class="btn-tools" id="btnCreate">
+                        <span><i class="fa-solid fa-plus"></i></span>
+                    </button>
+                </div>
+
+                <button type="button" class="btn-tools" id="btnClear">
+                    <i class="fa-solid fa-rotate"></i>
+                    <span>Tải lại</span>
+                </button>
+
+                <div id="action-tools" style="display: inline-block;">
+                    <span style="display: inline-block;">
+                        <div style="display: inline-block;">
+                            <button type="button" class="btn-tools" id="multi_delete">
+                                <i class="fa-solid fa-trash"></i>
+                                <span>Xóa</span>
+                            </button>
+                        </div>
+                    </span>
+                </div>
+
+                <div class="filter">
+                    <div>
+                        <button id="btn-filter" tabindex="0" type="button" class="btn-tools">
+                            <i class="fa-solid fa-filter"></i>
+                            <span>Thêm lọc</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END TOOLBAR -->
+        <!-- PAGE CONTENT -->
+        <div class="content-wrapper">
+            
+
+            <div class="table-container">
+                <table class="table table-hover table-responsive-xl" id="customerTable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="text-align: center"><input type="checkbox" id="select_all" /></th>
+                            <th>Id</th>
+                            <th>Tên khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Ngày sinh</th>
+                            <th>Địa chỉ</th>
+                            <th>Ngày tạo</th>
+                            <th>Cập nhật cuối</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-notify modal-info" role="document">
+                <div class="modal-content text-center">
+                    <div class="modal-header d-flex justify-content-center">
+                        <h5 class="heading">Xác nhận</h5>
+                    </div>
+                    <div class="modal-body">
+                        <i class="fa-solid fa-triangle-exclamation mb-4" style="color: #f00; text-shadow: 1px 1px 1px #ccc;
+                        font-size: 3em;"></i>
+                        <p id="confirmText"></p>
+                    </div>
+                    <div class="modal-footer flex-center">
+                        <a type="button"  class="btn btn-info" id="yesBtn">Yes</a>
+                        <a type="button" class="btn btn-outline-info waves-effect" data-bs-dismiss="modal">No</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="toast" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+              <div class="toast-header">
+                <i class="fa-solid fa-check" style="font-size: 1.5rem; color: rgb(0, 255, 21)"></i>
+                <strong class="me-auto"><h6>Thông báo</h6></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">
+                <p id="toast-content"></p>
+              </div>
+            </div>
+        </div>
+        <div th:replace="~{customer/customer-form.html :: modal}"></div>
+        
+        <!-- FOOTER -->
+        <div th:replace="~{fragments/footer.html :: footer}"></div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script th:src="@{/js/customer.js}"></script>
+</body>
+
+</html>

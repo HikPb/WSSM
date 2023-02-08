@@ -1,5 +1,6 @@
 $(document).ready(function () {
-    let table = $("#productTable").DataTable( {
+    var toast = new bootstrap.Toast($("#toast"));
+    var table = $("#productTable").DataTable( {
         // processing: true,
         // serverSide: true,
         responsive: true,
@@ -47,7 +48,7 @@ $(document).ready(function () {
                 className: 'td-data',
                 render: function(data, type, row){
 					buttons='';
-					data.forEach(c => {buttons += '<span class="badge badge-primary">' + c.cateName +' </span>'});
+					data.forEach(c => {buttons += '<span class="badge badge-primary badge-pill m-r-5 m-b-5">' + c.cateName +' </span>'});
 					return buttons;
 				}
             },
@@ -70,7 +71,7 @@ $(document).ready(function () {
             	}
             },
             {
-                defaultContent: '<button th:p-id="${product.id}" th:productName="${product.productName}" id="btnDelete title="Delete this product" class="fa-regular fa-trash-can icon-dark btn-delete"></button>'
+                defaultContent: '<button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>'
             },
         ],
         paging: true, 
@@ -100,7 +101,7 @@ $(document).ready(function () {
             style:    'multi',
             selector: 'td:first-child'
         },
-        order: [[ 8, 'desc' ]]
+        order: [[ 1, 'desc' ]]
     });
 
     new $.fn.dataTable.Buttons( table, {
@@ -180,12 +181,6 @@ $(document).ready(function () {
 
         
       });
-
-    $("#btnCreate").on("click", function(e){
-        e.preventDefault();
-        $("#product-modal").modal("show");
-        
-    });
 
     /*$("#cate-create").on("input", function(){
 		$.get('/api/category/search?key=' + $(this).val(), function(response) {
@@ -372,23 +367,33 @@ $(document).ready(function () {
 	
 	//$("#c-warehouse").autocomplete("option", "appendTo", ".ware-c-group");
 	
-	$("#c-pform").on("submit", function (e) {
+    $("#btnCreate").on("click", function(e){
+        e.preventDefault();
+        $("#product-modal").modal("show");
+    });
+
+    $("#c-pform").on("submit", function (e) {
         e.preventDefault();
         let ccate = $("#c-categories").autocomplete("instance").selectedItems;
         console.log(ccate)
         let product = JSON.stringify({
-	      barcode: $("#c-barcode").val(),
-	      productName: $("#c-pname").val(),
-	      weight: $("#c-weight").val(),
-	      categories: ccate.map(function(item){return{id: item.value, cateName: item.label}})
-	    });
+          barcode: $("#c-barcode").val(),
+          productName: $("#c-pname").val(),
+          weight: $("#c-weight").val(),
+          categories: ccate.map(function(item){return{id: item.value, cateName: item.label}})
+        });
         $.ajax({
             url: "/api/products/new",
             method: "post",
             data: product,
             contentType: "application/json",
-            success: function (data) {  
-				window.location.href = "/products"
+            success: function (response) { 
+                table.ajax.reload(null, false) 
+                $('#product-modal form :input').val("");
+                $("#product-modal").modal("hide");
+                $("#toast-content").html("Tạo mới thành công: # "+response.data['id']+' - '+ response.data['productName'])
+                toast.show()
+                //window.location.href = "/products"
             },  
             error: function (err) {  
                 alert(err);  
@@ -396,43 +401,40 @@ $(document).ready(function () {
         });
         
       });
+	
       
     $("#productTable tbody").on("click", ".btn-delete", function (e) {
         e.preventDefault();
         data = table.row($(this).parents('tr')).data();
-        href = "/api/products/"+data["id"]+"";
-        $("#yesBtn").attr("href", href);
-        $("#yesBtn").attr("p-id", data["id"]);
-
+        $("#yesBtn").attr("p-name", data['productName']);
+        $("#yesBtn").attr("p-id", data['id']);
         $("#confirmText").html("Bạn muốn xoá sản phẩm này: \<strong\>" + data["productName"] + "\<\/strong\>?");
         $("#confirmModal").modal("show");
     });
-
     $("#yesBtn").on("click", function (e) {
         e.preventDefault();
-        url = $(this).attr("href");
+        pname = $(this).attr("p-name");
         id = $(this).attr("p-id");
         $.ajax({
-            url: url,
+            url: "api/products/" + id,
             method: "delete",
             success: function (data) {  
-                window.location.href = "/products"
+                table.ajax.reload(null, false) 
+                $("#confirmModal").modal("hide");
+                $("#toast-content").html("Xóa thành công: #"+id+" - "+pname)
+                toast.show()
             },  
             error: function (err) {  
                 alert(err);  
             } 
-        });
-        
+        });   
       });
+
 
     $("#btnClear").on("click", function (e) {
       e.preventDefault();
       table.ajax.reload(null, false)
-    //   window.location="/products"
+      //window.location="/products"
     });
     
   });
-
-  function changePageSize() {
-    $("#searchForm").submit();
-  }

@@ -1,6 +1,8 @@
 package com.project.wsms.model;
 
+import java.util.Date;
 import java.util.Set;
+import java.util.HashSet;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -32,14 +34,22 @@ public class Customer {
 	@Column(name = "cus_phone", nullable = false, length = 15)
 	private String phone;
 	
+	@Column(name = "dob", nullable = true)
+	private Date dob;
+	
 	@Column(name = "address", nullable = true)
 	private String address;
 	
 	@OneToMany(mappedBy="customer")
-	private Set<Order> orders;
+	private Set<Order> orders = new HashSet<>();
 	
-	private Integer npCus; //number of purchases
-	private Integer nsoCus; //number of successful orders
+	@Column(name = "npcus", nullable = true)
+	private Integer npCus = 0; //number of purchases
+	@Column(name = "nsocus", nullable = true)
+	private Integer nsoCus = 0; //number of successful orders
+	
+	@Column(name = "total_money", nullable = true)
+	private Integer tmoney = 0;
 	
 	public void addOrder(Order order) {
 		this.orders.add(order);

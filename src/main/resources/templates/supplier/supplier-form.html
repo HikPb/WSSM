@@ -4,105 +4,34 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="modal-title" id="pmTitle">
-                        <h3>Thông tin sản phẩm</h3>
+                        <h3>Nhà cung cấp</h3>
                     </div>
+                    <button type="submit" class="btn btn-primary" style="position: absolute; right: 40px;" form="c-sform"><span>Lưu</span></button>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 				
-                <form action="#" enctype="multipart/form-data" method="post" id="c-pform">
-                    <div style="display: flex; flex-direction: row-reverse;background-color: #fff; padding: 5px;">
-                    	<button type="submit" class="btn btn-primary" style="margin-right: 30px;" id="c-submit-btn"><span>Lưu</span></button>
-                    </div>
+                <form action="#" enctype="multipart/form-data" method="post" id="c-sform">
                     <div class="modal-body">
                         <div class="steps-container">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <span class="form-title">Mã sản phẩm <span
-                                                style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
-                                        <input placeholder="Mã sản phẩm, barcode" class="form-control" type="text" 
-                                        		oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')"
- 												oninput="setCustomValidity('')" id="c-barcode" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <span class="form-title">Tên sản phẩm <span
-                                                style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
-                                        <input placeholder="Tên sản phẩm" class="form-control" type="text" id="c-pname" 
-                                        		oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộcbuộc')"
- 												oninput="setCustomValidity('')" required>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <span class="col-sm-4 form-title">Khối lượng (gram):</span>
-                                        <div class="col-sm-8">
-                                        	<input class="form-control" role="combobox" type="number" id="c-weight" 
-                                        		oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộcbuộc')"
- 												oninput="setCustomValidity('')" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group ware-c-group">
-                                        <span class="form-title">Kho hàng:</span>
-                                        <input type="text" class="form-control" id="c-warehouse" role="combobox">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <div>
-                                            <div class="form-title">Link nhập hàng:</div>
-                                            <div>
-                                                <input placeholder="Enter để thêm link sản phẩm" class="form-control"
-                                                    type="text" value="">
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Tên NCC: </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" id="c-sname" type="text" placeholder="Tên nhà cung cấp sản phẩm" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group cate-c-group">
-                                        <span class="form-title">Danh mục:</span>
-                                        <input class="cate-c-input" id="c-categories" type="text">
-                                        <div id="c-result"></div>
-                                    </div>
-
-                                    <div class="form-group sup-c-group">
-                                        <span class="form-title">Nhà cung cấp:</span>
-                                        <input type="text" id="c-supplier" class="form-control" role="combobox">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <span class="form-title">Ghi chú:</span>
-                                        <textarea rows="4" placeholder="Ghi chú SP" autosize="[object Object]"
-                                            class="form-control"></textarea>
-                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Số điện thoại: </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" id="c-sphone" type="text" placeholder="Số điện thoại" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Địa chỉ: </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" id="c-address" type="text" placeholder="Địa chỉ">
                                 </div>
                             </div>
                         </div>
-                        <div class="table-container">
-                                <table class="table table-hover table-responsive-xl">
-                                    <thead class="thead-light">
-                                        <tr>
-                                        	<th></th>
-                                            <th>Hình ảnh</th>
-                                            <th>Giá nhập</th>
-                                            <th>Giá bán</th>
-                                            <th>Số lượng</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                        	<td>
-                                        		<label class="switch"><input class="issell" type="checkbox" checked>
-                                        			<span class="slider round"></span>
-                                        			</label>
-                                        	</td>
-                                            <td>1</td>
-                                            <td><input class="form-control" id="c-pprice" type="text"></td>
-                                            <td><input class="form-control" id="c-sprice" type="text"></td>
-                                            <td><input class="form-control" id="c-qtyqty" type="number"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                     </div>
                 </form>
 
@@ -119,104 +48,38 @@
                     <div class="modal-title">
                         <h3>Thông tin sản phẩm</h3>
                     </div>
+                    <button type="submit" class="btn btn-primary" style="position: absolute; right: 40px;" form="e-sform"><span>Lưu</span></button>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form id="pme-form" enctype="multipart/form-data" method="put">
-                	<div style="display: flex; flex-direction: row-reverse;background-color: #fff; padding: 5px;">
-                    	<button type="submit" class="btn btn-primary" style="margin-right: 30px;" id="e-submit-btn"><span>Lưu</span></button>
+                <form id="e-sform" enctype="multipart/form-data">
+                	<div style="display: flex; flex-direction: row-reverse;background-color: #fff; padding: 12px; align-items: center;">
                     	<div style="position: absolute; left: 15px">
                              <span>Tạo lúc: </span>
-                             <span  id="created-val"></span>
+                             <span  id="updated-val"></span>
                         </div>
                     </div>
                     <div class="modal-body">
                         <div class="steps-container">
-                            <div class="row">
-                                <div class="col-md-6">
-
-                                    <div class="form-group">
-                                        <span class="form-title">Mã sản phẩm <span
-                                                style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
-                                        <input placeholder="Ma sản phẩm" class="form-control" type="text" id="e-barcode"
-                                            th:value="*{barcode}">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <span class="form-title">Tên sản phẩm <span
-                                                style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
-                                        <input placeholder="Tên sản phẩm" class="form-control" type="text" id="e-pname"
-                                            th:value="*{productName}">
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <span class="col-sm-4 form-title">Khối lượng (gram):</span>
-                                        <div class="col-sm-8">
-                                        	<input class="form-control" id="e-weight" role="combobox" type="number">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <span class="form-title">Kho hàng:</span>
-                                        <input type="search" autocomplete="off" class="form-control" role="combobox">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <div>
-                                            <div class="form-title">Link nhập hàng:</div>
-                                            <div>
-                                                <input placeholder="Enter để thêm link sản phẩm" class="form-control"
-                                                    type="text" value="">
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Tên NCC: </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" id="e-sname" type="text" placeholder="Tên nhà cung cấp sản phẩm" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
                                 </div>
-                                <div class="col-md-6">
-
-                                    <div class="form-group">
-                                        <span class="form-title">Danh mục:</span>
-                                        <input type="text" class="form-control" id="e-categories">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <span class="form-title">Nhà cung cấp:</span>
-                                        <input type="search" class="form-control" role="combobox">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <span class="form-title">Ghi chú:</span>
-                                        <textarea rows="4" placeholder="Ghi chú SP" autosize="[object Object]"
-                                            class="form-control"></textarea>
-                                    </div>
-                                </div>
-                            </div>                    
-                        </div>
-                    	<div class="table-container">
-                                <table class="table table-hover table-responsive-xl">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th></th>
-                                            <th>Hình ảnh</th>
-                                            <th>Giá nhập</th>
-                                            <th>Giá bán</th>
-                                            <th>Số lượng</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                        	<td>
-                                        		<label class="switch"><input class="issell" type="checkbox" checked>
-                                        			<span class="slider round"></span>
-                                        			</label>
-                                        	</td>
-                                            <td>1</td>
-                                            <td><input class="form-control" id="e-pprice" type="text"></td>
-                                            <td><input class="form-control" id="e-sprice" type="text"></td>
-                                            <td><input class="form-control" id="e-qty" type="number" disabled></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Số điện thoại: </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" id="e-sphone" type="text" placeholder="Số điện thoại" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Địa chỉ: </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" id="e-address" type="text" placeholder="Địa chỉ">
+                                </div>
+                            </div>                 
+                        </div>
                     </div>
                 </form>
             </div>

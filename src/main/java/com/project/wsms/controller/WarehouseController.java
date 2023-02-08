@@ -32,7 +32,7 @@ public class WarehouseController {
 	@GetMapping("/warehouse")
     public String view(Model model){
         model.addAttribute("pageTitle", "QUẢN LÝ KHO HÀNG");
-		return "warehouse";
+		return "warehouse/warehouse";
     }
     
 	// VIEW KIỂM KHO

@@ -2009,7 +2009,7 @@ fieldset[disabled] .btn-yahoo:hover {
 
 .ibox {
     position: relative;
-    margin-bottom: 25px;
+    margin-bottom: 8px;
     background-color: #fff;
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .1);
     box-shadow: 0 1px 1px rgba(0, 0, 0, .1)
@@ -2796,6 +2796,12 @@ body.fullscreen-mode {
     margin-bottom: 1rem;
 }
 
+.form-group2{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 1rem;
+}
 .form-control {
     -webkit-border-radius: 2px;
     border-radius: 2px;
@@ -4603,6 +4609,10 @@ body:not(.fixed-layout).sidebar-mini .content-wrapper {
     margin-left: 60px
 }
 
+body:not(.fixed-layout).sidebar-mini .content-wrapper2 {
+    margin-left: 60px
+}
+
 body:not(.fixed-layout).sidebar-mini .tools-container {
     margin-left: -160px
 }
@@ -4700,6 +4710,10 @@ body.fixed-layout.sidebar-mini .content-wrapper {
     margin-left: 0
 }
 
+body.fixed-layout.sidebar-mini .content-wrapper2 {
+    margin-left: 0
+}
+
 .page-footer {
     position: fixed;
     left: 0;
@@ -4741,6 +4755,18 @@ body.fixed-layout.sidebar-mini .content-wrapper {
     -o-transition: margin .2s ease-in-out;
     transition: margin .2s ease-in-out;
     min-height: 800px
+}
+
+.content-wrapper2 {
+    position: relative;
+    background-color: #f7f7f7;
+    background-color: #f2f2f2;
+    background-color: #f1f1f1;
+    margin-left: 220px;
+    padding: 0 15px 60px 15px;
+    -webkit-transition: margin .2s ease-in-out;
+    -o-transition: margin .2s ease-in-out;
+    transition: margin .2s ease-in-out;
 }
 
 .page-header {
@@ -4807,6 +4833,11 @@ body.fixed-navbar .header {
 body.fixed-layout .content-wrapper,
 body.fixed-navbar .content-wrapper {
     padding-top: 112px
+}
+
+body.fixed-layout .content-wrapper2,
+body.fixed-navbar .content-wrapper2 {
+    padding-top: 65px
 }
 
 body.fixed-layout .page-sidebar {

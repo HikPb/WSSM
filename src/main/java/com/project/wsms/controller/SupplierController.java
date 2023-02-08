@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import org.springframework.ui.Model;
 import com.project.wsms.model.ResponseObject;
 import com.project.wsms.model.Supplier;
 import com.project.wsms.service.SupplierService;
@@ -28,21 +29,23 @@ public class SupplierController {
 	@Autowired
 	private SupplierService supplierService;
 	
-	/*
-	 * @GetMapping("/supplier") public String search(@RequestParam("key") String
-	 * key, Model model) { List<Supplier> results =
-	 * supplierService.getByKeyword(key); model.addAttribute("results", results);
-	 * return "products/product-form"; }
-	 */
+
+	@GetMapping("/supplier")
+    public String view(Model model){
+        model.addAttribute("pageTitle", "QUẢN LÝ NHÀ CUNG CẤP");
+		return "supplier/supplier";
+    }
 	
 	@GetMapping("/api/supplier")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllSupplier(){
 		List<Supplier> listSupplier= supplierService.getAll();
-		/*
-		 * if(listSupplier.isEmpty()) { return new ResponseEntity<>( new
-		 * ResponseObject("empty", "No content", ""), HttpStatus.NO_CONTENT); }
-		 */
+		
+		if(listSupplier.isEmpty()) { 
+			return new ResponseEntity<>( 
+				new ResponseObject("empty", "No content", ""), HttpStatus.NO_CONTENT); 
+			}
+		
 		return new ResponseEntity<>(
 				new ResponseObject("ok", "Query successfully", listSupplier), 
 				HttpStatus.OK);
@@ -79,17 +82,17 @@ public class SupplierController {
 				HttpStatus.NOT_FOUND);
 	}
 	
-	@PostMapping("/api/supplier/")
+	@PostMapping("/api/supplier")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> saveSupplier(@Valid @RequestBody Supplier supplier) {
 		try {
 			Supplier newSupplier = new Supplier();
 			newSupplier.setSupName(supplier.getSupName());
 			newSupplier.setSupPhone(supplier.getSupPhone());
-			//TODO newSupplier.setSupAddress(null); 
+			newSupplier.setAddress(supplier.getAddress()); 
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Save new supplier successfully", supplierService.save(newSupplier)), 
-					HttpStatus.BAD_REQUEST
+					HttpStatus.OK
 					);
 		} catch (Exception e) {
 			return new ResponseEntity<>(
@@ -107,7 +110,7 @@ public class SupplierController {
 		if(uSupplier.isPresent()){
 			uSupplier.get().setSupName(supplier.getSupName());
 			uSupplier.get().setSupPhone(supplier.getSupPhone());
-			//TODO update address
+			uSupplier.get().setAddress(supplier.getAddress());
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Update supplier successfully", supplierService.save(uSupplier.get())),
 					HttpStatus.OK
@@ -117,7 +120,7 @@ public class SupplierController {
 		Supplier newSupplier = new Supplier();
 		newSupplier.setSupName(supplier.getSupName());
 		newSupplier.setSupPhone(supplier.getSupPhone());
-		//TODO update
+		newSupplier.setAddress(supplier.getAddress());
 		return new ResponseEntity<>(
 				new ResponseObject("ok", "Update supplier successfully", supplierService.save(newSupplier)),
 				HttpStatus.OK
