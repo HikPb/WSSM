@@ -1,19 +1,17 @@
 package com.project.wsms.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +24,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "warehouses")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Warehouse extends AuditModel{
 	private static final long serialVersionUID = 1L;
 	
@@ -40,14 +41,13 @@ public class Warehouse extends AuditModel{
 	@Column(name = "address", nullable = true)
 	private String address;
 	
-	@JsonIgnore
 	@OneToMany(mappedBy="warehouse")
-	private List<Item> items;
+	private Set<Item> items = new HashSet<>()  ;
 	
-	
-	/*
-	 * @JsonManagedReference public List<Item> getItems () { return this.items; }
-	 */
+	public Set<Item> getItems () { 
+		return this.items; 
+	}
+	 
 	
 	public void addItem(Item item) {
 		this.items.add(item);

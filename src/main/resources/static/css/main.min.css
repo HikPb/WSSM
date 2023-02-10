@@ -2758,7 +2758,21 @@ body.fullscreen-mode {
 }
 
 .media-list .media {
-    padding: 8px 0
+    padding: 8px;
+    border: 1px solid #dedede;
+    margin-bottom: 8px;
+}
+
+.media:hover,
+.media:focus{
+    color: #485b6f !important;
+    background-color: #ededed !important;
+    border-color: #b4b8b8 !important;
+}
+
+.selected{
+    border: 1px solid #2b2b2b;
+    background-color: #ededed;
 }
 
 .media-right .media-img {
@@ -2811,6 +2825,11 @@ body.fullscreen-mode {
 
 .form-control:focus {
     border-color: #23b7e5
+}
+
+.ip-70 {
+    width: 70%;
+    text-align: -webkit-center;
 }
 
 .input-rounded {
@@ -2867,6 +2886,22 @@ body.fullscreen-mode {
 .input-group-icon.right .form-control {
     padding-left: 12px;
     padding-right: 33px
+}
+
+.has-search .form-control {
+    padding-left: 2.375rem;
+}
+
+.has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
 }
 
 .has-success .form-control,
@@ -3140,7 +3175,9 @@ body.fullscreen-mode {
 .table thead th {
     border-bottom: 1px solid #ddd !important;
     border-top: 0;
-    font-weight: 700
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .table.no-border>tbody>tr>td,
@@ -3157,7 +3194,7 @@ body.fullscreen-mode {
 }
 
 .table-hover tbody tr:hover {
-    background-color: rgba(0, 0, 0, .05)
+    background-color: #fcfcfc
 }
 
 .table tr.success>td {
@@ -3174,6 +3211,11 @@ body.fullscreen-mode {
 
 .table tr.danger>td {
     background-color: #fbe4e2 !important
+}
+
+.cell-align{
+    text-align: -webkit-center;
+    vertical-align: middle;
 }
 
 .pagination .page-link {

@@ -4,8 +4,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -30,6 +31,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "products")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Product extends AuditModel {
 	private static final long serialVersionUID = 1L;
 	
@@ -51,9 +55,9 @@ public class Product extends AuditModel {
 	private Integer tInventory;
 	
 	@OneToMany(mappedBy="product")
-	@JsonIgnore
 	private Set<Item> items = new HashSet<>();
 	
+	@JsonIgnore
 	@OneToMany(mappedBy="product")
 	private Set<OrderItem> orderItems = new HashSet<>();
 
@@ -63,14 +67,7 @@ public class Product extends AuditModel {
 		joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false), 
 		inverseJoinColumns = @JoinColumn(name = "cate_id", referencedColumnName = "id", nullable = false))
 	private Set<Category> categories = new HashSet<>();
-	
-	
-	@JsonManagedReference 
-	public Set<Item> getItems(){ 
-		return this.items; 
-	}
-	 
-	
+		
 	public void addItem(Item item) {
 		this.items.add(item);
 	}

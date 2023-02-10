@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var toast = new bootstrap.Toast($("#toast"));
     var table = $("#supplierTable").DataTable( {
         responsive: true,
         ajax: {
@@ -47,7 +48,7 @@ $(document).ready(function () {
             	}
             },
             {
-                defaultContent: '<button id="btnDelete" title="Delete" class="fa-regular fa-trash-can icon-dark btn-delete"></button>'
+                defaultContent: '<button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>'
             },
         ],
         columnDefs: [
@@ -141,30 +142,33 @@ $(document).ready(function () {
             $("#e-address").val(data.address);
         })
         $("#e-sup-modal").modal("show");
-
-        $("#e-sform").on("submit", function (e) {
-            e.preventDefault();
-            let supplier = JSON.stringify({
-              supName: $("#e-sname").val(),
-              supPhone: $("#e-sphone").val(),
-              address: $("#e-address").val(),
-            });
-            $.ajax({
-                url: "/api/supplier/"+data["id"],
-                method: "put",
-                data: supplier,
-                contentType: "application/json",
-                success: function (response) {  
-                    window.location.href = "/supplier"
-                    console.log(response)
-                },  
-                error: function (err) {  
-                    alert(err);  
-                } 
-            });
-            
-          });
     });
+
+    $("#e-sform").on("submit", function (e) {
+        e.preventDefault();
+        let supplier = JSON.stringify({
+          supName: $("#e-sname").val(),
+          supPhone: $("#e-sphone").val(),
+          address: $("#e-address").val(),
+        });
+        $.ajax({
+            url: "/api/supplier/"+data["id"],
+            method: "put",
+            data: supplier,
+            contentType: "application/json",
+            success: function (response) {  
+                table.ajax.reload(null, false) 
+                $('#e-sup-modal form :input').val("");
+                $("#e-sup-modal").modal("hide");
+                $("#toast-content").html("Chỉnh sửa thành công: #"+response.data['id']+' - '+ response.data['supName'])
+                toast.show()
+            },  
+            error: function (err) {  
+                alert(err);  
+            } 
+        });
+        
+      });
 
     
 
@@ -183,8 +187,12 @@ $(document).ready(function () {
                 method: "post",
                 data: supplier,
                 contentType: "application/json",
-                success: function (data) {  
-                    window.location.href = "/supplier"
+                success: function (response) {  
+                    table.ajax.reload(null, false) 
+                    $('#c-sup-modal form :input').val("");
+                    $("#c-sup-modal").modal("hide");
+                    $("#toast-content").html("Tạo mới thành công: #"+response.data['id']+' - '+ response.data['supName'])
+                    toast.show()
                 },  
                 error: function (err) {  
                     alert(err);  
@@ -204,7 +212,6 @@ $(document).ready(function () {
         href = "/api/supplier/"+data["id"]+"";
         $("#yesBtn").attr("href", href);
         $("#yesBtn").attr("p-id", data["id"]);
-
         $("#confirmText").html("Bạn muốn xoá NCC này: \<strong\>" + data["supName"] + "\<\/strong\>?");
         $("#confirmModal").modal("show");
     });
@@ -217,7 +224,10 @@ $(document).ready(function () {
             url: url,
             method: "delete",
             success: function (data) {  
-                window.location.href = "/supplier"
+                table.ajax.reload(null, false) 
+                $("#confirmModal").modal("hide");
+                $("#toast-content").html("Xoá thành công: #"+id)
+                toast.show()
             },  
             error: function (err) {  
                 alert(err);  

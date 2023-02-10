@@ -40,7 +40,7 @@ public class ProductController {
 	@GetMapping("/products")
 	public String getAllProduct(Model model) {
 		model.addAttribute("pageTitle", "QUẢN LÝ SẢN PHẨM");
-		model.addAttribute("warehouses", warehouseService.getAll());
+		//model.addAttribute("warehouses", warehouseService.getAll());
 		return "products/products";
 	}
 

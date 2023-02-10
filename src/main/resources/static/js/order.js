@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var toast = new bootstrap.Toast($("#toast"));
     $('#pr-select').select2({
         placeholder: "Nhap ten san pham hoac barcode",
         minimumInputLength: 3,

@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var toast = new bootstrap.Toast($("#toast"));
     // let table = $("#cqTable").DataTable( {
     //     responsive: true,
     //     ajax: {
@@ -58,7 +59,7 @@ $(document).ready(function () {
     //         }
     //         },
     //         {
-    //             defaultContent: '<button th:productId="${product.productId}" th:productName="${product.productName}" id="btnDelete title="Delete this product" class="fa-regular fa-trash-can icon-dark btn-delete"></button>'
+    //             defaultContent: '<button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>'
     //         },
     //     ],
     //     paging: true, 

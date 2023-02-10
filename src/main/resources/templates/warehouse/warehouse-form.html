@@ -1,10 +1,10 @@
 <div th:fragment="modal">
-    <div class="modal fade" role="dialog" id="c-cus-modal">
+    <div class="modal fade" role="dialog" id="c-ware-modal">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div class="modal-title" id="pmTitle">
-                        <h3>Thông tin khách hàng</h3>
+                    <div class="modal-title">
+                        <h3>Kho hàng</h3>
                     </div>
                     <button type="submit" class="btn btn-primary" style="position: absolute; right: 40px;" form="c-form"><span>Lưu</span></button>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -13,148 +13,22 @@
                 <form action="#" enctype="multipart/form-data" method="post" id="c-form">
                     <div class="modal-body">
                         <div class="steps-container">
-                            <div class="col-sm-12">
-                                <div class="form-group row">
-                                    <label class="col-sm-2 col-form-label">Tên khách hàng: </label>
-                                    <div class="col-sm-8">
-                                        <input class="form-control" id="c-name" type="text" placeholder="Tên khách hàng" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-2 col-form-label">Số điện thoại: </label>
-                                    <div class="col-sm-8">
-                                        <input class="form-control" id="c-phone" type="text" placeholder="Số điện thoại" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-2 col-form-label">Ngày sinh: </label>
-                                    <div class="col-sm-8">
-                                        <input class="form-control" id="c-dob" type="date" placeholder="Ngày sinh" value="" pattern="\d{4}-\d{2}-\d{2}">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-2 col-form-label">Địa chỉ: </label>
-                                    <div class="col-sm-8">
-                                        <input class="form-control" id="c-address" type="text" placeholder="Địa chỉ">
-                                    </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Tên kho hàng: </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" id="c-wname" type="text" placeholder="Tên kho hàng" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-
-    </div>
-
-
-    <div class="modal fade" role="dialog" id="e-cus-modal">
-        <div class="modal-dialog modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title">
-                        <h3>Thông tin khách hàng</h3>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="position: absolute; right: 40px;" form="e-form"><span>Lưu</span></button>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <form id="e-form" enctype="multipart/form-data">
-                	
-                    <div class="modal-body">
-                        <div class="ibox">
-                            <div class="ibox-head">
-                                <div class="ibox-title">
-                                    <i class="fa-solid fa-user"></i>
-                                    Thông tin
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Số điện thoại: </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" id="c-wphone" type="text" placeholder="Số điện thoại" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
                                 </div>
                             </div>
-                            <div class="steps-container" style="display: flex;">
-                                <div class="col-sm-6" style="padding: 12px; border: 1px solid #d7d3cf;">
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Tên khách hàng: </label>
-                                        <div class="col-sm-8">
-                                            <input class="form-control" id="e-name" type="text" placeholder="Tên nhà cung cấp sản phẩm" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Số điện thoại: </label>
-                                        <div class="col-sm-8">
-                                            <input class="form-control" id="e-phone" type="text" placeholder="Số điện thoại" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Ngày sinh: </label>
-                                        <div class="col-sm-8">
-                                            <input class="form-control" id="e-dob" type="date" placeholder="Ngày sinh">
-                                        </div>
-                                    </div>
-        
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Địa chỉ: </label>
-                                        <div class="col-sm-8">
-                                            <input class="form-control" id="e-address" type="text" placeholder="Địa chỉ">
-                                        </div>
-                                    </div>                 
-                                </div>
-                                <div class="col-sm-6" style="padding: 12px; border: 1px solid #d7d3cf;">
-                                    <div class="form-group2 row">
-                                        <label class="col-sm-4 col-form-label">Tổng đơn mua: </label>
-                                        <div class="col-sm-4">
-                                            <span id="e-np"></span>
-                                            <span>đơn</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group2 row">
-                                        <label class="col-sm-4 col-form-label">Đơn thành công: </label>
-                                        <div class="col-sm-4">
-                                            <span id="e-nso"></span>
-                                            <span>đơn</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group2 row">
-                                        <label class="col-sm-4 col-form-label">Đơn hủy: </label>
-                                        <div class="col-sm-4">
-                                            <span id="e-oc"></span>
-                                            <span>đơn</span>
-                                        </div>
-                                    </div>
-        
-                                    <div class="form-group2 row">
-                                        <label class="col-sm-4 col-form-label">Tổng tiền đã chi: </label>
-                                        <div class="col-sm-4">
-                                            <span id="e-tm"></span>
-                                            <span>đ</span>
-                                        </div>
-                                    </div> 
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ibox">
-                            <div class="ibox-head">
-                                <div class="ibox-title">
-                                    <i class="fa-solid fa-clock-rotate-left"></i>
-                                    Lịch sử mua hàng
-                                </div>
-                            </div>
-                            <div class="ibox-body">
-                                <div class="table-container">
-                                    <table class="table table-hover table-responsive-xl" style="height: 220px; overflow-y: scroll;">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th></th>
-                                                <th>Mã đơn hàng</th>
-                                                <th>Sản phẩm</th>
-                                                <th>Tổng tiền</th>
-                                                <th>Ngày đặt hàng</th>
-                                                <th>Trạng thái</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            
-                                        </tbody>
-                                    </table>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Địa chỉ: </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" id="c-address" type="text" placeholder="Địa chỉ">
                                 </div>
                             </div>
                         </div>
@@ -162,6 +36,5 @@
                 </form>
             </div>
         </div>
-
     </div>
 </div>

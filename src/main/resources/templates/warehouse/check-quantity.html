@@ -117,25 +117,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-notify modal-info" role="document">
-                <div class="modal-content text-center">
-                    <div class="modal-header d-flex justify-content-center">
-                        <h5 class="heading">Xác nhận</h5>
-                    </div>
-                    <div class="modal-body">
-                        <i class="fa-solid fa-triangle-exclamation mb-4" style="color: #f00; text-shadow: 1px 1px 1px #ccc;
-                        font-size: 3em;"></i>
-                        <p id="confirmText"></p>
-                    </div>
-                    <div class="modal-footer flex-center">
-                        <a type="button"  class="btn btn-info" id="yesBtn">Yes</a>
-                        <a type="button" class="btn btn-outline-info waves-effect" data-bs-dismiss="modal">No</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <th:block th:include="fragments/modal :: toast-modal"></th:block>
         <!-- MODAL -->
         <div th:replace="warehouse/check-quantity-form :: cq-modal"></div>
         <!-- FOOTER -->

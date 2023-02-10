@@ -97,17 +97,17 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 	
-	@PostMapping("/api/warehouse/")
+	@PostMapping(value = "/api/warehouse", consumes = {"application/xml","application/json"})
 	@ResponseBody
-	public ResponseEntity<ResponseObject> saveWarehouse(@Valid @RequestBody Warehouse warehouse) {
+	public ResponseEntity<ResponseObject> saveWarehouse(@RequestBody Warehouse warehouse) {
 		try {
 			Warehouse newWarehouse = new Warehouse();
 			newWarehouse.setName(warehouse.getName());
 			newWarehouse.setPhone(warehouse.getPhone());
-			//TODO newWarehouse.setWareAddress(null);
+			newWarehouse.setAddress(warehouse.getAddress());
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Save new warehouse successfully", warehouseService.save(newWarehouse)), 
-					HttpStatus.BAD_REQUEST
+					HttpStatus.OK
 					);
 		} catch (Exception e) {
 			return new ResponseEntity<>(
@@ -126,7 +126,7 @@ public class WarehouseController {
 					
 			uWarehouse.get().setName(warehouse.getName());
 			uWarehouse.get().setPhone(warehouse.getPhone());
-			//TODO address
+			uWarehouse.get().setAddress(warehouse.getAddress());
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Update warehouse successfully", warehouseService.save(uWarehouse.get())),
 					HttpStatus.OK
@@ -136,7 +136,7 @@ public class WarehouseController {
 		Warehouse newWarehouse = new Warehouse();
 		newWarehouse.setName(warehouse.getName());
 		newWarehouse.setPhone(warehouse.getPhone());
-		//TODO address
+		newWarehouse.setAddress(warehouse.getAddress());
 		return new ResponseEntity<>(
 				new ResponseObject("ok", "Update warehouse successfully", warehouseService.save(newWarehouse)),
 				HttpStatus.OK

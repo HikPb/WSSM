@@ -8,7 +8,9 @@
     <title>[[${pageTitle}]]</title>
     <!-- GLOBAL MAINLY STYLES-->
     <link rel="shortcut icon" href="#" />
-    <th:block th:include="fragments/assets :: assets"></th:block>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"/>
+    <th:block th:include="~{fragments/assets :: assets}"></th:block>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 </head>
 
 
@@ -104,7 +106,7 @@
             </div>
         </div>
 
-        <th:block th:include="fragments/modal :: toast-modal"></th:block>
+        <th:block th:include="~{fragments/modal :: toast-modal}"></th:block>
         <div th:replace="~{products/product-form.html :: modal}"></div>
         <!-- FOOTER -->
         <div th:replace="~{fragments/footer.html :: footer}"></div>

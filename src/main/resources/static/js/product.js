@@ -1,8 +1,10 @@
 $(document).ready(function () {
-    var toast = new bootstrap.Toast($("#toast"));
-    var table = $("#productTable").DataTable( {
-        // processing: true,
-        // serverSide: true,
+    const toast = new bootstrap.Toast($("#toast"));
+    const wareData = getAjaxResponse("/api/warehouse")
+    const cateData = getAjaxResponse("/api/category")
+    const supData = getAjaxResponse("/api/supplier")
+    const table = $("#productTable").DataTable( {
+        processing: true,
         responsive: true,
         ajax: {
             url: "/api/products",
@@ -19,18 +21,6 @@ $(document).ready(function () {
                 orderable: false,
                 className: 'select-checkbox',
             },
-            /*{ 
-                data: 'isSell', 
-                orderable: false,
-                render: function(data, type, row){
-	                if(data == true){
-	                    return `<label class="switch"><input class="issell" data="`+data +`" type="checkbox" checked><span class="slider round"></span></label>`
-	                }
-	                if(data == false){
-	                    return `<label class="switch"><input class="issell" data="`+data +`"type="checkbox"><span class="slider round"></span></label>`
-	                }
-            	}
-            },*/
             { 
                 data: 'id',
                 className: 'td-data'
@@ -48,7 +38,9 @@ $(document).ready(function () {
                 className: 'td-data',
                 render: function(data, type, row){
 					buttons='';
-					data.forEach(c => {buttons += '<span class="badge badge-primary badge-pill m-r-5 m-b-5">' + c.cateName +' </span>'});
+                    if(data){
+                        data.forEach(c => {buttons += '<span class="badge badge-primary badge-pill m-r-5 m-b-5">' + c.cateName +' </span>'});
+                    }
 					return buttons;
 				}
             },
@@ -87,16 +79,9 @@ $(document).ready(function () {
             "infoFiltered": "(filtered from _MAX_ total records)"
         },
         dom: '<"top"if>rt<"bottom"pl><"clear">',
-        // buttons: [
-        //     'excel', 'print'
-        // ],
         search: {
             "addClass": 'form-control input-lg col-xs-12'
         },
-        // columnDefs: [ {
-        //     className: "td-data", 
-        //     targets: [2,3,4] 
-        // } ],
         select: {
             style:    'multi',
             selector: 'td:first-child'
@@ -180,192 +165,82 @@ $(document).ready(function () {
         });
 
         
-      });
-
-    /*$("#cate-create").on("input", function(){
-		$.get('/api/category/search?key=' + $(this).val(), function(response) {
-			list ='';
-			if(response.data && response.data !=""){
-				response.data.forEach((d)=>{list += '<li>' + d.cateName + '</li>'});
-	     		$("#c-result").html('<ul>' + list + '</ul>');
-     		}
-     	})
-	});*/
+    });
 	
-	$.widget("ui.autocomplete", $.ui.autocomplete, {
-    options : $.extend({}, this.options, {
-        multiselect: false
-    }),
-    _create: function(){
-        this._super();
-
-        var self = this,
-            o = self.options;
-
-        if (o.multiselect) {
-            self.selectedItems = [];           
-            self.multiselect = $("<div></div>")
-                .addClass("ui-autocomplete-multiselect ui-state-default ui-widget")
-                .css("width", "100%")
-                .insertBefore(self.element)
-                .append(self.element)
-                .bind("click.autocomplete", function(){
-                    self.element.focus();
-                });
-            
-            var fontSize = parseInt(self.element.css("fontSize"), 10);
-            function autoSize(e){
-                var $this = $(this);
-                $this.width(1).width(this.scrollWidth+fontSize-1);
-            };
-
-            var kc = $.ui.keyCode;
-            self.element.bind({
-                "keydown.autocomplete": function(e){
-                    if ((this.value === "") && (e.keyCode == kc.BACKSPACE)) {
-                        var prev = self.element.prev();
-                        delete self.selectedItems[prev.text()];
-                        prev.remove();
-                    }
-                },
-                "focus.autocomplete blur.autocomplete": function(){
-                    self.multiselect.toggleClass("ui-state-active");
-                },
-                "keypress.autocomplete change.autocomplete focus.autocomplete blur.autocomplete": autoSize
-            }).trigger("change");
-
-            o.select = function(e, ui) {
-                $("<div></div>")
-                    .addClass("ui-autocomplete-multiselect-item")
-                    //.text(ui.item.label)
-                    .append(
-						$("<span></span>").text(ui.item.label)
-					)
-                    .append(
-                        $("<span></span>")
-                            .addClass("ui-icon ui-icon-close")
-                            .click(function(){
-                                var item = $(this).parent();
-                                self.selectedItems = self.selectedItems.filter((i) => i.label !== item.text());
-                                item.remove();
-                            })
-                    )
-                    .insertBefore(self.element);
-                
-                self.selectedItems.push(ui.item);
-                //console.log(self.selectedItems);
-                self._value("");
-                return false;
+    $("#c-categories").select2({
+        data: $.map(cateData, function(s) {
+            return {
+                text: s.cateName,
+                id: s.id
             }
-        }
+        }),
+        placeholder: "Chọn danh mục sản phẩm",
+        allowClear: true,
+        tags: true,
+        tokenSeparators: [','],
+        width: '100%',
+        height: '34px',
+        //dropdownAutoWidth: true,
+        dropdownParent: ".cate-c-group"
+    });
 
-        return this;
-    }
-	});
-	
-	$("#c-categories").autocomplete({
-	    source: function(request, response) {
-			let lists = [];
-			let matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
-			$.ajax({
-				url: '/api/category/search?key='+request.term,
-			    type: "GET",
-			    success: function(data){
-					lists = $.map(data.data, function(c) {
-	             		return {
-			                 label: c.cateName,
-			                 value: c.id
-			             }
-					})
-					response($.grep( lists, function(item){
-              			return matcher.test(item.label);
-          			}))
-				}
-			});
-	    },
-	    multiselect: true,
-    	minLength: 0,
-    	delay: 200,
-    	select: function(event, ui){
-			console.log(ui.item.value)
-			return false
-		}
-  	}).focus(function () {
-    	$(this).autocomplete("search");
-	});
-	
-	$("#c-categories").autocomplete("option", "appendTo", ".cate-c-group");
+	$("#c-supplier").select2({
+        data: $.map(supData, function(s) {
+            return {
+                text: s.supName,
+                id: s.id
+            }
+        }),
+        placeholder: "Chọn đơn vị cung cấp",
+        allowClear: true,
+        width: '100%',
+        height: '34px',
+        //dropdownAutoWidth: true,
+        dropdownParent: ".sup-c-group"
+    });
 
-	$("#c-supplier").autocomplete({
-	    source: function(request, response) {
-			let lists = [];
-			let matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
-			$.ajax({
-				url: '/api/supplier/search?key='+request.term,
-			    type: "GET",
-			    success: function(data){
-					lists = $.map(data.data, function(s) {
-	             		return {
-			                 label: s.supName,
-			                 value: s.id
-			             }
-					})
-					response($.grep( lists, function(item){
-              			return matcher.test(item.label);
-          			}))
-				}
-			});
-	    },
-    	minLength: 0,
-    	delay: 200,
-    	select: function(e, ui){
-			$( "#c-supplier" ).val(ui.item.label);
-			return false;
-		}
-  	}).focus(function () {
-    	$(this).autocomplete("search","");
-	});
-	
-	$("#c-supplier").autocomplete("option", "appendTo", ".sup-c-group");
-	
-	$.ajax({
-		url: '/api/warehouse',
-	    type: "GET",
-	    success: function(data){
-			let lists = $.map(data.data, function(s) {
-         		return {
-	                 label: s.name,
-	                 value: s.id
-	             }
-			})
-			console.log(lists)
-			$("#c-warehouse").autocomplete({
-			    source: function( request, response ) {
-				    let matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
-				    response( $.grep( lists, function( item ){
-				        return matcher.test( item.label );
-				    }));
-				},
-				autoFocus: true,
-				minLength: 0,
-		    	multiselect: true,
-		    	appendTo: ".ware-c.group",
-		    	/*select: function( event, ui ) {  
+    $("#c-warehouse").select2({
+        data: $.map(wareData, function(s) {
+            return {
+                text: s.name,
+                id: s.id
+            }
+        }),
+        placeholder: "Chọn kho hàng",
+        allowClear: true,
+        width: '100%',
+        height: '34px',
+        //dropdownAutoWidth: true,
+        dropdownParent: ".ware-c-group"
+    });
 
-		            lists = jQuery.grep(lists, function(element) {
-		            	return element.value != ui.item.value;
-		            });   
-		            $('#c-warehouse').autocomplete('option', 'source', lists);          
-		            return false;        
-
-            	} */
-		  	}).focus(function(){
-    				$(this).autocomplete("search");
-    			});
-    		}
-	});
-	
-	//$("#c-warehouse").autocomplete("option", "appendTo", ".ware-c-group");
+    $("#c-categories").on("select2:select", function(e){
+        console.log($("#c-categories").select2("data"));
+    })
+    
+    $("#c-warehouse").on("select2:select" , function(e){
+        let insert =    '<tr id="r'+e.params.data.id+'">' +
+                            '<td class="cell-align" style="font-weight: 700; border-right: 1px solid #ccc;">'+e.params.data.text+'</td>'+
+                            '<td class="cell-align">'+
+                                '<label class="switch"><input class="status" type="checkbox" checked>'+
+                                    '<span class="slider round"></span>'+
+                                '</label>'+
+                            '</td>'+
+                            '<td class="cell-align"></td>'+
+                            '<td class="cell-align"><input class="form-control ip-70 pprice" type="number"></td>'+
+                            '<td class="cell-align"><input class="form-control ip-70 sprice" type="number"></td>'+
+                            '<td class="cell-align"><input class="form-control ip-70 qty"  type="number"></td>'+
+                        '</tr>'
+        
+        $("#c-tb").find('tbody').append(insert);
+    });
+      
+    $("#c-warehouse").on("select2:unselect", function(e){
+        //let dt = $("#wh").select2("data")
+        //let dt= $(this).val()
+        id="r"+e.params.data.id
+        deleteRow(id)
+    });
 	
     $("#btnCreate").on("click", function(e){
         e.preventDefault();
@@ -374,13 +249,19 @@ $(document).ready(function () {
 
     $("#c-pform").on("submit", function (e) {
         e.preventDefault();
-        let ccate = $("#c-categories").autocomplete("instance").selectedItems;
+        //ccate = $("#c-categories").select2('data');
+        ccate = $("#c-categories").select2("data").map(c=>{
+            return{
+                id: c.id,
+                cateName: c.text
+            }
+        })
         console.log(ccate)
         let product = JSON.stringify({
           barcode: $("#c-barcode").val(),
           productName: $("#c-pname").val(),
           weight: $("#c-weight").val(),
-          categories: ccate.map(function(item){return{id: item.value, cateName: item.label}})
+          categories: ccate
         });
         $.ajax({
             url: "/api/products/new",
@@ -437,4 +318,22 @@ $(document).ready(function () {
       //window.location="/products"
     });
     
-  });
+});
+
+function deleteRow(rid){   
+    var row = document.getElementById(rid);
+    row.parentNode.removeChild(row);
+}
+function getAjaxResponse( url ){
+    let result= jQuery.ajax({
+        url: url,
+        type: 'get',
+        async:false,
+        contentType: "application/json",
+        dataType: 'json',
+        success:function(response){
+            return response.data;
+        } 
+    }).responseJSON;
+    return result.data;
+}

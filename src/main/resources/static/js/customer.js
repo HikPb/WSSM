@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var toast = new bootstrap.Toast($("#toast"));
     var table = $("#customerTable").DataTable( {
         responsive: true,
         ajax: {
@@ -42,22 +43,9 @@ $(document).ready(function () {
                 data: 'address', 
                 className: 'td-data',
             },
-            { 
-                data: 'createdAt',
-                className: 'td-data',
-                render: function(data, type, row){
-                	return moment(data).format('HH:mm DD-MM-YYYY')
-            	}
-            },
-            { 
-                data: 'updatedAt',
-                className: 'td-data',
-                render: function(data, type, row){
-                	return moment(data).format('HH:mm DD-MM-YYYY')
-            	}
-            },
             {
-                defaultContent: '<button id="btnDelete" title="Delete" class="fa-regular fa-trash-can icon-dark btn-delete"></button>'
+                orderable: false,
+                defaultContent: '<button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>'
             },
         ],
         columnDefs: [
@@ -175,7 +163,7 @@ $(document).ready(function () {
                 table.ajax.reload(null, false) 
                 $('#e-cus-modal form :input').val("");
                 $("#e-cus-modal").modal("hide");
-                $("#toast-content").html("Tạo mới thành công: #"+response.data['id']+' - '+ response.data['name'])
+                $("#toast-content").html("Chỉnh sửa thành công: #"+response.data['id']+' - '+ response.data['name'])
                 toast.show()
                 //window.location.href = "/customer"
             },  
@@ -205,11 +193,11 @@ $(document).ready(function () {
             method: "post",
             data: customer,
             contentType: "application/json",
-            success: function (data) {  
+            success: function (response) {  
                 table.ajax.reload(null, false) 
                 $('#c-cus-modal form :input').val("");
                 $("#c-cus-modal").modal("hide");
-                $("#toast-content").html("Chỉnh sửa thành công: #"+response.data['id']+' - '+ response.data['name'])
+                $("#toast-content").html("Tạo mới thành công: #"+response.data['id']+' - '+ response.data['name'])
                 toast.show()
                 //window.location.href = "/customer"
             },  

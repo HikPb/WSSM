@@ -1,77 +1,155 @@
 $(document).ready(function () {
-    var table = $("#customerTable").DataTable( {
-        responsive: true,
-        ajax: {
-            url: "/api/customer",
-            dataSrc: '',
-            type: "GET",
-            dataType: "json",
+    var toast = new bootstrap.Toast($("#toast"));
+    showListWarehouse();
+    
+    $("#e-wform").on("submit", function (e) {
+        e.preventDefault();
+        let customer = JSON.stringify({
+            name: $("#e-wname").val(),
+            phone: $("#e-wphone").val(),
+            address: $("#e-waddress").val(),
+        });
+        $.ajax({
+            url: "/api/warehouse/"+$(this).attr("wid"),
+            method: "put",
+            data: customer,
             contentType: "application/json",
-            dataSrc: 'data'
-            },
+            success: function (response) {  
+                $("#toast-content").html("Chỉnh sửa thành công: #"+response.data['id']+' - '+ response.data['name'])
+                toast.show()
+            },  
+            error: function (err) {  
+                alert(err);  
+            } 
+        });    
+    });
+
+    $("#btn-create").on("click", function(e){
+        e.preventDefault();
+        $("#c-ware-modal").modal("show");
+    });
+
+    $("#c-form").on("submit", function (e) {
+        e.preventDefault();
+        let customer = JSON.stringify({
+          name: $("#c-wname").val(),
+          phone: $("#c-wphone").val(),
+          address: $("#c-address").val(),
+        });
+        $.ajax({
+            url: "/api/warehouse",
+            method: "post",
+            data: customer,
+            contentType: "application/json",
+            success: function (response) {  
+                showListWarehouse()
+                $('#c-ware-modal form :input').val("");
+                $("#c-ware-modal").modal("hide");
+                $("#toast-content").html("Tạo thành công: #"+response.data['id']+' - '+ response.data['name'])
+                toast.show()
+                //window.location.href = "/warehouse"
+            },  
+            error: function (err) {  
+                alert(err);  
+            } 
+        })
+    });
+        
+    $("#ul-list").on("click", "li", function() {
+        $("#ul-list li").removeClass("selected")
+        if(!$(this).hasClass("selected")){
+            showWareData($(this).attr("wid"))
+            $(this).addClass("selected");
+        }
+    });
+
+    $("#ul-list").on("click", ".btn-delete", function (e) {
+        e.preventDefault();
+        href = "/api/warehouse/" + $(this).attr("w-id");
+        $("#yesBtn").attr("href", href);
+        $("#yesBtn").attr("w-id", $(this).attr("w-id"));
+        $("#confirmText").html("Bạn chắc chắn muốn xoá kho hàng: \<strong\>" + $(this).attr("wname") + "\<\/strong\> này?");
+        $("#confirmModal").modal("show");
+    });
+
+    $("#yesBtn").on("click", function (e) {
+        e.preventDefault();
+        url = $(this).attr("href");
+        id = $(this).attr("w-id");
+        $.ajax({
+            url: url,
+            method: "delete",
+            success: function (data) {  
+                showListWarehouse()
+                $("#confirmModal").modal("hide");
+                $("#toast-content").html("Đã xóa: #"+id)
+                toast.show()
+                //window.location.href = "/warehouse"
+            },  
+            error: function (err) {  
+                alert(err);  
+            } 
+        });
+        
+    });
+
+    // $("#btnClear").on("click", function (e) {
+    //   e.preventDefault();
+    //   table.ajax.reload(null, false)
+    //   window.location="/customer"
+    // });
+    
+  });
+
+  function showWareData(wareId){
+    let url = "/api/warehouse/"+ wareId;
+    let wareData = getAjaxResponse(url)
+    $("#e-wform").attr("wid", wareId)
+    $("#e-wname").val(wareData.name);
+    $("#e-wphone").val(wareData.phone);
+    $("#e-waddress").val(wareData.address);
+    $("#whpTable").DataTable( {
+        responsive: true,
+        destroy: true,
+        data: wareData.items,
         columns: [
             {
-                defaultContent: '',
-                data: null,
+                data: "active",
                 orderable: false,
-                className: 'select-checkbox',
+                render: function(data, type, row){
+	                if(data == true){
+	                    return `<label class="switch"><input class="" data="`+data +`" type="checkbox" checked><span class="slider round"></span></label>`
+	                }
+	                if(data == false){
+	                    return `<label class="switch"><input class="" data="`+data +`"type="checkbox"><span class="slider round"></span></label>`
+	                }
+            	}
             },
             { 
                 data: 'id',
                 className: 'td-data'
             },
             { 
-                data: 'name',
+                data: 'sku',
                 className: 'td-data'
             },
             { 
-                data: 'phone', 
+                data: 'sku', 
+                className: 'td-data',
+            },
+            { 
+                data: 'qty', 
+                className: 'td-data',
+            },
+            { 
+                data: 'purcharsePrice', 
                 className: 'td-data'
             },
             { 
-                data: 'dob',
+                data: 'retailPrice',
                 className: 'td-data',
-                render: function(data, type, row){
-                    if(!data){
-                        return '<span style="color: red;">Chưa có</span>';
-                    }
-                	return moment(data).format('DD-MM-YYYY')
-            	}
-            },
-            { 
-                data: 'address', 
-                className: 'td-data',
-            },
-            { 
-                data: 'createdAt',
-                className: 'td-data',
-                render: function(data, type, row){
-                	return moment(data).format('HH:mm DD-MM-YYYY')
-            	}
-            },
-            { 
-                data: 'updatedAt',
-                className: 'td-data',
-                render: function(data, type, row){
-                	return moment(data).format('HH:mm DD-MM-YYYY')
-            	}
-            },
-            {
-                defaultContent: '<button id="btnDelete" title="Delete" class="fa-regular fa-trash-can icon-dark btn-delete"></button>'
-            },
-        ],
-        columnDefs: [
-            {
-               'targets': 0,
-               'checkboxes': {
-                  'selectRow': true
-               }
             }
-         ],
-        initComplete: function(settings, json) {
-            table.row().invalidate().draw();
-            console.log(table.row().count())
-          },
+        ],
         paging: true, 
         pagingType: 'numbers',
         lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
@@ -95,158 +173,69 @@ $(document).ready(function () {
         },
         order: [[ 1, 'desc' ]]
     });
+    
+  }
 
-    new $.fn.dataTable.Buttons( table, {
-        buttons: [             
-            {
-            extend:    'print',
-            text:      '<i class="fa fa-print"></i> In',
-            titleAttr: 'Print',
-            className: 'btn-tools',
-            exportOptions: {
-                columns: [2,3,4,5,6,7]
+function showListWarehouse(){
+    var warehouses = [];
+    $.get("/api/warehouse", function(response){
+        let items =""
+        warehouses = $.map(response.data, dt=>{
+            return{
+                id: dt['id'],
+                name: dt['name'],
+                phone: dt['phone'],
+                address: dt['address']
             }
-            },  
-            {
-                extend:    'excel',
-                text:      '<i class="fa-solid fa-file-export"></i><span>Xuất excel</span>',
-                titleAttr: 'Excel',
-                className: 'btn-tools',
-                exportOptions: {
-                    columns: ':visible'
-                }
-                },
-        ]
-    } );
-    table.buttons().container().appendTo('#action-tools');
-
-   table.on("click", "th.select-checkbox", function() {
-        if ($("th.select-checkbox").hasClass("selected")) {
-            table.rows().deselect()
-            $("th.select-checkbox").removeClass("selected");
-        } else {
-            table.rows().select();
-            $("th.select-checkbox").addClass("selected");
-        }
-    }).on("select deselect", function() {
-        ("Some selection or deselection going on")
-        if (table.rows({
-                selected: true
-            }).count() !== table.rows().count()) {
-            $("th.select-checkbox").removeClass("selected");
-        } else {
-            $("th.select-checkbox").addClass("selected");
-        }
-    });
-
-    $('#customerTable').on('click', 'tbody tr .td-data', function (e) {
-        e.preventDefault();
-        data = table.row(this).data();
-        href = "api/customer/"+data["id"];
-        $.get(href, function(response, status){
-			//$("#e-sform").attr("action", "/api/products/"+data.id);
-			$("#updated-val").html(moment(data.updatedAt).format('HH:mm DD-MM-YYYY'));
-            $("#e-name").val(data.name);
-            $("#e-phone").val(data.phone);
-            $("#e-dob").val(moment(data.dob).format('YYYY-MM-DD'));
-            $("#e-address").val(data.address);
-            $("#e-np").text(data.npCus);
-            $("#e-nso").text(data.nsoCus);
-            $("#e-oc").text(data.npCus-data.nsoCus);
-            $("#e-tm").text(data.tmoney);
         })
-        $("#e-cus-modal").modal("show");
+        if(warehouses.length>0){
+            $(".media-list").empty();
+            warehouses.forEach(w=>{
+                items +=    '<li class="media" style="cursor: pointer;" wid="'+w.id+'" wname="'+w.name+'">' +
+                                '<div class="media-body">' +
+                                    '<h6 class="media-heading">'+w.name+'</h6>' +
+                                    '<button class="btn btn-xs btn-delete" style="position: absolute;right:30px;" w-id="'+w.id+'" wname="'+w.name+'" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>' +
+                                    '<div class="warehouse-phone">' +
+                                        '<i class="fa-solid fa-phone"></i>' +
+                                        '<span class="span-info">'+w.phone+'</span>' +
+                                    '</div>' +
+                                    '<div class="warehouse-address ">' +
+                                        '<i class="fa-solid fa-location-dot"></i>' +
+                                        '<span class="span-info">'+w.address+'</span>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</li>'
+            })
+            $(".media-list").append(items);
+        }
+    })
+  }
 
-        $("#e-form").on("submit", function (e) {
-            e.preventDefault();
-            let customer = JSON.stringify({
-              name: $("#e-name").val(),
-              phone: $("#e-phone").val(),
-              dob: $("#e-dob").val(),
-              address: $("#e-address").val(),
-            });
-            $.ajax({
-                url: "/api/customer/"+data["id"],
-                method: "put",
-                data: customer,
-                contentType: "application/json",
-                success: function (response) {  
-                    window.location.href = "/customer"
-                    console.log(response)
-                },  
-                error: function (err) {  
-                    alert(err);  
-                } 
-            });
-            
-          });
-    });
+function getAjaxResponse( url ){
+    let result= jQuery.ajax({
+        url: url,
+        type: 'get',
+        async:false,
+        contentType: "application/json",
+        dataType: 'json',
+        success:function(response){
+            return response.data;
+        } 
+    }).responseJSON;
+    return result.data;
+}
 
-    
-
-    $("#btnCreate").on("click", function(e){
-        e.preventDefault();
-        $("#c-cus-modal").modal("show");
-        $("#c-form").on("submit", function (e) {
-            e.preventDefault();
-            let customer = JSON.stringify({
-              name: $("#c-name").val(),
-              phone: $("#c-phone").val(),
-              dob: $("#c-dob").val(),
-              address: $("#c-address").val(),
-            });
-            $.ajax({
-                url: "/api/customer",
-                method: "post",
-                data: customer,
-                contentType: "application/json",
-                success: function (data) {  
-                    window.location.href = "/customer"
-                },  
-                error: function (err) {  
-                    alert(err);  
-                } 
-            });
-            
-          });
-    });
-	
-	
-	
-
-      
-    $("#customerTable tbody").on("click", ".btn-delete", function (e) {
-        e.preventDefault();
-        data = table.row($(this).parents('tr')).data();
-        href = "/api/customer/"+data["id"]+"";
-        $("#yesBtn").attr("href", href);
-        $("#yesBtn").attr("p-id", data["id"]);
-
-        $("#confirmText").html("Bạn muốn xoá khách hàng này: \<strong\>" + data["name"] + "\<\/strong\>?");
-        $("#confirmModal").modal("show");
-    });
-
-    $("#yesBtn").on("click", function (e) {
-        e.preventDefault();
-        url = $(this).attr("href");
-        id = $(this).attr("p-id");
-        $.ajax({
-            url: url,
-            method: "delete",
-            success: function (data) {  
-                window.location.href = "/customer"
-            },  
-            error: function (err) {  
-                alert(err);  
-            } 
-        });
-        
-      });
-
-    $("#btnClear").on("click", function (e) {
-      e.preventDefault();
-      table.ajax.reload(null, false)
-      window.location="/customer"
-    });
-    
-  });
+function searchWh() {
+    var filter, ul, li, i, txtValue;
+    filter = document.getElementById("wh-search").value.toUpperCase();
+    ul = document.getElementById("ul-list");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+        txtValue = li[i].getAttribute("wname");
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}

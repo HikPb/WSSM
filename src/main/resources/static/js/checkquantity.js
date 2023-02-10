@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var toast = new bootstrap.Toast($("#toast"));
     // let table = $("#cqTable").DataTable( {
     //     responsive: true,
     //     ajax: {
