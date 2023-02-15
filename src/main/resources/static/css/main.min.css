@@ -5343,7 +5343,7 @@ table.dataTable {
     border: 3px solid rgb(209 183 183 / 40%);
     display: block;
     position: fixed;
-    z-index: 1001;
+    z-index: 1000;
     left: 230px;
     right: 10px;
     top: 56px;  
@@ -5408,117 +5408,7 @@ table.dataTable {
     height: 100%;
 }
 
-/* Switch style */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 30px;
-    height: 14px;
-  }
-  
-  .switch input { 
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
-  }
-  
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 12px;
-    width: 12px;
-    left: 1px;
-    bottom: 1px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-  }
-  
-  input:checked + .slider {
-    background-color: #2196F3;
-  }
-  
-  input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
-  }
-  
-  input:checked + .slider:before {
-    -webkit-transform: translateX(14px);
-    -ms-transform: translateX(14px);
-    transform: translateX(14px);
-  }
-  
-  /* Rounded sliders */
-  .slider.round {
-    border-radius: 14px;
-  }
-  
-  .slider.round:before {
-    border-radius: 50%;
-  }
-  
-  .ui-autocomplete-multiselect.ui-state-default {
+.form-switch {
     display: flex;
-    background: #fff;
-    border: 1px solid #ccc;
-    padding: 3px 3px;
-    padding-bottom: 0px;
-    overflow: hidden;
-    cursor: text;
-    margin: 0px auto;
-}
-
-.ui-autocomplete-multiselect .ui-autocomplete-multiselect-item .ui-icon {
-    float: right;
-    cursor: pointer;
-}
-
-.ui-autocomplete-multiselect .ui-autocomplete-multiselect-item {
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 1px 3px;
-    margin-right: 2px;
-    margin-bottom: 3px;
-    color: #333;
-    background-color: #f6f6f6;
-}
-
-.ui-autocomplete-multiselect input {
-    display: inline-block;
-    border: none;
-    outline: none;
-    height: auto;
-    margin: 2px;
-    overflow: visible;
-    margin-bottom: 5px;
-    text-align: left;
-    width: 100% !important;
-}
-
-.ui-autocomplete-multiselect.ui-state-active {
-    outline: none;
-    border: 1px solid #7ea4c7;
-    -moz-box-shadow: 0 0 5px rgba(50,150,255,0.5);
-    -webkit-box-shadow: 0 0 5px rgba(50,150,255,0.5);
-    -khtml-box-shadow: 0 0 5px rgba(50,150,255,0.5);
-    box-shadow: 0 0 5px rgba(50,150,255,0.5);
-}
-
-.ui-autocomplete {
-    border-top: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+    justify-content: center;
 }

@@ -39,16 +39,16 @@ public class SupplierController {
 	@GetMapping("/api/supplier")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllSupplier(){
-		List<Supplier> listSupplier= supplierService.getAll();
-		
-		if(listSupplier.isEmpty()) { 
-			return new ResponseEntity<>( 
-				new ResponseObject("empty", "No content", ""), HttpStatus.NO_CONTENT); 
-			}
-		
-		return new ResponseEntity<>(
-				new ResponseObject("ok", "Query successfully", listSupplier), 
+		try{
+			List<Supplier> listSup= supplierService.getAll();
+			return new ResponseEntity<>(
+				new ResponseObject("ok", "Query successfully", listSup), 
 				HttpStatus.OK);
+		} catch(Exception e){
+			return new ResponseEntity<>(
+					new ResponseObject("failed", "Error when query supplier data", ""),
+					HttpStatus.BAD_REQUEST);
+		}	
 	}
 	
 	@GetMapping("/api/supplier/search")
@@ -57,7 +57,7 @@ public class SupplierController {
 		try {
 			List<Supplier> listSupplier = supplierService.getByKeyword(key);
 			return new ResponseEntity<>( 
-					new ResponseObject("ok", "Query categories successfully", listSupplier), 
+					new ResponseObject("ok", "Query successfully", listSupplier), 
 					HttpStatus.OK);
 			
 		} catch (Exception e) {

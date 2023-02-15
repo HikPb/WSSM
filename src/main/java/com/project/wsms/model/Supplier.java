@@ -1,19 +1,19 @@
 package com.project.wsms.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,16 +38,22 @@ public class Supplier extends AuditModel {
 	private String supPhone;
 	@Column(name = "sup_address", nullable = true)
 	private String address;
+
+	@ManyToMany(fetch = FetchType.LAZY,
+			cascade = {
+					CascadeType.PERSIST,
+					CascadeType.MERGE
+			},
+			mappedBy = "suppliers")
+	@JsonIgnore
+	private Set<Product> products = new HashSet<>();
+
 	@JsonIgnore
 	@OneToMany(mappedBy="supplier")
-	private List<Item> items;
-	
-	/*
-	 * @JsonManagedReference public List<Item> getItems () { return this.items; }
-	 */
-	
-	public void addItem(Item item) {
-		this.items.add(item);
+	private Set<Import> importItems = new HashSet<>();
+
+	public void addImportItem(Import item) {
+		this.importItems.add(item);
 	}
 
 }

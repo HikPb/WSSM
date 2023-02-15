@@ -14,39 +14,42 @@
                                                 <div>Sản phẩm</div>
                                             </div>
                                             <div>
-                                                <select class="form-control wh-select">
+                                                <select class="form-control c-warehouse">
                                                     <option value="a">Kho A</option>
                                                     <option value="b">Kho B</option>
                                                 </select>
                                             </div>
                                         </div>
-                                        <div id="test1">
-                                            <select class="form-control" id="pr-select"> </select>
-                                        </div>
-                                        
-                    
 
                                         <div class="box-order-product">
+                                            <!-- <div class="form-group">
+                                                <div class="input-group">
+                                                    <select class="form-control" id="c-searchbox">
+                                                    <div class="input-group-addon">
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" id="c-checkbox" value="">
+                                                            <label class="form-check-label" for="c-checkbox">Còn hàng</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> -->
+
+
+
                                             <div class="ant-select-selector">
                                                 <span class="ant-input-wrapper ant-input-group">
                                                     <span class="box-input-group">
-                                                        
-                                                        <input class="form-control" placeholder="Nhập mã, tên sản phẩm hoặc Barcode" type="text" id="pr-select2">
-                                                        <span class="input-group-addon">
-                                                            <div>
-                                                                <label class="ant-checkbox-wrapper filter-stock-checkbox">
-                                                                    <span class="ant-checkbox">
-                                                                        <input type="checkbox" class="ant-checkbox-input" value="">
-                                                                    </span>
-                                                                    <span>Còn hàng</span>
-                                                                </label>
+                                                        <select class="form-control" id="c-searchbox" multiple></select>
+                                                        <div class="input-group-addon">
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" id="c-checkbox">
+                                                                <label class="form-check-label" for="c-checkbox">Còn hàng</label>
                                                             </div>
-                                                        </span>
+                                                        </div>
                                                         
                                                     </span>
                                                     <div id="suggesstion-box"></div>
                                                 </span>
-                                            
                                             </div>
                                             <div class=" order-item-container" id="order-items" style="border: 1px solid rgb(217, 217, 217);">
                                                 <div id="virtualize-list">
@@ -153,9 +156,9 @@
                                             <section>
                                                 <div class="box-order-title flex-space-between">
                                                     <nav>
-                                                        <div class="nav nav-tabs" id="note-1-tab" role="tablist">
-                                                            <div class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#note-1" role="tab" aria-controls="note-1" aria-selected="true">Nội bộ</div>
-                                                            <div class="nav-link" id="note-2-tab" data-bs-toggle="tab" data-bs-target="#note-2" role="tab" aria-controls="note-2" aria-selected="false">In</div>
+                                                        <div class="nav nav-tabs tabs-line" role="tablist">
+                                                            <div class="nav-link active" data-bs-toggle="tab" data-bs-target="#note-1" role="tab" aria-controls="note-1" aria-expanded="true" aria-selected="true">Nội bộ</div>
+                                                            <div class="nav-link" data-bs-toggle="tab" data-bs-target="#note-2" role="tab" aria-controls="note-2" aria-expanded="false" aria-selected="false">In</div>
                                                         </div>
                                                     </nav>
                                                 </div>
@@ -163,7 +166,7 @@
                                                 <div
                                                     class="tab-content" id="nav-tabContent">
                                                     <!-- CONTENT 1 -->
-                                                    <div class="tab-pane fade show active" id="note-1" role="tabpanel" aria-labelledby="note-1-tab">
+                                                    <div class="tab-pane fade show active" id="note-1" aria-expanded="true">
                                                         <div style="width: 100%; position: relative; padding: 16px;">
                                                             <div class="ant-mentions" style="min-height: 122px;">
                                                                 <textarea placeholder="Viết ghi chú" id="note" rows="1" class="rc-textarea" style="height: 134px; min-height: 134px; max-height: 904px; overflow-y: hidden; resize: none;"></textarea>
@@ -171,7 +174,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="tab-pane fade" id="note-2" role="tabpanel" aria-labelledby="note-2-tab">
+                                                    <div class="tab-pane fade" id="note-2" aria-expanded="false">
                                                         <div style="width: 100%; position: relative; padding: 16px;">
                                                             <div class="ant-mentions" style="min-height: 122px;">
                                                                 <textarea placeholder="Viết ghi chú" id="note" rows="1" class="rc-textarea" style="height: 134px; min-height: 134px; max-height: 904px; overflow-y: hidden; resize: none;"></textarea>
@@ -207,7 +210,7 @@
                                             <div>Tạo lúc:</div>
                                             <div>
                                                 <span>
-                                                    <span style="cursor: pointer; color: rgb(9, 109, 217); font-weight: 500;">13/12/2022 03:00</span>
+                                                    <span style="color: rgb(9, 109, 217); font-weight: 500;"></span>
                                                 </span>
                                             </div>
                                         </div>
@@ -222,15 +225,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="ant-dropdown-trigger order-tag add-tag">
-                                            <span role="img" aria-label="tag" class="anticon anticon-tag">
-                                                <svg viewBox="64 64 896 896" focusable="false" data-icon="tag" width="1em" height="1em" fill="currentColor" aria-hidden="true"></svg>
-                                            </span>
-                                            <span style="margin-left: 8px;">Thêm thẻ</span>
                                         </div>
                                     </div>
                                 </div>
@@ -291,21 +285,6 @@
                                         </div>
                                         <div>Nhận hàng</div>
                                     </div>
-                                    <div class="ant-select-selector">
-                                        <select class="form-control ad-select-0">
-                                            <option></option>
-                                            <optgroup label="Alaskan/Hawaiian Time Zone">
-                                                <option value="AK">Alaska</option>
-                                                <option value="HI">Hawaii</option>
-                                            </optgroup>
-                                            <optgroup label="Pacific Time Zone">
-                                                <option value="CA">California</option>
-                                                <option value="NV">Nevada</option>
-                                                <option value="OR">Oregon</option>
-                                                <option value="WA">Washington</option>
-                                            </optgroup>
-                                        </select>
-                                    </div>
                                 </div>
                                 <div class="box-receiver-info">
                                     <div class="flex-space-between">
@@ -313,7 +292,7 @@
                                         <div class="form-group">
                                             <div class="input-group-icon">
                                                 <div class="input-icon" style="top: 2px;">
-                                                    <i class="fa-regular fa-calendar-days"></i>
+                                                    <!-- <i class="fa-regular fa-calendar-days"></i> -->
                                                 </div>
                                                 <input id="date_1" class="form-control" type="date" placeholder="Chọn ngày" size="12">
                                             </div>
@@ -330,61 +309,6 @@
                                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-group">
                                                 <div class="ant-select-selector">
                                                     <input class="form-control" placeholder="Địa chỉ" type="text">
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="d-flex flex-row justifsy-content-between mt-2">
-                                                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                                                    <div class="form-group px-1">
-                                                        <select class="form-control ad-select-1">
-                                                            <option></option>
-                                                            <optgroup label="Alaskan/Hawaiian Time Zone">
-                                                                <option value="AK">Alaska</option>
-                                                                <option value="HI">Hawaii</option>
-                                                            </optgroup>
-                                                            <optgroup label="Pacific Time Zone">
-                                                                <option value="CA">California</option>
-                                                                <option value="NV">Nevada</option>
-                                                                <option value="OR">Oregon</option>
-                                                                <option value="WA">Washington</option>
-                                                            </optgroup>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                                                    <div class="form-group px-1">
-                                                        <select class="form-control ad-select-2">
-                                                            <option></option>
-                                                            <optgroup label="Alaskan/Hawaiian Time Zone">
-                                                                <option value="AK">Alaska</option>
-                                                                <option value="HI">Hawaii</option>
-                                                            </optgroup>
-                                                            <optgroup label="Pacific Time Zone">
-                                                                <option value="CA">California</option>
-                                                                <option value="NV">Nevada</option>
-                                                                <option value="OR">Oregon</option>
-                                                                <option value="WA">Washington</option>
-                                                            </optgroup>
-                                                        </select>
-                                                    </div>      
-                                                </div>
-
-                                                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                                                    <div class="form-group px-1">
-                                                        <select class="form-control ad-select-3">
-                                                            <option></option>
-                                                            <optgroup label="Alaskan/Hawaiian Time Zone">
-                                                                <option value="AK">Alaska</option>
-                                                                <option value="HI">Hawaii</option>
-                                                            </optgroup>
-                                                            <optgroup label="Pacific Time Zone">
-                                                                <option value="CA">California</option>
-                                                                <option value="NV">Nevada</option>
-                                                                <option value="OR">Oregon</option>
-                                                                <option value="WA">Washington</option>
-                                                            </optgroup>
-                                                        </select>
-                                                    </div>       
                                                 </div>
                                             </div>
                                         </div>
@@ -406,7 +330,7 @@
                                     </div>
                                 </div>
                                     
-                                <div class="d-flex mt-2">
+                                <div class="col-sm-12 mt-2">
                                     <div class="row p-3">
                                         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-group">
                                             <input class="form-control" type="text" placeholder="Mã vận chuyển">

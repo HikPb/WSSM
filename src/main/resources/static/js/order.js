@@ -1,9 +1,9 @@
+const toast = new bootstrap.Toast($("#toast"));
 $(document).ready(function () {
-    var toast = new bootstrap.Toast($("#toast"));
-    $('#pr-select').select2({
-        placeholder: "Nhap ten san pham hoac barcode",
-        minimumInputLength: 3,
-        allowClear: true,
+    $('#c-searchbox').select2({
+        placeholder: "Nhập tên sản phẩm hoặc barcode",
+        minimumInputLength: 1,
+        width: "100%",
         ajax: {
             url: '/api/products/search',
             type: 'GET',
@@ -19,7 +19,7 @@ $(document).ready(function () {
                 var rs= [];
                 data['data'].forEach( d =>{
                     var rsObj = {
-                        id: d['productId'],
+                        id: d['id'],
                         text: d['productName']
                       }
                     rs.push(rsObj)
@@ -41,27 +41,27 @@ $(document).ready(function () {
         }
     });
 
-    $("#pr-select2").keyup(function() {
-		$.ajax({
-			type: "GET",
-			url: "/api/products/search",
-			data: {
-                keyword : $(this).val()
-            },
-			beforeSend: function() {
-				$("#pr-select2").css("background", "#FFF");
-			},
-			success: function(data) {
-                $.each(function(key,value){
+    // $("#pr-select2").keyup(function() {
+	// 	$.ajax({
+	// 		type: "GET",
+	// 		url: "/api/products/search",
+	// 		data: {
+    //             keyword : $(this).val()
+    //         },
+	// 		beforeSend: function() {
+	// 			$("#pr-select2").css("background", "#FFF");
+	// 		},
+	// 		success: function(data) {
+    //             $.each(function(key,value){
 
 
-                })
-				$("#suggesstion-box").show();
-				$("#suggesstion-box").html("Xin");
-				$("#pr-select2").css("background", "#FFF");
-			}
-		});
-	});
+    //             })
+	// 			$("#suggesstion-box").show();
+	// 			$("#suggesstion-box").html("Xin");
+	// 			$("#pr-select2").css("background", "#FFF");
+	// 		}
+	// 	});
+	// });
 
     //To select a country name
     function selectCountry(val) {
@@ -69,30 +69,6 @@ $(document).ready(function () {
 	$("#suggesstion-box").hide();
     };
 
-    // Select address
-    $(".ad-select-0").select2({
-        width: 'resolve',
-        placeholder: "Chọn địa chỉ",
-        allowClear: true
-    });
-    
-    $(".ad-select-1").select2({
-        width: 'resolve',
-        placeholder: "Tỉnh thành phố",
-        allowClear: true
-    });
-    
-    $(".ad-select-2").select2({
-        width: 'resolve',
-        placeholder: "Quận huyện",
-        allowClear: true
-    });
-    
-    $(".ad-select-3").select2({
-        width: 'resolve',
-        placeholder: "Phuong xa",
-        allowClear: true
-    });
 
     $(".deli-select").select2({
         width: 'resolve',
@@ -103,7 +79,7 @@ $(document).ready(function () {
     
     // Select warehouse
     $(".wh-select").select2({
-        width: '80px',
+        width: '100%',
         placeholder: "Kho mặc định",
         allowClear: true
     });

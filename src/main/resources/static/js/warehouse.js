@@ -1,5 +1,6 @@
+const toast = new bootstrap.Toast($("#toast"));
+
 $(document).ready(function () {
-    var toast = new bootstrap.Toast($("#toast"));
     showListWarehouse();
     
     $("#e-wform").on("submit", function (e) {
@@ -15,6 +16,7 @@ $(document).ready(function () {
             data: customer,
             contentType: "application/json",
             success: function (response) {  
+                showListWarehouse()
                 $("#toast-content").html("Chỉnh sửa thành công: #"+response.data['id']+' - '+ response.data['name'])
                 toast.show()
             },  
@@ -93,44 +95,67 @@ $(document).ready(function () {
         
     });
 
-    // $("#btnClear").on("click", function (e) {
-    //   e.preventDefault();
-    //   table.ajax.reload(null, false)
-    //   window.location="/customer"
-    // });
+    // $("#whpTable").on("click", "tr .status", function (e) {
+    //     e.preventDefault();
+    //     data = $("#whpTable").DataTable().row($(this).parents('tr')).data();
+    //     url = "/api/item/"+data["id"]+"/status";
+    //     $.ajax({
+    //         url: url,
+    //         method: "POST",
+    //         success: function (response) {  
+    //             $("#toast-content").html("Cập nhật thành công: #"+response.data['id']+' - '+ response.data.product['productName'])
+    //             toast.show()
+    //         },  
+    //         error: function (err) {  
+    //             alert(err);  
+    //         } 
+    //     });
+
+        
+    //   });
     
   });
 
   function showWareData(wareId){
     let url = "/api/warehouse/"+ wareId;
+    let url2 = "/api/item/warehouse/"+ wareId;
     let wareData = getAjaxResponse(url)
+    let wareItem = getAjaxResponse(url2)
     $("#e-wform").attr("wid", wareId)
     $("#e-wname").val(wareData.name);
     $("#e-wphone").val(wareData.phone);
     $("#e-waddress").val(wareData.address);
     $("#whpTable").DataTable( {
+        processing: true,
         responsive: true,
         destroy: true,
-        data: wareData.items,
+        data: wareItem,
+        dataSrc: function(data){
+            if(data.data == null){
+                return [];
+            } else {
+                return data.data;
+            }
+        },
         columns: [
             {
-                data: "active",
+                data: null,
                 orderable: false,
                 render: function(data, type, row){
-	                if(data == true){
-	                    return `<label class="switch"><input class="" data="`+data +`" type="checkbox" checked><span class="slider round"></span></label>`
+	                if(data.active == true){
+                        return `<div class="form-check form-switch"><input class="form-check-input status" type="checkbox" onclick="setItemStatus(`+data.id+`)" role="switch" checked></div>`
 	                }
-	                if(data == false){
-	                    return `<label class="switch"><input class="" data="`+data +`"type="checkbox"><span class="slider round"></span></label>`
+	                if(data.active == false){
+                        return `<div class="form-check form-switch"><input class="form-check-input status" type="checkbox" onclick="setItemStatus(`+data.id+`)" role="switch"></div>`
 	                }
             	}
             },
             { 
-                data: 'id',
+                data: 'product.id',
                 className: 'td-data'
             },
             { 
-                data: 'sku',
+                data: 'product.productName',
                 className: 'td-data'
             },
             { 
@@ -166,10 +191,6 @@ $(document).ready(function () {
         dom: '<"top"if>rt<"bottom"pl><"clear">',
         search: {
             "addClass": 'form-control input-lg col-xs-12'
-        },
-        select: {
-            style:    'multi',
-            selector: 'td:first-child'
         },
         order: [[ 1, 'desc' ]]
     });
@@ -238,4 +259,19 @@ function searchWh() {
             li[i].style.display = "none";
         }
     }
+}
+
+function setItemStatus(d){
+    url = "/api/item/"+d+"/status";
+    $.ajax({
+        url: url,
+        method: "POST",
+        success: function (response) {  
+            $("#toast-content").html("Cập nhật trạng thái: #"+response.data['id']+' - '+ response.data.product['productName'])
+            toast.show()
+        },  
+        error: function (err) {  
+            alert(err);  
+        } 
+    });
 }

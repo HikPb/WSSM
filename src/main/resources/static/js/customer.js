@@ -1,6 +1,7 @@
 $(document).ready(function () {
     var toast = new bootstrap.Toast($("#toast"));
     var table = $("#customerTable").DataTable( {
+        processing: true,
         responsive: true,
         ajax: {
             url: "/api/customer",

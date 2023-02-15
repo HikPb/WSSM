@@ -18,11 +18,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.project.wsms.dto.ProductDto;
 import com.project.wsms.model.Category;
+import com.project.wsms.model.Item;
 import com.project.wsms.model.Product;
 import com.project.wsms.model.ResponseObject;
+import com.project.wsms.model.Supplier;
+import com.project.wsms.model.Warehouse;
 import com.project.wsms.service.CategoryService;
+import com.project.wsms.service.ItemService;
 import com.project.wsms.service.ProductService;
+import com.project.wsms.service.SupplierService;
 import com.project.wsms.service.WarehouseService;
 
 @Controller
@@ -36,6 +42,12 @@ public class ProductController {
 	
 	@Autowired
 	private WarehouseService warehouseService;
+
+	@Autowired
+	private SupplierService supplierService;
+
+	@Autowired
+	private ItemService itemService;
 
 	@GetMapping("/products")
 	public String getAllProduct(Model model) {
@@ -127,56 +139,66 @@ public class ProductController {
 	}
 	
 	@PostMapping("/api/products/new")
-	public ResponseEntity<ResponseObject> createProduct(@RequestBody Product product) {
+	@ResponseBody
+	public ResponseEntity<ResponseObject> createProduct(@RequestBody ProductDto productDto) {
 		try {
-			Product newProduct = new Product();
-			newProduct.setBarcode(product.getBarcode());
-			newProduct.setProductName(product.getProductName());
-			newProduct.setWeight(product.getWeight());
-			product.getCategories().forEach(c->{
-				if(categoryService.existsById(c.getId())) {
-					Optional<Category> category = categoryService.getById(c.getId());
-					newProduct.addCategory(category.get());
-				}else {
-					Category newCategory = new Category();
-					newCategory.setCateName(c.getCateName());
-					newProduct.addCategory(newCategory);
-					categoryService.save(newCategory);
-				}
-				
-			});
+			Product newProduct = productDto.convertToEntity();
+			newProduct.setTSale(0);
+			newProduct.setTImport(0);
+			newProduct.setTInventory(0);
+			if(!productDto.getCategories().isEmpty()){
+				productDto.getCategories().forEach(c->{
+					if(categoryService.existsById(c.getId())) {
+						Optional<Category> category = categoryService.getById(c.getId());
+						newProduct.addCategory(category.get());
+					}else {
+						Category newCategory = new Category();
+						newCategory.setCateName(c.getCateName());
+						newProduct.addCategory(newCategory);
+						categoryService.save(newCategory);
+					}
+					
+				});
+			}
+			
+			if(!productDto.getSuppliers().isEmpty()){
+				productDto.getSuppliers().forEach(c->{
+					if(supplierService.existsById(c.getId())) {
+						Optional<Supplier> supplier = supplierService.getById(c.getId());
+						newProduct.addSupplier(supplier.get());
+					}
+				});
+			}
+
+			if(!productDto.getItems().isEmpty()){
+				productDto.getItems().forEach(it ->{
+					Item newItem = it.convertToEntity();
+					newProduct.setTImport(newProduct.getTImport() + it.getQty());
+					newProduct.setTInventory(newProduct.getTInventory() + it.getQty());
+					Warehouse wh = warehouseService.getById(it.getWareId()).get();
+					newItem.setProduct(newProduct);
+					newItem.setWarehouse(wh);
+					newProduct.addItem(newItem);
+					wh.addItem(newItem);
+					warehouseService.save(wh);
+					itemService.save(newItem);
+				});
+
+			}
 			productService.save(newProduct);
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Create new product successfully", newProduct), 
 					HttpStatus.OK
 					);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(
 					new ResponseObject("failed", "Exception when saving new product", ""), 
 					HttpStatus.BAD_REQUEST
 					);
 		}
 	}
-	
-//	@PostMapping("/api/{id}/{isSell}")
-//	@ResponseBody
-//	public ResponseEntity<ResponseObject> updateProductIsSell(@PathVariable("id") Integer id, @PathVariable("isSell") boolean isSell) {
-//		try {
-//			productService.updateIsSell(id, isSell);
-//
-//			String status = isSell ? "activated" : "inactivated";
-//			String message = "Product id = " + id + " " + "has been "+ status;
-//			return new ResponseEntity<ResponseObject>(
-//					new ResponseObject("ok", message, ""), 
-//					HttpStatus.OK
-//					);
-//		} catch (Exception e) {
-//			return new ResponseEntity<ResponseObject>(
-//					new ResponseObject("failed", "Exception when changing product/issell", ""), 
-//					HttpStatus.BAD_REQUEST
-//					);
-//		}
-//	}
+
 
 	@DeleteMapping("/api/products/{id}")
 	@ResponseBody
@@ -195,15 +217,17 @@ public class ProductController {
 
 	@PutMapping("/api/products/{id}")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> updateOne(@RequestBody Product product, @PathVariable Integer id) {
+	public ResponseEntity<ResponseObject> updateOne(@RequestBody ProductDto productDto, @PathVariable Integer id) {
 		Product uproduct = productService.getByProductId(id)
 		.map( p-> {
-			p.setBarcode(product.getBarcode());
-			p.setProductName(product.getProductName());
-			p.setWeight(product.getWeight());
-			if(!p.getCategories().equals(product.getCategories())) {
-				p.resetCategory();
-				product.getCategories().forEach(c->{
+			p.setBarcode(productDto.getBarcode());
+			p.setProductName(productDto.getProductName());
+			p.setWeight(productDto.getWeight());
+			p.setLink(productDto.getLink());
+			p.setNote(productDto.getNote());
+			if(!p.getCategories().equals(productDto.getCategories())) {
+				p.resetCategories();
+				productDto.getCategories().forEach(c->{
 					if(categoryService.existsById(c.getId())) {
 						Optional<Category> category = categoryService.getById(c.getId());
 						p.addCategory(category.get());
@@ -215,15 +239,46 @@ public class ProductController {
 					}	
 				});
 			}
+			p.resetSuppliers();
+			productDto.getSuppliers().forEach(c->{
+				if(supplierService.existsById(c.getId())){
+					Optional<Supplier> sup = supplierService.getById(c.getId());
+					p.addSupplier(sup.get());
+				}
+			});
+
+			productDto.getItems().forEach(i->{
+				if(i.getId()==null){
+					Item newItem = i.convertToEntity();
+					p.setTImport(p.getTImport() + i.getQty());
+					p.setTInventory(p.getTInventory() + i.getQty());
+					Warehouse wh = warehouseService.getById(i.getWareId()).get();
+					newItem.setProduct(p);
+					newItem.setWarehouse(wh);
+					p.addItem(newItem);
+					wh.addItem(newItem);
+					warehouseService.save(wh);
+					itemService.save(newItem);
+				} else {
+					Optional<Item> it = itemService.getById(i.getId());
+					p.setTInventory(p.getTInventory() - it.get().getQty() + i.getQty());
+					it.get().setPurcharsePrice(i.getPprice());
+					it.get().setRetailPrice(i.getSprice());
+					it.get().setQty(i.getQty());
+					it.get().setSku(i.getSku());
+				}
+			});
 			productService.update(p);
 			return p;
 
 		}).orElseGet(() -> {
 			Product newProduct = new Product();
-			newProduct.setBarcode(product.getBarcode());
-			newProduct.setProductName(product.getProductName());
-			newProduct.setWeight(product.getWeight());
-			product.getCategories().forEach(c->{
+			newProduct.setBarcode(productDto.getBarcode());
+			newProduct.setProductName(productDto.getProductName());
+			newProduct.setWeight(productDto.getWeight());
+			newProduct.setLink(productDto.getLink());
+			newProduct.setNote(productDto.getNote());
+			productDto.getCategories().forEach(c->{
 				if(categoryService.existsById(c.getId())) {
 					Optional<Category> category = categoryService.getById(c.getId());
 					newProduct.addCategory(category.get());

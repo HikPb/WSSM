@@ -77,8 +77,7 @@ public class Order extends AuditModel{
 		this.orderItems.add(item);
 	}
 	
-	@Lob
 	private String internalNote;
-	@Lob
+
 	private String printedNote;	
 }

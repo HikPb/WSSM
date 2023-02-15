@@ -45,7 +45,7 @@ public class Product extends AuditModel {
 	@Column(name = "barcode", nullable = false, length = 8)
 	private String barcode;
 	
-	@Column(name = "weight", nullable = false, precision = 6, scale = 1)
+	@Column(name = "weight", nullable = false)
 	private Float weight;
 	@Column(name = "total_import", nullable = true)
 	private Integer tImport;
@@ -54,13 +54,10 @@ public class Product extends AuditModel {
 	@Column(name = "total_inventory", nullable = true)
 	private Integer tInventory;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy="product")
 	private Set<Item> items = new HashSet<>();
 	
-	@JsonIgnore
-	@OneToMany(mappedBy="product")
-	private Set<OrderItem> orderItems = new HashSet<>();
-
 	@ManyToMany(fetch = FetchType.LAZY,
 			cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "product_category", 
@@ -68,12 +65,21 @@ public class Product extends AuditModel {
 		inverseJoinColumns = @JoinColumn(name = "cate_id", referencedColumnName = "id", nullable = false))
 	private Set<Category> categories = new HashSet<>();
 		
+	@ManyToMany(fetch = FetchType.LAZY,
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(name = "product_supplier", 
+		joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false), 
+		inverseJoinColumns = @JoinColumn(name = "sup_id", referencedColumnName = "id", nullable = false))
+	private Set<Supplier> suppliers = new HashSet<>();
+
+	@Column(name = "note", nullable = true, columnDefinition="TEXT")
+	private String note;
+
+	@Column(name = "link", nullable = true, columnDefinition="TEXT")
+	private String link;
+
 	public void addItem(Item item) {
 		this.items.add(item);
-	}
-	
-	public void addOrderItem(OrderItem item) {
-		this.orderItems.add(item);
 	}
 	
 	public void addCategory(Category category) {
@@ -89,11 +95,31 @@ public class Product extends AuditModel {
 		}
 	}
 	
-	public void resetCategory() {
+	public void resetCategories() {
 		this.categories.forEach(c->
 			c.getProducts().remove(this)
 		);
 		this.categories.clear();
+	}
+
+	public void addSupplier(Supplier sup) {
+		this.suppliers.add(sup);
+		sup.getProducts().add(this);
+	}
+	
+	public void removeSupplier(Integer supId) {
+		Supplier sup = this.suppliers.stream().filter(c -> Objects.equals(c.getId(), supId)).findFirst().orElse(null);
+		if(sup!=null) {
+			this.suppliers.remove(sup);
+			sup.getProducts().remove(this);
+		}
+	}
+	
+	public void resetSuppliers() {
+		this.suppliers.forEach(c->
+			c.getProducts().remove(this)
+		);
+		this.suppliers.clear();
 	}
 	
 }

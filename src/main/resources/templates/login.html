@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>WSSM | Login</title>
+    <!-- GLOBAL MAINLY STYLES-->
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css} " />
+    <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/6.2.0/css/all.min.css} " />
+    <link th:rel="stylesheet" th:href="@{/css/main.min.css} " />
+    <link th:rel="stylesheet" th:href="@{/css/auth-light.css} " />
+    <!-- PAGE LEVEL STYLES-->
+</head>
+
+<body class="bg-silver-300" style="background-image: linear-gradient(to right, #8360c3, #2ebf91);">
+    <div class="content">
+        <div class="brand">
+            <a class="link" th:href="@{/}">WSSM</a>
+        </div>
+        <form id="login-form" th:action="@{/j_spring_security_check}" method="post">
+            <h2 class="login-title">Đăng nhập</h2>
+            <div class="form-group">
+                <div class="input-group-icon right">
+                    <div class="input-icon" style="right: 8px;"><i class="fa fa-envelope"></i></div>
+                    <input class="form-control" type="text" name="username" placeholder="Tên tài khoản" autocomplete="off">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group-icon right">
+                    <div class="input-icon" style="right: 8px;"><i class="fa fa-lock font-16"></i></div>
+                    <input class="form-control" type="password" name="password" placeholder="Mật khẩu">
+                </div>
+            </div>
+            <div class="form-group d-flex justify-content-between">
+                <label class="ui-checkbox ui-checkbox-info">
+                    <input type="checkbox" name="remember-me">
+                    <span class="input-span"></span>Ghi nhớ</label>
+                <!-- <a href="forgot_password.html">Forgot password?</a> -->
+            </div>
+            <div class="form-group">
+                <button class="btn btn-info btn-block" type="submit" style="width: 100%;">Đăng nhập</button>
+            </div>
+        </form>
+    </div>
+    <!-- END PAGA BACKDROPS-->
+    <!-- CORE PLUGINS -->
+    <script th:src="@{/webjars/jquery/3.6.1/jquery.js}"></script> 
+    <script th:src="@{/webjars/popper.js/2.9.3/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/metisMenu/3.0.7/metisMenu.min.js}"></script>
+    <!-- PAGE LEVEL PLUGINS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <!-- CORE SCRIPTS-->
+    <script th:src="@{/js/app.min.js}"></script>
+    <!-- PAGE LEVEL SCRIPTS-->
+    <script type="text/javascript">
+        $(function() {
+            $('#login-form').validate({
+                errorClass: "help-block",
+                rules: {
+                    username: {
+                        required: true,
+                    },
+                    password: {
+                        required: true
+                    }
+                },
+                highlight: function(e) {
+                    $(e).closest(".form-group").addClass("has-error")
+                },
+                unhighlight: function(e) {
+                    $(e).closest(".form-group").removeClass("has-error")
+                },
+            });
+        });
+    </script>
+</body>
+
+</html>

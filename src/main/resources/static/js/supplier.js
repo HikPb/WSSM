@@ -1,6 +1,7 @@
 $(document).ready(function () {
     var toast = new bootstrap.Toast($("#toast"));
     var table = $("#supplierTable").DataTable( {
+        processing: true,
         responsive: true,
         ajax: {
             url: "/api/supplier",
@@ -135,7 +136,7 @@ $(document).ready(function () {
         data = table.row(this).data();
         href = "api/supplier/"+data["id"];
         $.get(href, function(response, status){
-			//$("#e-sform").attr("action", "/api/products/"+data.id);
+			$("#e-sform").attr("pid", data.id);
 			$("#updated-val").html(moment(data.updatedAt).format('HH:mm DD-MM-YYYY'));
             $("#e-sname").val(data.supName);
             $("#e-sphone").val(data.supPhone);
@@ -175,37 +176,34 @@ $(document).ready(function () {
     $("#btnCreate").on("click", function(e){
         e.preventDefault();
         $("#c-sup-modal").modal("show");
-        $("#c-sform").on("submit", function (e) {
-            e.preventDefault();
-            let supplier = JSON.stringify({
-              supName: $("#c-sname").val(),
-              supPhone: $("#c-sphone").val(),
-              address: $("#c-address").val(),
-            });
-            $.ajax({
-                url: "/api/supplier",
-                method: "post",
-                data: supplier,
-                contentType: "application/json",
-                success: function (response) {  
-                    table.ajax.reload(null, false) 
-                    $('#c-sup-modal form :input').val("");
-                    $("#c-sup-modal").modal("hide");
-                    $("#toast-content").html("Tạo mới thành công: #"+response.data['id']+' - '+ response.data['supName'])
-                    toast.show()
-                },  
-                error: function (err) {  
-                    alert(err);  
-                } 
-            });
-            
-          });
     });
-	
-	
-	
 
-      
+    $("#c-sform").on("submit", function (e) {
+        e.preventDefault();
+        let supplier = JSON.stringify({
+          supName: $("#c-sname").val(),
+          supPhone: $("#c-sphone").val(),
+          address: $("#c-address").val(),
+        });
+        $.ajax({
+            url: "/api/supplier",
+            method: "post",
+            data: supplier,
+            contentType: "application/json",
+            success: function (response) {  
+                table.ajax.reload(null, false) 
+                $('#c-sup-modal form :input').val("");
+                $("#c-sup-modal").modal("hide");
+                $("#toast-content").html("Tạo mới thành công: #"+response.data['id']+' - '+ response.data['supName'])
+                toast.show()
+            },  
+            error: function (err) {  
+                alert(err);  
+            } 
+        });
+        
+      });
+	
     $("#supplierTable tbody").on("click", ".btn-delete", function (e) {
         e.preventDefault();
         data = table.row($(this).parents('tr')).data();

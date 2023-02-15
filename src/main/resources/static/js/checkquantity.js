@@ -1,6 +1,7 @@
 $(document).ready(function () {
     var toast = new bootstrap.Toast($("#toast"));
     // let table = $("#cqTable").DataTable( {
+        // processing: true,
     //     responsive: true,
     //     ajax: {
     //         url: "/products/api",
