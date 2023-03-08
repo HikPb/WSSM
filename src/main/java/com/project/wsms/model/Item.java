@@ -6,9 +6,9 @@ import java.util.Set;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,9 +28,9 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Table(name = "items")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+// @JsonIdentityInfo(
+//         generator = ObjectIdGenerators.PropertyGenerator.class,
+//         property = "id")
 public class Item {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,30 +42,37 @@ public class Item {
 	private boolean active = true;
 	
 	//@JsonIgnore
+	@JsonManagedReference
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ware_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
 	private Warehouse warehouse;
 	
 	//@JsonIgnore
+	@JsonManagedReference
+	@JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
 	private Product product;
  
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	@OneToMany(mappedBy="item")
 	private Set<OrderItem> orderItems = new HashSet<>();
 
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	@OneToMany(mappedBy="item")
 	private Set<CqItem> cqItems = new HashSet<>();
 
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	@OneToMany(mappedBy="item")
 	private Set<ImportItem> importItems = new HashSet<>();
 
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	@OneToMany(mappedBy="item")
 	private Set<ExportItem> exportItems = new HashSet<>();
 

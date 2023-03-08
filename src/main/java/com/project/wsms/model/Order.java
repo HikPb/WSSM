@@ -1,5 +1,6 @@
 package com.project.wsms.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.hibernate.annotations.OnDelete;
@@ -7,18 +8,15 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -66,18 +64,30 @@ public class Order extends AuditModel{
 	
 	private String receiverName;
 	private String receiverPhone;
-	
 	@Column(name = "address", nullable = true)
 	private String address;
+
+	private String internalNote;
+	private String printedNote;	
+	
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ware_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+	@JsonIgnore
+	private Warehouse warehouse;
 	
 	@OneToMany(mappedBy="order")
 	private Set<OrderItem> orderItems;
 	
-	public void addItem(OrderItem item) {
+	public void addOrderItem(OrderItem item) {
 		this.orderItems.add(item);
 	}
 	
-	private String internalNote;
-
-	private String printedNote;	
+	public void removeOrderItem(Integer itemId) {
+		OrderItem item = this.orderItems.stream().filter(c -> Objects.equals(c.getId(), itemId)).findFirst().orElse(null);
+		if(item!=null) {
+			this.orderItems.remove(item);
+		}
+	}
+	
 }

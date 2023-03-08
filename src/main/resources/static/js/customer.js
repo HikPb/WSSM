@@ -50,13 +50,15 @@ $(document).ready(function () {
             },
         ],
         columnDefs: [
+            { className: "dt-head-center", targets: [ 0, 1, 2, 3, 4, 5, 6 ] },
+            { className: "dt-body-center", targets: [ 0, 1, 2, 3, 4, 6 ] },
             {
-               'targets': 0,
-               'checkboxes': {
-                  'selectRow': true
-               }
-            }
-         ],
+                'targets': 0,
+                'checkboxes': {
+                   'selectRow': true
+                }
+             }
+        ],
         initComplete: function(settings, json) {
             table.row().invalidate().draw();
             console.log(table.row().count())
@@ -74,7 +76,7 @@ $(document).ready(function () {
             "infoEmpty": "Không có kết quả",
             "infoFiltered": "(Lọc từ _MAX_ kết quả)"
         },
-        dom: '<"top"if>rt<"bottom"pl><"clear">',
+        dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
         search: {
             "addClass": 'form-control input-lg col-xs-12'
         },

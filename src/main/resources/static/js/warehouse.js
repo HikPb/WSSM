@@ -188,10 +188,7 @@ $(document).ready(function () {
             "infoEmpty": "Không có kết quả",
             "infoFiltered": "(Lọc từ _MAX_ kết quả)"
         },
-        dom: '<"top"if>rt<"bottom"pl><"clear">',
-        search: {
-            "addClass": 'form-control input-lg col-xs-12'
-        },
+        dom: '<"tabletop"if>rt<"tabletop"lp><"clear">',
         order: [[ 1, 'desc' ]]
     });
     

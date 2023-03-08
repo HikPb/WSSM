@@ -13,44 +13,28 @@
                                                 <div class="box-icon"><i class="fa-solid fa-cart-shopping"></i></div>
                                                 <div>Sản phẩm</div>
                                             </div>
-                                            <div>
-                                                <select class="form-control c-warehouse">
-                                                    <option value="a">Kho A</option>
-                                                    <option value="b">Kho B</option>
-                                                </select>
+                                            <div class="form-group ware-c-group">
+                                                <select class="form-control" id="c-warehouse"></select>
                                             </div>
                                         </div>
 
                                         <div class="box-order-product">
-                                            <!-- <div class="form-group">
-                                                <div class="input-group">
-                                                    <select class="form-control" id="c-searchbox">
-                                                    <div class="input-group-addon">
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox" id="c-checkbox" value="">
-                                                            <label class="form-check-label" for="c-checkbox">Còn hàng</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div> -->
-
-
-
                                             <div class="ant-select-selector">
                                                 <span class="ant-input-wrapper ant-input-group">
-                                                    <span class="box-input-group">
-                                                        <select class="form-control" id="c-searchbox" multiple></select>
-                                                        <div class="input-group-addon">
-                                                            <div class="form-check form-check-inline">
-                                                                <input class="form-check-input" type="checkbox" id="c-checkbox">
+                                                    <div class="form-group">
+                                                        <div class="input-group" style="background-color: #fff;border: 1px solid #cecece;">
+                                                            <input class="form-control" id="c-searchbox" type="text" placeholder="Nhập tên sản phẩm hoặc barcode" style="border: none;">
+                                                            <div class="input-group-addon" style="display: flex;align-items: center;margin-left: 3px;">
+                                                                <input type="checkbox" id="c-checkbox" style="margin-right: 2px;">
                                                                 <label class="form-check-label" for="c-checkbox">Còn hàng</label>
                                                             </div>
+                                                            <!-- <div class="search-items" id="listresult"></div> -->
                                                         </div>
-                                                        
-                                                    </span>
-                                                    <div id="suggesstion-box"></div>
+                                                    </div>
                                                 </span>
                                             </div>
+                                            
+                                                
                                             <div class=" order-item-container" id="order-items" style="border: 1px solid rgb(217, 217, 217);">
                                                 <div id="virtualize-list">
                                                     <div class="order-empty-text">Giỏ hàng trống</div>
@@ -58,6 +42,7 @@
                                             </div>
                                             <div style="width: 100%; margin-top: 12px;"></div>
                                         </div>
+                                    
                                     </section>
                                     <div class="resize">
                                         <div style="flex: 1 1 0%;">
@@ -80,7 +65,7 @@
                                                                     &nbsp;<span>Phí vận chuyển</span>
                                                                 </div>
                                                                 <div class="box-input-group">
-                                                                    <input class="form-control" role="spinbutton" max="9007199254740991" min="0" step="1000" value="0" type="number">
+                                                                    <input class="form-control number-separator" id="shippingFee" role="spinbutton" max="99999999999" min="0" step="1000" value="0" type="text" onchange="renderSubtotal()">
                                                                     <span class="input-group-addon">₫</span>
                                                                 </div>
                                                             </div>
@@ -89,10 +74,10 @@
                                                             <div class="input-group-icon">
                                                                 <div class="input-icon">
                                                                     <i class="fa-solid fa-ticket"></i>
-                                                                    &nbsp;<span>Giảm giá</span>
+                                                                    &nbsp;<span>Giảm giá trên đơn</span>
                                                                 </div>
                                                                 <div class="box-input-group">
-                                                                    <input class="form-control" role="spinbutton" max="9007199254740991" min="0" step="1000" value="0" type="number">
+                                                                    <input class="form-control number-separator" id="discount" role="spinbutton" max="99999999999" min="0" step="1000" value="0" type="text" onchange="renderSubtotal()">
                                                                     <span class="input-group-addon">₫</span>
                                                                 </div>
                                                             </div>
@@ -104,7 +89,7 @@
                                                                     &nbsp;<span>Tiền chuyển khoản</span>
                                                                 </div>
                                                                 <div class="box-input-group">
-                                                                    <input class="form-control" role="spinbutton" max="9007199254740991" min="0" step="1000" value="0" type="number">
+                                                                    <input class="form-control number-separator" id="receivedMoney" role="spinbutton" max="99999999999" min="0" step="1000" value="0" type="text" onchange="renderSubtotal()">
                                                                     <span class="input-group-addon">₫</span>
                                                                 </div>
                                                             </div>
@@ -118,30 +103,26 @@
                                                                         <div class="box-money-section s1">
                                                                             <div class="box-monney">
                                                                                 <span class="title">Tổng số tiền</span>
-                                                                                <span class="fw-500" id="final-price">0₫</span>
+                                                                                <span class="fw-500"><span id="total"></span> ₫</span>
                                                                             </div>
                                                                             <div class="box-monney">
-                                                                                <span class="title" style="display: flex; align-items: center;">Giảm giá&nbsp;</span>
-                                                                                <span class="fw-500 green">0₫</span>
+                                                                                <span class="title" style="display: flex; align-items: center;">Tổng giảm giá&nbsp;</span>
+                                                                                <span class="fw-500 green"><span id="totalDiscount"></span> ₫</span>
                                                                             </div>
                                                                         </div>
                                                                         <div class="box-money-section s3">
                                                                             <div class="box-monney">
-                                                                                <span class="title">Sau giảm giá</span>
-                                                                                <span class="fw-500">0₫</span>
-                                                                            </div>
-                                                                            <div class="box-monney">
                                                                                 <span class="title">Cần thanh toán</span>
-                                                                                <span class="fw-500 blue">0₫</span>
+                                                                                <span class="fw-500 blue"><span id="payment"></span> ₫</span>
                                                                             </div>
                                                                             <div class="box-monney">
                                                                                 <span class="title">Đã thanh toán</span>
-                                                                                <span class="fw-500">0₫</span>
+                                                                                <span class="fw-500"><span id="received"></span> ₫</span>
                                                                             </div>
                                                                         </div>
                                                                         <div class="box-monney" style="padding-bottom: 0px;">
                                                                             <span class="title">Còn thiếu</span>
-                                                                            <span class="fw-500 red" id="remain-price">0₫</span>
+                                                                            <span class="fw-500 red"><span id="owe"></span> ₫</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>

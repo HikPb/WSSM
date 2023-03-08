@@ -77,7 +77,7 @@ $(document).ready(function () {
             "infoEmpty": "Không có kết quả",
             "infoFiltered": "(Lọc từ _MAX_ kết quả)"
         },
-        dom: '<"top"if>rt<"bottom"pl><"clear">',
+        dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
         search: {
             "addClass": 'form-control input-lg col-xs-12'
         },

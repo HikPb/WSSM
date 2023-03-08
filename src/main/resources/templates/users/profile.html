@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width initial-scale=1.0">
+        <title>[[${pageTitle}]]</title>
+        <!-- GLOBAL MAINLY STYLES-->
+        <link th:href="@{/img/favicon.ico}" rel="icon">
+        <th:block th:include="~{fragments/assets :: assets}"></th:block>
+</head>
+
+<body class="fixed-navbar sidebar-mini">
+    <div class="page-wrapper">
+        <div th:replace="~{fragments/header.html :: header}"></div>
+        <div th:replace="~{fragments/sidebar.html :: sidebar}"></div>
+        <div class="content-wrapper2">
+            <div class="page-content fade-in-up">
+                <div class="row">
+                    <div class="col-lg-4 col-md-5">
+                        <div class="ibox">
+                            <div class="ibox-body text-center">
+                                <div class="m-t-20">
+                                    <img src="/img/admin-avatar.png" class="rounded-circle shadow-4" style="width: 150px;" alt="Avatar" />
+                                </div>
+                                <div class="m-b-20 text-muted"><span>@</span>Developer</div>
+                                <div>
+                                    <button class="btn btn-info btn-rounded m-b-5"><i class="fa fa-plus"></i> Thay đổi ảnh đại diện</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-7">
+                        <div class="ibox">
+                            <div class="ibox-body">
+                                <ul class="nav nav-tabs tabs-line">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="#tab-1" data-bs-toggle="tab">Thông tin chung</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#tab-2" data-bs-toggle="tab">Hoạt động</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="tab-1">
+                                        <form id="profile-form" autocomplete="off">
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-sm-6 form-group">
+                                                    <label><strong>Họ và tên:</strong></label>
+                                                    <input class="form-control" type="text" id="fullname" placeholder="Họ và tên" autocomplete="off">
+                                                </div>
+                                                <div class="col-sm-6 form-group">
+                                                    <label><strong>Số điện thoại:</strong></label>
+                                                    <input class="form-control" type="text" id="phone" placeholder="Số điên thoại" autocomplete="off">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label><strong>Địa chỉ:</strong></label>
+                                                <input class="form-control" type="text" placeholder="Địa chỉ" autocomplete="off" value="">
+                                            </div>
+                                            <div class="form-group">
+                                                <label><strong>Thay đổi mật khẩu:</strong></label>
+                                                <div class="form-group">
+                                                    <div class="input-group-icon right">
+                                                        <div class="input-icon" onclick="showhidePassword('p1','ip1')"><i id="ip1" class="fa-solid fa-eye-slash"></i></div>
+                                                        <input class="form-control" id="p1" type="password" placeholder="Mật khẩu hiện tại" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="input-group-icon right">
+                                                        <div class="input-icon" onclick="showhidePassword('p2','ip2')"><i id="ip2" class="fa-solid fa-eye-slash"></i></div>
+                                                        <input class="form-control" id="p2" type="password" placeholder="Mật khẩu mới" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="input-group-icon right">
+                                                        <div class="input-icon" onclick="showhidePassword('p3','ip3')"><i id="ip3" class="fa-solid fa-eye-slash"></i></div>
+                                                        <input class="form-control" id="p3" type="password" placeholder="Xác nhận mật khẩu mới" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div id="message"></div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <button class="btn btn-primary" id="submit-btn" type="submit" disabled>Submit</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="tab-pane fade" id="tab-2">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .profile-social a {
+                        font-size: 16px;
+                        margin: 0 10px;
+                        color: #999;
+                    }
+
+                    .profile-social a:hover {
+                        color: #485b6f;
+                    }
+
+                    .profile-stat-count {
+                        font-size: 22px
+                    }
+                </style>
+            </div>
+            <!-- END PAGE CONTENT-->
+            <th:block th:include="~{fragments/modal :: toast-modal}"></th:block>
+            <!-- FOOTER -->
+            <div th:replace="~{fragments/footer.html :: footer}"></div>
+        </div>
+    </div>
+    <!-- BEGIN PAGA BACKDROPS-->
+    <div class="sidenav-backdrop backdrop"></div>
+    <div class="preloader-backdrop">
+        <div class="page-preloader">Loading</div>
+    </div>
+    <!-- END PAGA BACKDROPS-->
+
+    <script th:src="@{/js/profile.js}"></script>
+</body>
+
+</html>

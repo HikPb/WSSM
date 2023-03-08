@@ -3,9 +3,8 @@ package com.project.wsms.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +24,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "warehouses")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Warehouse extends AuditModel {
 	private static final long serialVersionUID = 1L;
 
@@ -40,21 +39,26 @@ public class Warehouse extends AuditModel {
 	@Column(name = "address", nullable = true)
 	private String address;
 
-	@JsonIgnore
+	@JsonBackReference
 	@OneToMany(mappedBy = "warehouse")
 	private Set<Export> exports = new HashSet<>();
 
-	@JsonIgnore
+	@JsonBackReference
 	@OneToMany(mappedBy = "warehouse")
 	private Set<Import> imports = new HashSet<>();
 
-	@JsonIgnore
+	@JsonBackReference
 	@OneToMany(mappedBy = "warehouse")
 	private Set<CheckQty> checkqtys = new HashSet<>();
 	
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	@OneToMany(mappedBy = "warehouse")
 	private Set<Item> items = new HashSet<>();
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "warehouse")
+	private Set<Order> orders = new HashSet<>();
 
 	public Set<Item> getItems() {
 		return this.items;
@@ -71,5 +75,8 @@ public class Warehouse extends AuditModel {
 	}
 	public void addItem(Item item) {
 		this.items.add(item);
+	}
+	public void addOrder(Order item) {
+		this.orders.add(item);
 	}
 }

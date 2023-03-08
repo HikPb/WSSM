@@ -72,14 +72,14 @@ $(document).ready(function () {
         lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
         language: {
             "search": "_INPUT_",            
-            "searchPlaceholder": "Search",
+            "searchPlaceholder": "Tìm kiếm",
             "lengthMenu": "_MENU_/trang",
             "zeroRecords": "Không có sản phẩm nào!",
             "info": "Trang _PAGE_/_PAGES_",
             "infoEmpty": "Không có sản phẩm",
-            "infoFiltered": "(filtered from _MAX_ total records)"
+            "infoFiltered": "(lọc từ _MAX_ kết quả)"
         },
-        dom: '<"top"if>rt<"bottom"pl><"clear">',
+        dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
         search: {
             "addClass": 'form-control input-lg col-xs-12'
         },
@@ -449,6 +449,7 @@ $(document).ready(function () {
                 // $("#c-supplier").select2().val([]).trigger("change");
                 // $("#c-warehouse").select2().val("");
                 $("#product-modal").modal("hide");
+                $("#product-modal").find('form').trigger('reset');
                 $("#toast-content").html("Tạo mới thành công: # "+response.data['id']+' - '+ response.data['productName'])
                 toast.show()
                 //window.location.href = "/products"

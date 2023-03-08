@@ -1,34 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>WSSM</title>
+        <title>Trang chủ - WSSM</title>
+        <!-- Favicons -->
+        <link th:href="@{/img/favicon.ico}" rel="icon">
         <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css} " />
         <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/6.2.0/css/all.min.css} " />
-        <link th:rel="stylesheet" th:href="@{/webjars/metisMenu/3.0.7/metisMenu.min.css} " />
-        <link th:rel="stylesheet" th:href="@{/css/main.min.css} " />
+        <link th:rel="stylesheet" th:href="@{/css/index.css} " />
     </head>
-    <body style="background-image: linear-gradient(to right, #8360c3, #2ebf91);">
-        <!-- Navigation-->
-        <nav class="navbar navbar-light bg-light static-top" style="background-color: #e3f2fd;">
-            <div class="container">
-                <a class="navbar-brand" href="#"><h3>WSSM</h3></a>
-                <a class="btn btn-primary" th:href="@{/login}">Đăng nhập</a>
+    <body>
+        <!-- ======= Header ======= -->
+        <header id="header" class="fixed-top ">
+            <div class="container d-flex align-items-center">
+
+            <h1 class="logo me-auto"><a th:href="@{/}">WSSM</a></h1>
+            <!-- Uncomment below if you prefer to use an image logo -->
+            <!-- <a href="index.html" class="logo me-auto"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+            <nav id="navbar" class="navbar static-top">
+                <ul>
+                    <li><a class="getstarted scrollto" th:href="@{/login}">Đăng nhập</a></li>
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav><!-- .navbar -->
+
             </div>
-        </nav>
-        
-        <div style="display: flex; justify-content: center; margin: 200px;">
-            <span style="font-size: 5rem; font-weight: 600;">Hệ thống quản lý kho và bán hàng</span>
-        </div>
-        
+        </header><!-- End Header -->
+    
+        <section id="hero" class="d-flex align-items-center">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="200">
+                  <h1>Hệ thống quản lý kho và bán hàng</h1>
+                  <h2>Giải pháp dành cho những bài toán quản lý kho</h2>
+                  <!-- <div class="d-flex justify-content-center justify-content-lg-start">
+                    <a href="#about" class="btn-get-started scrollto">Get Started</a>
+                  </div> -->
+                </div>
+                <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-in" data-aos-delay="200">
+                  <img src="/img/index.png" class="img-fluid animated" alt="">
+                </div>
+              </div>
+            </div>
+        </section>
+
         <!-- Bootstrap core JS-->
-        <script th:src="@{/webjars/jquery/3.6.1/jquery.js}"></script> 
-        <script th:src="@{/webjars/popper.js/2.9.3/umd/popper.min.js}"></script>
         <script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.min.js}"></script>
-        <script th:src="@{/webjars/metisMenu/3.0.7/metisMenu.min.js}"></script>
-        <script th:src="@{/js/app.min.js}"></script>
+        <!-- <script th:src="@{/js/index.js}"></script> -->
     </body>
 </html>

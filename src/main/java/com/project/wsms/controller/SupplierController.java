@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.springframework.ui.Model;
-import com.project.wsms.model.ResponseObject;
+
 import com.project.wsms.model.Supplier;
+import com.project.wsms.payload.response.ResponseObject;
 import com.project.wsms.service.SupplierService;
 
 import jakarta.validation.Valid;

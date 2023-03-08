@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width initial-scale=1.0">
     <title>[[${pageTitle}]]</title>
     <!-- GLOBAL MAINLY STYLES-->
-    <link rel="shortcut icon" href="#" />
+    <link th:href="@{/img/favicon.ico}" rel="icon">
     <link th:rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" />
     <th:block th:include="fragments/assets :: assets"></th:block>
 </head>
@@ -124,6 +124,12 @@
         <div th:replace="fragments/footer :: footer"></div>
     </div>
 
+     <!-- BEGIN PAGA BACKDROPS-->
+     <div class="sidenav-backdrop backdrop"></div>
+     <div class="preloader-backdrop">
+         <div class="page-preloader">Loading</div>
+     </div>
+     <!-- END PAGA BACKDROPS-->
     <!-- SCRIPT -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script th:src="@{/js/exportproduct.js}"></script>

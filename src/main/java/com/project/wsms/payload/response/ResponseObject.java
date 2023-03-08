@@ -1,4 +1,4 @@
-package com.project.wsms.model;
+package com.project.wsms.payload.response;
 
 import lombok.Getter;
 import lombok.Setter;

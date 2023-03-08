@@ -5,77 +5,129 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
-    <title>WSSM | Login</title>
+    <title>Đăng nhập - WSSM</title>
+    <!-- Favicons -->
+    <link th:href="@{/img/favicon.ico}" rel="icon">
     <!-- GLOBAL MAINLY STYLES-->
     <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css} " />
     <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/6.2.0/css/all.min.css} " />
-    <link th:rel="stylesheet" th:href="@{/css/main.min.css} " />
-    <link th:rel="stylesheet" th:href="@{/css/auth-light.css} " />
+    <link th:rel="stylesheet" th:href="@{/css/index.css} " />
     <!-- PAGE LEVEL STYLES-->
 </head>
 
-<body class="bg-silver-300" style="background-image: linear-gradient(to right, #8360c3, #2ebf91);">
-    <div class="content">
+<body style="background-image: linear-gradient(to right, #361378, #0d457b);">
+    <!-- ======= Header ======= -->
+    <header id="header" class="fixed-top ">
+        <div class="container d-flex align-items-center">
+            <h1 class="logo me-auto"><a th:href="@{/}">WSSM</a></h1>
+            <nav id="navbar" class="navbar static-top">
+                <ul>
+                    <li><a class="getstarted scrollto" th:href="@{/login}">Đăng nhập</a></li>
+                </ul>
+            </nav><!-- .navbar -->
+        </div>
+    </header>
+    <section class="login-form">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center mb-5">
+                    <h2 class="heading-section">Đăng nhập</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="login-wrap p-0">
+                        <!-- <h3 class="mb-4 text-center">Đăng nhập</h3> -->
+                        <form action="#" class="signin-form" th:action="@{/login}" method="post" th:object="${loginRequest}">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Tên đăng nhập" name="username" autocomplete="off" th:field="*{username}" required>
+                            </div>
+                            <div class="form-group">
+                                <input id="password-field" type="password" class="form-control" placeholder="Mật khẩu" name="password" autocomplete="off" th:field="*{password}" required>
+                                <span toggle="#password-field" class="fa fa-fw field-icon toggle-password fa-eye"></span>
+                            </div>
+                            <div class="form-group d-md-flex">
+                                <div class="w-50">
+                                    <label class="checkbox-wrap checkbox-primary">Ghi nhớ
+                                        <input type="checkbox" checked="">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <!-- <div class="w-50 text-md-right">
+                                    <a href="#" style="color: #fff">Forgot Password</a>
+                                </div> -->
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="form-control btn btn-primary submit px-3">Đăng nhập</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- <div class="content">
         <div class="brand">
             <a class="link" th:href="@{/}">WSSM</a>
         </div>
-        <form id="login-form" th:action="@{/j_spring_security_check}" method="post">
+        <form id="login-form" th:action="@{/login}" method="post" th:object="${loginRequest}">
             <h2 class="login-title">Đăng nhập</h2>
+
             <div class="form-group">
-                <div class="input-group-icon right">
-                    <div class="input-icon" style="right: 8px;"><i class="fa fa-envelope"></i></div>
-                    <input class="form-control" type="text" name="username" placeholder="Tên tài khoản" autocomplete="off">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="fa-solid fa-user"></i></div>
+                    <input class="form-control" type="text" name="username" placeholder="Tên tài khoản" autocomplete="off"
+                    th:field="*{username}" required oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')">
                 </div>
             </div>
             <div class="form-group">
-                <div class="input-group-icon right">
-                    <div class="input-icon" style="right: 8px;"><i class="fa fa-lock font-16"></i></div>
-                    <input class="form-control" type="password" name="password" placeholder="Mật khẩu">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="fa-solid fa-lock"></i></div>
+                    <div style="display: flex;position: absolute;right: 10px;transform: translate(0px, 10px);z-index: 100;" onclick="showhidePassword('pw','icon')">
+                        <i id="icon" class="fa-solid fa-eye-slash"></i>
+                    </div>
+                    <input class="form-control" type="password" id ="pw" name="password" placeholder="Mật khẩu" autocomplete="off"
+                    th:field="*{password}" required oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')">
                 </div>
             </div>
+            
             <div class="form-group d-flex justify-content-between">
                 <label class="ui-checkbox ui-checkbox-info">
                     <input type="checkbox" name="remember-me">
                     <span class="input-span"></span>Ghi nhớ</label>
-                <!-- <a href="forgot_password.html">Forgot password?</a> -->
+                <a href="forgot_password.html">Forgot password?</a>
             </div>
             <div class="form-group">
                 <button class="btn btn-info btn-block" type="submit" style="width: 100%;">Đăng nhập</button>
             </div>
         </form>
-    </div>
+    </div> -->
     <!-- END PAGA BACKDROPS-->
     <!-- CORE PLUGINS -->
     <script th:src="@{/webjars/jquery/3.6.1/jquery.js}"></script> 
     <script th:src="@{/webjars/popper.js/2.9.3/umd/popper.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.min.js}"></script>
-    <script th:src="@{/webjars/metisMenu/3.0.7/metisMenu.min.js}"></script>
     <!-- PAGE LEVEL PLUGINS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
     <!-- CORE SCRIPTS-->
-    <script th:src="@{/js/app.min.js}"></script>
+    <script th:src="@{/js/login.js}"></script>
     <!-- PAGE LEVEL SCRIPTS-->
-    <script type="text/javascript">
-        $(function() {
-            $('#login-form').validate({
-                errorClass: "help-block",
-                rules: {
-                    username: {
-                        required: true,
-                    },
-                    password: {
-                        required: true
-                    }
-                },
-                highlight: function(e) {
-                    $(e).closest(".form-group").addClass("has-error")
-                },
-                unhighlight: function(e) {
-                    $(e).closest(".form-group").removeClass("has-error")
-                },
-            });
-        });
-    </script>
+    <!-- <script type="text/javascript">
+        function showhidePassword(element, icon) {
+            var x = document.getElementById(element);
+            var i = document.getElementById(icon)
+            if (x.type === "password") {
+                x.type = "text";
+                i.classList.toggle("fa-eye");
+                i.classList.toggle("fa-eye-slash");
+            } else {
+                x.type = "password";
+                i.classList.toggle("fa-eye");
+                i.classList.toggle("fa-eye-slash");
+            }
+        }
+    </script> -->
 </body>
 
 </html>

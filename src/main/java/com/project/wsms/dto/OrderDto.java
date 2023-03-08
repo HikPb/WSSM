@@ -26,17 +26,19 @@ public class OrderDto {
     private String receiverName;
     private String receiverPhone;
 
+    private Integer discount; // Giam gia tren don
     private Integer totalWeight;
-	private Integer shippingFee; //tien ship
-	private Integer totalDiscount; // tong tien giam gia
-	private Integer receivedMoney; // tien da thanh toan truoc, dat coc vv
-	private Integer owe;	// tien khach con nợ
-	private Integer total;
-	private Integer revenue; // doanh thu
-	private Integer sales;
+	private Integer shippingFee; //Tien ship
+	private Integer totalDiscount; // Tong giam gia = Giam tren don + Giam tren sp
+	private Integer receivedMoney; // Tien da thanh toan
+	private Integer owe;	// Tien con no COD
+	private Integer total;  // T
+	private Integer revenue; // Doanh thu = Doanh so - Tong giam gia - Chi phi khac
+	private Integer sales;   // Doanh so = Gia ban * so luong
 
-    private Integer emId;
+    private Integer empId;
     private Integer cusId;
+    private Integer wareId;
     private Set<OrderItemDto> items;
 
     public Order convertToEntity(){

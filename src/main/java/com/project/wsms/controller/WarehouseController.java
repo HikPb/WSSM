@@ -1,7 +1,6 @@
 package com.project.wsms.controller;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,9 +32,9 @@ import com.project.wsms.model.ExportItem;
 import com.project.wsms.model.Import;
 import com.project.wsms.model.ImportItem;
 import com.project.wsms.model.Item;
-import com.project.wsms.model.ResponseObject;
 import com.project.wsms.model.Supplier;
 import com.project.wsms.model.Warehouse;
+import com.project.wsms.payload.response.ResponseObject;
 import com.project.wsms.service.CheckQtyService;
 import com.project.wsms.service.CqItemService;
 import com.project.wsms.service.EmployeeService;
@@ -200,6 +199,8 @@ public class WarehouseController {
 	@GetMapping("/checkqty")
 	public String getAllCheckQuantity(Model model) {
 		model.addAttribute("pageTitle", "KIỂM HÀNG");
+		model.addAttribute("wareData", warehouseService.getAll());
+		model.addAttribute("itemData", itemService.getAll());
 		return "warehouse/check-quantity";
 	}
 
@@ -385,6 +386,8 @@ public class WarehouseController {
 	public String getAllImportProduct(Model model) {
 		// model.addAttribute("products", ipService.getAll());
 		model.addAttribute("pageTitle", "NHẬP HÀNG");
+		model.addAttribute("wareData", warehouseService.getAll());
+		model.addAttribute("itemData", itemService.getAll());
 		return "warehouse/import";
 	}
 	
@@ -587,6 +590,8 @@ public class WarehouseController {
 	@GetMapping("/export")
 	public String getAllExportProduct(Model model) {
 		model.addAttribute("pageTitle", "XUẤT HÀNG");
+		model.addAttribute("wareData", warehouseService.getAll());
+		model.addAttribute("itemData", itemService.getAll());
 		return "warehouse/export";
 	}
 

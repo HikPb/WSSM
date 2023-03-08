@@ -8,17 +8,12 @@ import com.project.wsms.model.Order;
 public interface OrderService{
 
 	public void save(Order order);
-	
-	public void update(Order order);
-	
-//	public void updateIsSell(String orderId, Boolean isSell);
+		
+	public boolean existsById(Integer id);
 
     public List<Order> getAll();
 
-    public void delete(Integer orderId);
-
-//	public Page<Order> getAll(Pageable paging);
-	
+    public void delete(Integer orderId);	
 	
 	public Optional<Order> getById(Integer orderId);
 }

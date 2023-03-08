@@ -1,34 +1,31 @@
-package com.project.wsms.config;
+package com.project.wsms.security;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.project.wsms.model.Employee;
+import com.project.wsms.model.Role;
 
 public class CustomUserDetails implements UserDetails {
 
 
     private String username;
     private String password;
-    private List<GrantedAuthority> authorities;
+    private Role role;
 
     public CustomUserDetails(Employee employee) {
         username = employee.getUsername();
         password = employee.getPassword();
-        authorities= Arrays.stream(employee.getRole().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        role = employee.getRole();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

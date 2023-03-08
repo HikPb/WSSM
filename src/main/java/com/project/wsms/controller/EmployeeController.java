@@ -22,7 +22,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.project.wsms.model.Employee;
-import com.project.wsms.model.ResponseObject;
+import com.project.wsms.payload.request.UserRequest;
+import com.project.wsms.payload.response.ResponseObject;
 import com.project.wsms.service.EmployeeService;
 
 import jakarta.validation.Valid;
@@ -37,13 +38,13 @@ public class EmployeeController {
 	@GetMapping("/users")
     public String view(Model model){
         model.addAttribute("pageTitle", "NHÂN VIÊN");
-		return "employee/employee";
+		return "users/employee";
     }
 
     @GetMapping("/profile")
 	public String overview(Model model) {
 		model.addAttribute("pageTitle", "HỒ SƠ");
-		return "profile";
+		return "users/profile";
 	}
 
     @GetMapping("/api/currentuser")
@@ -91,7 +92,7 @@ public class EmployeeController {
 	
 	@PostMapping("/api/employee")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> saveEmployee(@Valid @RequestBody Employee employee) {
+	public ResponseEntity<ResponseObject> saveEmployee(@Valid @RequestBody UserRequest employee) {
 		try {
 			Employee newEmployee = new Employee();
 			newEmployee.setUsername(employee.getUsername());

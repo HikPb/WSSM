@@ -4,9 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -31,9 +29,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "products")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+// @JsonIdentityInfo(
+//         generator = ObjectIdGenerators.PropertyGenerator.class,
+//         property = "id")
 public class Product extends AuditModel {
 	private static final long serialVersionUID = 1L;
 	
@@ -54,7 +52,8 @@ public class Product extends AuditModel {
 	@Column(name = "total_inventory", nullable = true)
 	private Integer tInventory;
 	
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	@OneToMany(mappedBy="product")
 	private Set<Item> items = new HashSet<>();
 	
