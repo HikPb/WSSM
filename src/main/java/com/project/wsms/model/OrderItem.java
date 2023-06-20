@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 
 @Entity
 @Getter
@@ -36,7 +37,7 @@ public class OrderItem {
 	@JsonIgnore
 	private Order order;
 	
-	@JsonManagedReference
+	@JsonManagedReference(value = "oitem-item")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "item_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

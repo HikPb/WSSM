@@ -1,5 +1,6 @@
 package com.project.wsms.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.project.wsms.dto.CheckQtyDto;
 import com.project.wsms.dto.CqItemDto;
+import com.project.wsms.dto.EmployeeDto;
 import com.project.wsms.dto.ExportDto;
 import com.project.wsms.dto.ExportItemDto;
 import com.project.wsms.dto.ImportDto;
@@ -46,6 +49,8 @@ import com.project.wsms.service.ItemService;
 import com.project.wsms.service.ProductService;
 import com.project.wsms.service.SupplierService;
 import com.project.wsms.service.WarehouseService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class WarehouseController {
@@ -83,12 +88,17 @@ public class WarehouseController {
 	@Autowired
 	private CqItemService cqItemService;
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/warehouse")
-    public String view(Model model){
+    public String view(Model model, HttpServletRequest request){
+		Principal user = request.getUserPrincipal();
+		Employee employee = employeeService.getByUsername(user.getName()).get();
+		model.addAttribute("user", employee);
         model.addAttribute("pageTitle", "QUẢN LÝ KHO HÀNG");
 		return "warehouse/warehouse";
     }
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/warehouse")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllWarehouse(){
@@ -104,6 +114,7 @@ public class WarehouseController {
 		}		
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/warehouse/search")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> searchWarehouse(@RequestParam("key") String key){
@@ -121,6 +132,7 @@ public class WarehouseController {
 		}		
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/warehouse/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
@@ -135,6 +147,7 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping(value = "/api/warehouse", consumes = {"application/xml","application/json"})
 	@ResponseBody
 	public ResponseEntity<ResponseObject> saveWarehouse(@RequestBody Warehouse warehouse) {
@@ -155,6 +168,7 @@ public class WarehouseController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PutMapping("/api/warehouse/{id}")
 	public ResponseEntity<ResponseObject> updateWarehouse(@PathVariable Integer id, 
 	                                        @RequestBody Warehouse warehouse) {
@@ -181,6 +195,7 @@ public class WarehouseController {
 				);
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@DeleteMapping("/api/warehouse/{id}")
 	public ResponseEntity<ResponseObject> deleteWarehouse(@PathVariable(value = "id") Integer id) {
 	    if(!warehouseService.existsById(id)) {
@@ -196,14 +211,21 @@ public class WarehouseController {
 	}
 
 	// VIEW KIỂM KHO
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/checkqty")
-	public String getAllCheckQuantity(Model model) {
+	public String getAllCheckQuantity(Model model, HttpServletRequest request) {
+		Principal user = request.getUserPrincipal();
+		Employee emp = employeeService.getByUsername(user.getName()).get();
+		EmployeeDto employee = new EmployeeDto();
+		employee.convertToDto(emp);
+		model.addAttribute("user", employee);
 		model.addAttribute("pageTitle", "KIỂM HÀNG");
 		model.addAttribute("wareData", warehouseService.getAll());
 		model.addAttribute("itemData", itemService.getAll());
 		return "warehouse/check-quantity";
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/checkqty")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllCheckQtyForm(){
@@ -219,6 +241,7 @@ public class WarehouseController {
 		}	
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/checkqty/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOneCheckQty(@PathVariable Integer id) {
@@ -233,6 +256,7 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/checkqty/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeCheckQtyStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
@@ -272,22 +296,23 @@ public class WarehouseController {
 		}
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/checkqty")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> createCheckQtyForm(@RequestBody CheckQtyDto objectDto) {
 		try {
 			CheckQty newObject = objectDto.convertToEntity();
 			
+			//Employee employee = employeeService.getByUsername(objectDto.getEmpId()).get();
 			Employee employee = employeeService.getById(objectDto.getEmpId()).get();			
 			employee.addCheckQty(newObject);
 
 			Warehouse wh = warehouseService.getById(objectDto.getWareId()).get();			
-			wh.addCheckQtys(newObject);
+			wh.addCheckQty(newObject);
 
-			newObject.setEmployee(employee);
-			newObject.setWarehouse(wh);
+			//newObject.setEmployee(employee);
+			//newObject.setWarehouse(wh);
 			checkqtyService.save(newObject);
-
 			if(!objectDto.getItems().isEmpty()){
 				objectDto.getItems().forEach(it ->{
 					CqItem newItem = it.convertToEntity();
@@ -297,14 +322,15 @@ public class WarehouseController {
 					newObject.addItem(newItem);
 					//item.setQty(newItem.getCr_qty());
 
-					newItem.setItem(item);
-					newItem.setCqtyProduct(newObject);
+					//newItem.setItem(item);
+					//newItem.setCqtyProduct(newObject);
 					
 					cqItemService.save(newItem);
 					itemService.save(item);
 				});
 				checkqtyService.save(newObject);
 			}
+			
 			employeeService.save(employee);
 			warehouseService.save(wh);
 
@@ -321,51 +347,60 @@ public class WarehouseController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PutMapping("/api/checkqty/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> editCheckQtyForm(@PathVariable("id") Integer id, @RequestBody CheckQtyDto objectDto) {
 		try {
 			if(checkqtyService.existsById(id)){
 				CheckQty uObject = checkqtyService.getById(id).get();
-				uObject.setNote(objectDto.getNote());
-        		//uObject.setStatus(objectDto.getStatus());
-        		uObject.setCheckqtyAt(objectDto.getCheckqtyAt());
+				if(uObject.getStatus()==1){
+					uObject.setNote(objectDto.getNote());
+					//uObject.setStatus(objectDto.getStatus());
+					uObject.setCheckqtyAt(objectDto.getCheckqtyAt());
 
-				List<Integer> list = objectDto.getItems().stream().map(CqItemDto::getId).collect(Collectors.toList());
-				List<Integer> outList = uObject.getItems().stream().filter(i -> !list.contains(i.getId())).map(CqItem::getId).collect(Collectors.toList());
-				if(!outList.isEmpty()){
-					outList.forEach(o->{
-						uObject.removeItem(o);
-						cqItemService.delete(o);
-					});
-				}
-				if(!objectDto.getItems().isEmpty()){
-					objectDto.getItems().forEach(it ->{
-						if(it.getId() == null){
-							CqItem newItem = it.convertToEntity();
-	
-							Item item = itemService.getById(it.getItemId()).get();
-							item.addCqItem(newItem);
+					List<Integer> list = objectDto.getItems().stream().map(CqItemDto::getId).collect(Collectors.toList());
+					List<Integer> outList = uObject.getItems().stream().filter(i -> !list.contains(i.getId())).map(CqItem::getId).collect(Collectors.toList());
+					if(!outList.isEmpty()){
+						outList.forEach(o->{
+							uObject.removeItem(o);
+							cqItemService.delete(o);
+						});
+					}
+					if(!objectDto.getItems().isEmpty()){
+						objectDto.getItems().forEach(it ->{
+							if(it.getId() == null){
+								CqItem newItem = it.convertToEntity();
 		
-							newItem.setItem(item);
-							newItem.setCqtyProduct(uObject);
+								Item item = itemService.getById(it.getItemId()).get();
+								item.addCqItem(newItem);
+			
+								//newItem.setItem(item);
+								//newItem.setCqtyProduct(uObject);
+								
+								cqItemService.save(newItem);
+								itemService.save(item);
+							}else{
+								CqItem cqItem = cqItemService.getById(it.getId()).get();
+								cqItem.setSku(it.getSku());
+								cqItem.setBf_qty(it.getBfQty());
+								cqItem.setCr_qty(it.getCrQty());
+								cqItemService.save(cqItem);
+							}
 							
-							cqItemService.save(newItem);
-							itemService.save(item);
-						}else{
-							CqItem cqItem = cqItemService.getById(it.getId()).get();
-							cqItem.setSku(it.getSku());
-							cqItem.setBf_qty(it.getBfQty());
-							cqItem.setCr_qty(it.getCrQty());
-						}
-						
-					});
+						});
+					}
+					checkqtyService.save(uObject);
+					return new ResponseEntity<>(
+						new ResponseObject("ok", "Edit cq form successfully", uObject), 
+						HttpStatus.OK
+						);
+				}else{
+					return new ResponseEntity<>(
+						new ResponseObject("ok", "Cqform is completed or cancelled.", ""), 
+						HttpStatus.OK
+						);
 				}
-				checkqtyService.save(uObject);
-				return new ResponseEntity<>(
-					new ResponseObject("ok", "Edit cq form successfully", uObject), 
-					HttpStatus.OK
-					);
 			}else{
 				return new ResponseEntity<>(
 					new ResponseObject("ok", "Cqform does not exist", ""), 
@@ -382,15 +417,24 @@ public class WarehouseController {
 	}
 
 	// VIEW NHAP KHO
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/import")
-	public String getAllImportProduct(Model model) {
+	public String getAllImportProduct(Model model, HttpServletRequest request) {
+		Principal user = request.getUserPrincipal();
+		Employee emp = employeeService.getByUsername(user.getName()).get();
+		EmployeeDto employee = new EmployeeDto();
+		employee.convertToDto(emp);
+		model.addAttribute("user", employee);
 		// model.addAttribute("products", ipService.getAll());
 		model.addAttribute("pageTitle", "NHẬP HÀNG");
 		model.addAttribute("wareData", warehouseService.getAll());
 		model.addAttribute("itemData", itemService.getAll());
+		model.addAttribute("supData", supplierService.getAll());
+
 		return "warehouse/import";
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/import")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllImportForm(){
@@ -406,6 +450,7 @@ public class WarehouseController {
 		}	
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/import/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOneImport(@PathVariable Integer id) {
@@ -420,6 +465,7 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/import/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeImportStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
@@ -468,6 +514,7 @@ public class WarehouseController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/import")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> createImportForm(@RequestBody ImportDto objectDto) {
@@ -478,32 +525,33 @@ public class WarehouseController {
 			employee.addImport(newObject);
 
 			Warehouse wh = warehouseService.getById(objectDto.getWareId()).get();			
-			wh.addImports(newObject);
+			wh.addImport(newObject);
 
-			Supplier sup = supplierService.getById(objectDto.getSupId()).get();			
-			sup.addImportItem(newObject);
+			if(objectDto.getSupId()!=null){
+				Optional<Supplier> sup = supplierService.getById(objectDto.getSupId());	
+				if(!sup.isEmpty()){
+					sup.get().addImportItem(newObject);
+					supplierService.save(sup.get());
+				}		
+			}
 			
 
-			newObject.setEmployee(employee);
-			newObject.setWarehouse(wh);
-			newObject.setSupplier(sup);
 			importService.save(newObject);
 
 			if(!objectDto.getItems().isEmpty()){
 				objectDto.getItems().forEach(it ->{
 					ImportItem newItem = it.convertToEntity();
-
 					Item item = itemService.getById(it.getItemId()).get();
+					
 					item.addImportItem(newItem);
 					newObject.addItem(newItem);
 					//item.setQty(item.getQty() + newItem.getQty());
 					//item.setPurcharsePrice(newItem.getPurcharsePrice());
-					if(!item.getProduct().getSuppliers().contains(sup)){
-						item.getProduct().addSupplier(sup);
+					if(newObject.getSupplier()!=null && !item.getProduct().getSuppliers().contains(newObject.getSupplier())){
+						item.getProduct().addSupplier(newObject.getSupplier());
 						productService.save(item.getProduct());
 					}
-					newItem.setItem(item);
-					newItem.setImportProduct(newObject);
+			
 					iItemService.save(newItem);
 					itemService.save(item);
 				});
@@ -511,7 +559,6 @@ public class WarehouseController {
 			}
 			employeeService.save(employee);
 			warehouseService.save(wh);
-			supplierService.save(sup);
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Create new import form successfully", newObject), 
 					HttpStatus.OK
@@ -525,6 +572,7 @@ public class WarehouseController {
 		}
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PutMapping("/api/import/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> editImportForm(@PathVariable("id") Integer id, @RequestBody ImportDto objectDto) {
@@ -534,6 +582,21 @@ public class WarehouseController {
 				uObject.setNote(objectDto.getNote());
         		//uObject.setStatus(objectDto.getStatus());
         		uObject.setExpected_at(objectDto.getExpectedAt());
+				uObject.setTotalQty(objectDto.getTotalQty());
+				uObject.setTotalMoney(objectDto.getTotalMoney());
+				uObject.setShipFee(objectDto.getShipFee());
+
+				if(uObject.getSupplier()==null){
+					Supplier newSup = supplierService.getById(objectDto.getSupId()).get();
+					newSup.addImportItem(uObject);
+					supplierService.save(newSup);
+				} else if(uObject.getSupplier().getId()!=objectDto.getSupId()){
+					uObject.getSupplier().removeItem(uObject.getId());
+
+					Supplier newSup = supplierService.getById(objectDto.getSupId()).get();
+					newSup.addImportItem(uObject);
+					supplierService.save(newSup);
+				}
 
 				List<Integer> list = objectDto.getItems().stream().map(ImportItemDto::getId).collect(Collectors.toList());
 				List<Integer> outList = uObject.getItems().stream().filter(i -> !list.contains(i.getId())).map(ImportItem::getId).collect(Collectors.toList());
@@ -547,12 +610,10 @@ public class WarehouseController {
 					objectDto.getItems().forEach(it ->{
 						if(it.getId() == null){
 							ImportItem newItem = it.convertToEntity();
-	
 							Item item = itemService.getById(it.getItemId()).get();
+							
 							item.addImportItem(newItem);
-		
-							newItem.setItem(item);
-							newItem.setImportProduct(uObject);
+							uObject.addItem(newItem);
 							
 							iItemService.save(newItem);
 							itemService.save(item);
@@ -587,14 +648,22 @@ public class WarehouseController {
 
 	// VIEW XUẤT KHO
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/export")
-	public String getAllExportProduct(Model model) {
+	public String getAllExportProduct(Model model, HttpServletRequest request) {
+		Principal user = request.getUserPrincipal();
+		Employee emp = employeeService.getByUsername(user.getName()).get();
+		EmployeeDto employee = new EmployeeDto();
+		employee.convertToDto(emp);
+		model.addAttribute("user", employee);
 		model.addAttribute("pageTitle", "XUẤT HÀNG");
 		model.addAttribute("wareData", warehouseService.getAll());
 		model.addAttribute("itemData", itemService.getAll());
+		model.addAttribute("supData", supplierService.getAll());
 		return "warehouse/export";
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/export")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllExportForm(){
@@ -610,6 +679,7 @@ public class WarehouseController {
 		}	
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/export/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOneExport(@PathVariable Integer id) {
@@ -624,6 +694,7 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/export/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeExportStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
@@ -672,6 +743,7 @@ public class WarehouseController {
 		}
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/export")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> createExportForm(@RequestBody ExportDto objectDto) {
@@ -682,12 +754,11 @@ public class WarehouseController {
 			employee.addExport(newObject);
 
 			Warehouse wh = warehouseService.getById(objectDto.getWareId()).get();			
-			wh.addExports(newObject);
+			wh.addExport(newObject);
 
-			newObject.setEmployee(employee);
-			newObject.setWarehouse(wh);
-			exportService.save(newObject);
-
+			// newObject.setEmployee(employee);
+			// newObject.setWarehouse(wh);
+			exportService.save(newObject); //Tranh loi not-null property a transient value
 
 			if(!objectDto.getItems().isEmpty()){
 				objectDto.getItems().forEach(it ->{
@@ -699,13 +770,14 @@ public class WarehouseController {
 					//item.setQty(item.getQty() - newItem.getQty());
 					//item.setRetailPrice(newItem.getRetailPrice());
 
-					newItem.setItem(item);
-					newItem.setExportProduct(newObject);
+					// newItem.setItem(item);
+					// newItem.setExportProduct(newObject);
 					eItemService.save(newItem);
 					itemService.save(item);
 				});
 				exportService.save(newObject);
 			}
+			
 			employeeService.save(employee);
 			warehouseService.save(wh);
 
@@ -722,6 +794,7 @@ public class WarehouseController {
 		}
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PutMapping("/api/export/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> editExportForm(@PathVariable("id") Integer id, @RequestBody ExportDto objectDto) {
@@ -730,6 +803,8 @@ public class WarehouseController {
 				Export uObject = exportService.getById(id).get();
 				uObject.setNote(objectDto.getNote());
         		//uObject.setStatus(objectDto.getStatus());
+				uObject.setTotalQty(objectDto.getTotalQty());
+				uObject.setTotalMoney(objectDto.getTotalMoney());
         		uObject.setExpected_at(objectDto.getExpectedAt());
 
 				List<Integer> list = objectDto.getItems().stream().map(ExportItemDto::getId).collect(Collectors.toList());
@@ -747,9 +822,9 @@ public class WarehouseController {
 	
 							Item item = itemService.getById(it.getItemId()).get();
 							item.addExportItem(newItem);
-		
-							newItem.setItem(item);
-							newItem.setExportProduct(uObject);
+							uObject.addItem(newItem);
+							// newItem.setItem(item);
+							// newItem.setExportProduct(uObject);
 							
 							eItemService.save(newItem);
 							itemService.save(item);
@@ -758,6 +833,7 @@ public class WarehouseController {
 							epItem.setSku(it.getSku());
 							epItem.setRetailPrice(it.getSprice());
 							epItem.setQty(it.getQty());
+							eItemService.save(epItem);
 						}
 						
 					});

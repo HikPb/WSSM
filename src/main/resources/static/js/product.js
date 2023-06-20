@@ -491,9 +491,9 @@ $(document).ready(function () {
 
 
     $("#btnClear").on("click", function (e) {
-      e.preventDefault();
-      table.ajax.reload(null, false)
-      //window.location="/products"
+        e.preventDefault();
+        table.ajax.reload(null, false)
+        //window.location="/products"
     });
     
 });

@@ -81,6 +81,13 @@
                     <span class="nav-label">Khách hàng</span>
                 </a>
             </li>
+
+            <li th:if="${#strings.equals(user.role, 'ROLE_ADMIN')}">
+                <a th:href="@{/users}"><i class="sidebar-item-icon fa-solid fa-people-roof"></i>
+                    <span class="nav-label">Nhân viên</span>
+                </a>
+            </li>
+
             <li class="heading">KHÁC</li>
 
             <li>

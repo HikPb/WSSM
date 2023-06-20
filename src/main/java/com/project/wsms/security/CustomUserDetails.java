@@ -38,6 +38,10 @@ public class CustomUserDetails implements UserDetails {
         return username;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

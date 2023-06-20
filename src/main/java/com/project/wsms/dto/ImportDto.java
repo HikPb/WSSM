@@ -19,6 +19,9 @@ public class ImportDto {
     private Integer supId;
     private Integer wareId;
     private Integer empId;
+    private Integer totalQty;
+    private Integer totalMoney;
+    private Integer shipFee;
     private Date expectedAt;
     private Set<ImportItemDto> items;
 
@@ -27,6 +30,9 @@ public class ImportDto {
         newItem.setNote(this.note);
         newItem.setStatus(this.status);
         newItem.setExpected_at(this.expectedAt);
+        newItem.setTotalQty(this.totalQty);
+        newItem.setTotalMoney(this.totalMoney);
+        newItem.setShipFee(this.shipFee);
         return newItem;
     }
 
@@ -35,5 +41,8 @@ public class ImportDto {
         this.status = item.getStatus();
         this.note = item.getNote();
         this.expectedAt = item.getExpected_at();
+        this.totalQty = item.getTotalQty();
+        this.totalMoney = item.getTotalMoney();
+        this.shipFee = item.getShipFee();
     }
 }

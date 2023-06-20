@@ -39,7 +39,7 @@ public class ImportItem{
 	@JsonIgnore
 	private Import importProduct;
 	
-	@JsonManagedReference
+	@JsonManagedReference(value="iitem-item")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "item_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

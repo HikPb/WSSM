@@ -47,17 +47,17 @@ public class CheckQty extends AuditModel{
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ware_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	//@JsonIgnore
-	@JsonManagedReference
-	@JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
+	@JsonManagedReference(value = "warehouse-checkqty")
+	@JsonIgnoreProperties(value = {
+		"createdAt", "updatedAt", "phone", "address", "hibernateLazyInitializer"})
 	private Warehouse warehouse;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "emp_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	//@JsonIgnore
-	@JsonManagedReference
-	@JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
+	@JsonManagedReference(value = "emp-checkqty")
+	@JsonIgnoreProperties(value = {
+		"role", "fullname", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 	
 	@Column(name = "note", nullable = true, columnDefinition="TEXT")

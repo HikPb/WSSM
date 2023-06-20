@@ -1,0 +1,380 @@
+<div th:fragment="order-modal">
+    
+    <div class="modal fade" role="dialog" id="edit-modal">
+        <div class="modal-dialog modal-fullscreen" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        Thông tin chi tiết đơn hàng
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form action="#" enctype="multipart/form-data" method="post" id="e-form">
+                    
+                    <div class="modal-body" style="overflow-y: auto; height: 800px;">
+                        <div class="formbox-container">
+                            <div class="boxes-model">
+                                <div class="box-row-order">
+                                    <div class="col-100">
+                                        <div class="box-row-order">
+                                            <div class="col-65">
+                                                <div class="box-row-order">
+                                                    <div class="col-100">
+                                                        <section>
+                                                            <div class="box-order-title flex-space-between">
+                                                                <div class="box-meta">
+                                                                    <div class="box-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                                                                    <div>Sản phẩm</div>
+                                                                </div>
+                                                                <div class="form-group ware-c-group">
+                                                                    <select class="form-control" id="c-warehouse"></select>
+                                                                </div>
+                                                            </div>
+                    
+                                                            <div class="box-order-product">
+                                                                <div class="ant-select-selector">
+                                                                    <span class="ant-input-wrapper ant-input-group">
+                                                                        <div class="form-group">
+                                                                            <div class="input-group" style="background-color: #fff;border: 1px solid #cecece;">
+                                                                                <input class="form-control" id="c-searchbox" type="text" placeholder="Nhập tên sản phẩm hoặc barcode" style="border: none;">
+                                                                                <div class="input-group-addon" style="display: flex;align-items: center;margin-left: 3px;">
+                                                                                    <input type="checkbox" id="c-checkbox" style="margin-right: 2px;">
+                                                                                    <label class="form-check-label" for="c-checkbox">Còn hàng</label>
+                                                                                </div>
+                                                                                <!-- <div class="search-items" id="listresult"></div> -->
+                                                                            </div>
+                                                                        </div>
+                                                                    </span>
+                                                                </div>
+                                                                
+                                                                    
+                                                                <div class=" order-item-container" id="order-items" style="border: 1px solid rgb(217, 217, 217);">
+                                                                    <div id="virtualize-list">
+                                                                        <div class="order-empty-text">Giỏ hàng trống</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div style="width: 100%; margin-top: 12px;"></div>
+                                                            </div>
+                                                        
+                                                        </section>
+                                                        <div class="resize">
+                                                            <div style="flex: 1 1 0%;">
+                                                                <section>
+                                                                    <div class="box-order-title flex-space-between">
+                                                                        <div>
+                                                                            <div class="box-meta">
+                                                                                <div class="box-icon"><i class="fa-solid fa-wallet"></i></div>
+                                                                                <div>Thanh toán</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="line"></div>
+                                                                    <div class="box-payment" id="box-payment-info">
+                                                                        <div>
+                                                                            <div class="form-group">
+                                                                                <div class="input-group-icon">
+                                                                                    <div class="input-icon">
+                                                                                        <i class="fa-solid fa-truck"></i>
+                                                                                        &nbsp;<span>Phí vận chuyển</span>
+                                                                                    </div>
+                                                                                    <div class="box-input-group">
+                                                                                        <input class="form-control number-separator" id="c-shippingFee" role="spinbutton" max="99999999999" min="0" step="1000" value="0" type="text" onchange="renderSubtotal()">
+                                                                                        <span class="input-group-addon">₫</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <div class="input-group-icon">
+                                                                                    <div class="input-icon">
+                                                                                        <i class="fa-solid fa-ticket"></i>
+                                                                                        &nbsp;<span>Giảm giá trên đơn</span>
+                                                                                    </div>
+                                                                                    <div class="box-input-group">
+                                                                                        <input class="form-control number-separator" id="c-discount" role="spinbutton" max="99999999999" min="0" step="1000" value="0" type="text" onchange="renderSubtotal()">
+                                                                                        <span class="input-group-addon">₫</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <div class="input-group-icon">
+                                                                                    <div class="input-icon">
+                                                                                        <i class="fa-solid fa-wallet"></i>
+                                                                                        &nbsp;<span>Tiền chuyển khoản</span>
+                                                                                    </div>
+                                                                                    <div class="box-input-group">
+                                                                                        <input class="form-control number-separator" id="c-receivedMoney" role="spinbutton" max="99999999999" min="0" step="1000" value="0" type="text" onchange="renderSubtotal()">
+                                                                                        <span class="input-group-addon">₫</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                
+                                                                            <div data-show="true" class="ant-alert ant-alert-info ant-alert-no-icon" role="alert">
+                                                                                <div class="ant-alert-content">
+                                                                                    <div class="ant-alert-message">
+                                                                                        <div class="box-monney-wrapper">
+                                                                                            <div class="box-money-section s1">
+                                                                                                <div class="box-monney">
+                                                                                                    <span class="title">Tổng số tiền</span>
+                                                                                                    <span class="fw-500"><span id="total"></span> ₫</span>
+                                                                                                </div>
+                                                                                                <div class="box-monney">
+                                                                                                    <span class="title" style="display: flex; align-items: center;">Tổng giảm giá&nbsp;</span>
+                                                                                                    <span class="fw-500 green"><span id="totalDiscount"></span> ₫</span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="box-money-section s3">
+                                                                                                <div class="box-monney">
+                                                                                                    <span class="title">Cần thanh toán</span>
+                                                                                                    <span class="fw-500 blue"><span id="payment"></span> ₫</span>
+                                                                                                </div>
+                                                                                                <div class="box-monney">
+                                                                                                    <span class="title">Đã thanh toán</span>
+                                                                                                    <span class="fw-500"><span id="received"></span> ₫</span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="box-monney" style="padding-bottom: 0px;">
+                                                                                                <span class="title">Còn thiếu</span>
+                                                                                                <span class="fw-500 red"><span id="owe"></span> ₫</span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="ant-alert-description"></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </section>
+                                                            </div>
+                                                            <div class="note">
+                                                                <section>
+                                                                    <div class="box-order-title flex-space-between">
+                                                                        <nav>
+                                                                            <div class="nav nav-tabs tabs-line" role="tablist">
+                                                                                <div class="nav-link active" data-bs-toggle="tab" data-bs-target="#note-1" role="tab" aria-controls="note-1" aria-expanded="true" aria-selected="true">Nội bộ</div>
+                                                                                <div class="nav-link" data-bs-toggle="tab" data-bs-target="#note-2" role="tab" aria-controls="note-2" aria-expanded="false" aria-selected="false">In</div>
+                                                                            </div>
+                                                                        </nav>
+                                                                    </div>
+                                                                    
+                                                                    <div
+                                                                        class="tab-content" id="nav-tabContent">
+                                                                        <!-- CONTENT 1 -->
+                                                                        <div class="tab-pane fade show active" id="note-1" aria-expanded="true">
+                                                                            <div style="width: 100%; position: relative; padding: 16px;">
+                                                                                <div class="ant-mentions" style="min-height: 122px;">
+                                                                                    <textarea placeholder="Viết ghi chú" id="c-internalNote" rows="1" class="rc-textarea" style="height: 134px; min-height: 134px; max-height: 904px; overflow-y: hidden; resize: none;"></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                    
+                                                                        <div class="tab-pane fade" id="note-2" aria-expanded="false">
+                                                                            <div style="width: 100%; position: relative; padding: 16px;">
+                                                                                <div class="ant-mentions" style="min-height: 122px;">
+                                                                                    <textarea placeholder="Viết ghi chú" id="c-printNote" rows="1" class="rc-textarea" style="height: 134px; min-height: 134px; max-height: 904px; overflow-y: hidden; resize: none;"></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                    
+                                                                    </div>
+                                                                    <div class="line"></div>
+                    
+                                                                </section>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-35">
+                                                <section class="box-status">
+                                                    <div id="formbox-status">
+                                                        <div class="box-order-title flex-space-between">
+                                                            <div class="box-meta">
+                                                                <div class="box-icon">
+                                                                    <i class="fa-solid fa-circle-info"></i>
+                                                                </div>
+                                                                <div>Thông tin</div>
+                                                            </div>
+                                                            <div class="flex-space-between"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div style="padding: 4px 16px 16px;">
+                                                        <div id="processor-body">
+                                                            <div class="processor" id="processor-insert-at">
+                                                                <div>Tạo lúc:</div>
+                                                                <div>
+                                                                    <span style="color: rgb(9, 109, 217); font-weight: 500;" th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}">
+                    
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="processor" id="processor-assign-seller">
+                                                                <div id="title-assign-seller">NV xử lý:&nbsp;</div>
+                                                                <div style="display: flex;">
+                                                                    <div class="processor-seller">
+                                                                        <div class="div-user" style="max-width: 345px;">
+                                                                            <div class="user-name">
+                                                                                <span th:text="${user.username}"></span>
+                                                                            </div>
+                    
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                    
+                                                </section>
+                                                <section>
+                                                    <div class="box-order-title flex-space-between">
+                                                        <div>
+                                                            <div class="box-meta">
+                                                                <div class="box-icon">
+                                                                    <i class="fa-regular fa-user"></i>
+                                                                </div>
+                                                                <div>Khách hàng</div>
+                                                            </div>
+                                                        </div>
+                                                        <div style="display: flex;"></div>
+                                                    </div>
+                                                    <div class="box-customer">
+                                                        <div class="row mt-2">
+                                                            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                                                <div class="form-group px-1">
+                                                                    <input class="form-control" type="text" placeholder="Tên khách hàng" id="c-cusName">
+                                                                    <!-- <select class="form-control" id="c-cusName">
+                                                                        <option></option>
+                                                                    </select> -->
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                                                <div class="form-group px-1">
+                                                                    <input class="form-control" type="tel" placeholder="Số điện thoại" id="c-cusPhone">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                                                <div class="form-group px-1">
+                                                                    <div class="input-group date">
+                                                                        <input class="form-control" type="date" placeholder="Ngày sinh" title="" size="12" id="c-cusDob">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="customer-info" id="c-cusInfo">
+                                                            <div style="position: relative; padding: 6px; text-align: center; background-color: rgba(240, 245, 255, .4); border: 1px solid #adc6ff;">
+                                                                <i class="fa-solid fa-diamond-exclamation"></i>
+                                                                <span>Chưa có thông tin</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </section>
+                                                <section>
+                                                    <div class="box-order-title flex-space-between">
+                                                        <div class="box-meta">
+                                                            <div class="box-icon">
+                                                                <i class="fa-regular fa-address-book"></i>
+                                                            </div>
+                                                            <div>Nhận hàng</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="box-receiver-info">
+                                                        <div class="flex-space-between">
+                                                            <span>Dự kiến nhận hàng&nbsp;&nbsp;</span>
+                                                            <div class="form-group">
+                                                                <div class="input-group-icon">
+                                                                    <div class="input-icon" style="top: 2px;">
+                                                                        <!-- <i class="fa-regular fa-calendar-days"></i> -->
+                                                                    </div>
+                                                                    <input id="c-date1" class="form-control" type="date" placeholder="Chọn ngày" size="12">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-3">
+                                                            <div class="row mt-2">
+                                                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-group">
+                                                                    <input class="form-control" placeholder="Tên người nhận" type="text" id="c-receiverName">
+                                                                </div>
+                                                                <div id="last" class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-group">
+                                                                    <input class="form-control" placeholder="Số điện thoại" type="text" id="c-receiverPhone">
+                                                                </div>
+                                                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-group">
+                                                                    <div class="ant-select-selector">
+                                                                        <input class="form-control" placeholder="Địa chỉ" type="text" id="c-receiverAddress">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </section>
+                                                <section class="box-shipping">
+                                                    <div class="box-order-title flex-space-between">
+                                                        <div class="box-meta">
+                                                            <div class="box-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                                                            <div>Vận chuyển</div>
+                                                        </div>
+                                                        <div class="ant-select-selector">
+                                                            <select class="form-control deli-select">
+                                                                <option></option>
+                                                                <option value="CA">ViettelPost</option>
+                                                                <option value="NV">GHTK</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                        
+                                                    <div class="col-sm-12 mt-2">
+                                                        <div class="row p-3">
+                                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-group">
+                                                                <input class="form-control" type="text" placeholder="Mã vận chuyển">
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-group">
+                                                                <div class="input-group-icon">
+                                                                    <div class="input-icon">
+                                                                        <span>Phí VC</span>
+                                                                    </div>
+                                                                    <div class="box-input-group">
+                                                                        <input class="form-control" role="spinbutton" max="9007199254740991" min="0" step="1000" value="0" type="number" style="text-align: right;">
+                                                                        <span class="input-group-addon">₫</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </section>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="d-flex justify-content-between" style="width: 100%; margin: 0 10px;">
+                            <div style="font-size: 16px;">
+                                <div>Tổng số tiền:
+                                    <span style="font-weight: 500;"><span id="subTotal"></span> ₫</span>
+                                </div>
+                                <div>COD:
+                                    <span style="color: rgb(235, 87, 87); font-weight: 500;"><span id="cod"></span> ₫</span>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <button style="background: rgb(0, 162, 174); width: 100px; margin-right: 8px; flex: 1 1 0%; cursor: pointer;">
+                                    Mới
+                                </button>
+                                <span class="order-action-button">
+                                    <button type="submit" class="btn btn-primary" style="font-size: 14px; height: 100%; background: rgb(14, 86, 255); border-color: rgb(13, 26, 217);" id="e-submit-btn">
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                        <span>Lưu</span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -74,8 +74,9 @@
           </li>
           <li class="dropdown dropdown-user">
             <a class="nav-link dropdown-toggle link" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="/img/admin-avatar.png" />
-                <span></span>Admin<i class="fa fa-angle-down m-l-5"></i></a>
+                <img src="/img/user-avatar.png" />
+                <span th:text="${user.username}"></span><i class="fa fa-angle-down m-l-5"></i>
+            </a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" th:href="@{/profile}"><i class="fa fa-user"></i>Hồ sơ</a>
                 <li class="dropdown-divider"></li>

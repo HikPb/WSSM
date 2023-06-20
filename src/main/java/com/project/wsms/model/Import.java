@@ -10,6 +10,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
@@ -44,19 +46,25 @@ public class Import extends AuditModel{
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ware_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
+	@JsonManagedReference(value = "warehouse-import")
+	@JsonIgnoreProperties(value = {
+		"createdAt", "updatedAt", "phone", "address", "hibernateLazyInitializer"}) 
 	private Warehouse warehouse;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "sup_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
+	@JsonManagedReference(value = "supplier-import")
+	@JsonIgnoreProperties(value = {
+		"createdAt", "updatedAt", "supPhone", "address", "hibernateLazyInitializer"}) 
 	private Supplier supplier;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "emp_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
+	@JsonManagedReference(value = "emp-import")
+	@JsonIgnoreProperties(value = {
+		"role", "fullname", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 
 	@OneToMany(mappedBy = "importProduct")
@@ -66,6 +74,12 @@ public class Import extends AuditModel{
 	private String note;
 	@Column(name = "status", nullable = false)
 	private Integer status;
+	@Column(name = "total_qty", nullable = true)
+	private Integer totalQty;
+	@Column(name = "total_money", nullable = true)
+	private Integer totalMoney;
+	@Column(name = "ship_fee", nullable = true)
+	private Integer shipFee;
 	
 	@Column(name = "expected_at", nullable = true)
 	private Date expected_at;

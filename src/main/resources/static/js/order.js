@@ -1,8 +1,8 @@
-const toast = new bootstrap.Toast($("#toast"));
-//const wareData = getAjaxResponse("/api/warehouse");
-//const itemData = getAjaxResponse("/api/item");
-//const customerData = getAjaxResponse("/api/customer");
+"use strict";
 
+const toast = new bootstrap.Toast($("#toast"));
+
+const warehouseEl = document.getElementById("c-warehouse");
 const cartItemsEl = document.getElementById("order-items");
 const searchbox = document.getElementById("c-searchbox");
 
@@ -19,7 +19,6 @@ const oweTEl = document.getElementById("owe");
 const subTotalEl = document.getElementById("subTotal");
 const codEl = document.getElementById("cod");
 
-//let cart = JSON.parse(localStorage.getItem("CART")) || [];
 var cart = [];
 var customer;
 var totalPrice = 0;
@@ -33,7 +32,136 @@ var receivedMoney = 0;
 var revenue = 0;
 updateCart();
 
-// ADD TO CART
+const table = $("#orderTable").DataTable( {
+    processing: true,
+    responsive: true,
+    fixedHeader: true,
+
+    ajax: {
+        url: "/api/order",
+        dataSrc: 'data',
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json",
+    },
+    columns: [
+        {
+            defaultContent: '',
+            data: null,
+            orderable: false,
+            className: 'select-checkbox',
+        },
+        { 
+            data: 'id',
+            className: 'td-data'
+        },
+        { 
+            data: 'deliveryUnitId',
+            className: 'td-data',
+            render: function(data, type, row){
+                if(data!==""){
+                    return data;
+                }
+                return `<span style="color: red;">Chưa có</span>`
+
+            }
+        },
+        { 
+            data: 'customer.name', 
+            searchable: false,
+            className: 'td-data',
+        },
+        { 
+            data: 'customer.phone', 
+            className: 'td-data'
+            
+        },
+        {
+            data: 'internalNote',
+            className: 'td-data',
+            searchable: false,
+        },
+        {
+            data: 'address',
+            className: 'td-data',
+            searchable: false,
+        },
+        { 
+            data: 'orderItems',
+            className: 'td-data',
+            render: function(data, type, row){
+                let list=""
+                data.forEach(it => {
+                     list+= it.item.product.barcode + " x " + it.qty +"; ";
+                });
+                return list;
+            }
+        },
+        { 
+            data: 'createdAt',
+            className: 'td-data',
+            searchable: false,
+            render: function(data, type, row){
+                return moment(data).format('HH:mm DD-MM-YYYY')
+            }
+        },
+        {
+            data: 'revenue',
+            className: 'td-data'
+        },
+        {
+            data: 'status',
+            orderable: false,
+            searchable: false,
+            render: function(data, type, row){
+                if(data==0){
+                    return  `<div class="btn-group">
+                                <button class="btn btn-danger" style="width: 150px;"> Đã hủy </button>
+                            </div>`
+                }else if(data==1){
+                    return  `<div class="btn-group">
+                                <button class="btn btn-primary dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Mới <i class="fa fa-angle-down"></i></button>
+                                <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">
+                                    <li>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${2})">Đã nhập hàng</div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${0})">Hủy</div>
+                                    </li>
+                                </ul>
+                            </div>`
+                }else{
+                    return  `<div class="btn-group">
+                                <button class="btn btn-success" style="width: 150px;"> Đã nhập hàng </button>
+                            </div>`
+                }
+            }
+        },
+    ],
+    columnDefs: [
+       { className: "dt-head-center", targets: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] },
+       { className: "dt-body-center", targets: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] }
+    ],
+    paging: true, 
+    pagingType: 'numbers',
+    lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
+    language: {
+        "search": "_INPUT_",            
+        "searchPlaceholder": "Tìm kiếm",
+        "lengthMenu": "_MENU_/trang",
+        "zeroRecords": "Không có sản phẩm nào!",
+        "info": "Trang _PAGE_/_PAGES_",
+        "infoEmpty": "Không có sản phẩm",
+        "infoFiltered": "(lọc từ _MAX_ kết quả)"
+    },
+    dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
+    select: {
+        style:    'multi',
+        selector: 'td:first-child'
+    },
+    order: [[ 1, 'desc' ]]
+});
+
 function addToCart(id) {
     // check if product already exist in cart
     searchbox.value = "";
@@ -243,7 +371,96 @@ async function selectCustomer(id){
     $("#c-receiverAddress").val(customer.address);
 }
 
+async function changeStatus(id, status){
+    let url = "/api/order/"+id+"/status/"+status;
+    await fetch(url, {
+            method: "POST"
+        })
+        .then(response => {
+            if (!response.ok) throw Error(response.statusText);
+            return response.json();
+        })
+        .then(data => {
+            if(status==2){loadItemData();}
+            table.ajax.reload(null, false) 
+            $("#toast-content").html("Cập nhật thành công: # "+data.data['id']);
+            toast.show()
+        })
+        .catch(error => console.log(error));
+}
+
 $(document).ready(function () {
+    new $.fn.dataTable.Buttons( table, {
+        buttons: [             
+            {
+            extend:    'print',
+            text:      '<i class="fa fa-print"></i> In',
+            titleAttr: 'Print',
+            className: 'btn-tools',
+            exportOptions: {
+                columns: ':visible'
+            }
+            },  
+            {
+                extend:    'excel',
+                text:      '<i class="fa-solid fa-file-export"></i><span>Xuất excel</span>',
+                titleAttr: 'Excel',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: ':visible'
+                }
+                },
+        ]
+    } );
+    table.buttons().container().appendTo('#action-tools');
+
+    table.on("click", "th.select-checkbox", function() {
+        if ($("th.select-checkbox").hasClass("selected")) {
+            table.rows().deselect();
+            $("th.select-checkbox").removeClass("selected");
+        } else {
+            table.rows().select();
+            $("th.select-checkbox").addClass("selected");
+        }
+    }).on("select deselect", function() {
+        ("Some selection or deselection going on")
+        if (table.rows({
+                selected: true
+            }).count() !== table.rows().count()) {
+            $("th.select-checkbox").removeClass("selected");
+        } else {
+            $("th.select-checkbox").addClass("selected");
+        }
+    });
+
+    $('#orderTable').on('click', 'tbody tr .td-data', function (e) {
+        e.preventDefault();
+        // var data = table.row($(this).parents('tr')).data();
+        let data = table.row(this).data();
+        let href = "/api/order/"+data["id"];
+        $.get(href, function(res){
+            $("#e-form").attr("rid", data["id"]);
+            $("#e-date1").val(moment(data.createdAt).format('YYYY-MM-DD'));
+            $("#e-date2").val(moment(data.expectedAt).format('YYYY-MM-DD'));
+            $("#e-warehouse").val(data.warehouse.id).trigger('change');
+            $("#e-warehouse").prop("disabled", true);
+            //$("#e-supplier").val(data.supplier.id).trigger('change');
+            $("#e-note").val(res.data.note);
+        })
+
+        $("#edit-modal").modal("show");
+    });
+
+    $("#btnCreate").on("click", function(e){
+        e.preventDefault();
+        window.location.href="/order/new"
+    });
+
+    $("#e-form").on("submit", function (e) {
+        e.preventDefault();
+        
+    });
+
     $("#c-warehouse").select2({
         data: $.map(wareData, function(s) {
             return {
@@ -252,13 +469,15 @@ $(document).ready(function () {
             }
         }),
         placeholder: "Chọn kho hàng",
-        minimumResultsForSearch: Infinity,
         width: '100%',
-        height: '34px',
-
+        minimumResultsForSearch: Infinity,
         dropdownParent: ".ware-c-group"
     });
-    $("#c-warehouse").select2("val",null);
+
+    $("#btnClear").on("click", function (e) {
+      e.preventDefault();
+      table.ajax.reload(null, false)
+    });
 
     $("#c-warehouse").on("change", debounce(searchItem,100));
     $("#c-searchbox").on("keyup", debounce(searchItem,500));
@@ -284,98 +503,7 @@ $(document).ready(function () {
         placeholder: "ĐVVC",
         allowClear: true
     });
-
-
-    $("#c-submit-btn").on("click", async function(e){
-        e.preventDefault();
-        if(customer == null){
-            await fetch("/api/customer",{
-                method: "POST",
-                credentials: "same-origin",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: $("#c-cusName").val(),
-                    phone: $("#c-cusPhone").val(),
-                    address: $("#c-receiverAddress").val(),
-                    dob: $("#c-cusDob").val()
-                }),
-            })
-            .then(response => {
-                if(!response.ok) throw Error(response.statusText);
-                return response.json();
-            })
-            .then(data =>{
-                if(data.status=="ok") {
-                    customer = data.data;
-                    // $("#toast-content").html("Chỉnh sửa thành công: # "+data.message);
-                    // toast.show();
-                }
-            })
-            .catch(error => console.error(error));
-        }
-        if(customer!=null){
-            let orderItemDto = [];
-            if(cart.length!==0){
-                cart.map(it=>{
-                    let obj = {
-                        itemId: it.itemId,
-                        sprice: it.sprice,
-                        qty: it.qty,
-                        sku: it.sku,
-                        discount: it.discount
-                    }
-                    orderItemDto.push(obj);
-                })
-            }
-            
-            await fetch("/api/order",{
-                method: "POST",
-                credentials: "same-origin",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    status: 1,
-                    internalNote: $("#c-internalNote").val(),
-                    printNote: $("#c-printNote").val(),
-                    deliveryUnitId: "",
-                    address: $("#c-receiverAddress").val(),
-                    receiverName: $("#c-receiverName").val(),
-                    receiverPhone: $("#c-receiverPhone").val(),
-                    discount: discount,
-                    totalWeight: totalWeight,
-                    shippingFee: shippingFee,
-                    totalDiscount: totalDiscount,
-                    receivedMoney: receivedMoney,
-                    owe: owe,
-                    total: totalItems,
-                    revenue: totalPrice,
-                    sales: totalPrice,
-                    empId: user.id,
-                    cusId: customer.id,
-                    wareId: $("#c-warehouse").val(),
-                    items: orderItemDto,
-                }),
-            })
-            .then(response => {
-                if(!response.ok) throw Error(response.statusText);
-                return response.json();
-            })
-            .then(data =>{
-                if(data.status=="ok") {
-                    window.location.href="/order";
-                    // $("#toast-content").html("Chỉnh sửa thành công: # "+data.message);
-                    // toast.show();
-                }
-            })
-            .catch(error => console.error(error));
-        }
-
-    })
 });
-
 
 function debounce(func, wait, immediate) {
     var timeout;

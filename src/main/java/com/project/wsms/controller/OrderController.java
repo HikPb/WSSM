@@ -1,5 +1,6 @@
 package com.project.wsms.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.project.wsms.dto.EmployeeDto;
 import com.project.wsms.dto.OrderDto;
 import com.project.wsms.dto.OrderItemDto;
 import com.project.wsms.model.Customer;
@@ -32,6 +34,8 @@ import com.project.wsms.service.OrderItemService;
 import com.project.wsms.service.OrderService;
 import com.project.wsms.service.ProductService;
 import com.project.wsms.service.WarehouseService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class OrderController {
@@ -59,17 +63,28 @@ public class OrderController {
 	
 	// VIEW NHAP KHO
 	@GetMapping("/order")
-	public String getAllOrderProduct(Model model) {
+	public String getAllOrderProduct(Model model, HttpServletRequest request) {
+		Principal user = request.getUserPrincipal();
+		Employee emp = employeeService.getByUsername(user.getName()).get();
+		EmployeeDto employee = new EmployeeDto();
+		employee.convertToDto(emp);
+		model.addAttribute("user", employee);
 		model.addAttribute("pageTitle", "QUẢN LÝ ĐƠN HÀNG");
+		model.addAttribute("wareData", warehouseService.getAll());
+		model.addAttribute("itemData", itemService.getAll());
 		return "orders/order";
 	}
 
 	@GetMapping("/order/new")
-	public String createOrder(Model model) {
+	public String createOrder(Model model, HttpServletRequest request) {
+		Principal user = request.getUserPrincipal();
+		Employee emp = employeeService.getByUsername(user.getName()).get();
+		EmployeeDto employee = new EmployeeDto();
+		employee.convertToDto(emp);
+		model.addAttribute("user", employee);
 		model.addAttribute("pageTitle", "TẠO ĐƠN HÀNG");
 		model.addAttribute("wareData", warehouseService.getAll());
 		model.addAttribute("itemData", itemService.getAll());
-		model.addAttribute("customerData", customerService.getAll());
 
 		return "orders/new-order";
 	}
@@ -200,21 +215,18 @@ public class OrderController {
 			cus.addOrder(newObject);
 			
 
-			newObject.setEmployee(employee);
-			newObject.setWarehouse(wh);
-			newObject.setCustomer(cus);
+			// newObject.setEmployee(employee);
+			// newObject.setWarehouse(wh);
+			// newObject.setCustomer(cus);
 			orderService.save(newObject);
 
 			if(!objectDto.getItems().isEmpty()){
 				objectDto.getItems().forEach(it ->{
 					OrderItem newItem = it.convertToEntity();
-
 					Item item = itemService.getById(it.getItemId()).get();
 					item.addOrderItem(newItem);
 					newObject.addOrderItem(newItem);
 					
-					newItem.setItem(item);
-					newItem.setOrder(newObject);
 					orderItemService.save(newItem);
 					itemService.save(item);
 				});

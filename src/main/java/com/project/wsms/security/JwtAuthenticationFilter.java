@@ -3,6 +3,7 @@ package com.project.wsms.security;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -11,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -46,9 +48,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String parseJwt(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
+        // String bearerToken = request.getHeader("Authorization");
+        // if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+        //     return bearerToken.substring(7, bearerToken.length());
+        // }
+        String bearerToken = "";
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals("access-token"))
+            bearerToken = cookie.getValue();
+        }
+        
+        if(StringUtils.hasText(bearerToken)) {
+            return bearerToken;
         }
         return null;
     }

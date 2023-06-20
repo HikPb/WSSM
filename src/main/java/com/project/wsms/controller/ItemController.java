@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ public class ItemController {
 	@Autowired
 	private ItemService itemService;
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/item")
 	public ResponseEntity<ResponseObject> listAllItem(){
 		List<Item> listItem= itemService.getAll();
@@ -43,6 +45,7 @@ public class ItemController {
 				HttpStatus.OK);
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("item/search")
 	public ResponseEntity<ResponseObject> searchItem(@RequestParam("key") String key){
 		try {
@@ -59,6 +62,7 @@ public class ItemController {
 		}		
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/item/{id}")
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
 		Optional<Item> item = itemService.getById(id);
@@ -71,6 +75,8 @@ public class ItemController {
 				new ResponseObject("failed", "Cannot find item with id = " + id, ""),
 				HttpStatus.NOT_FOUND);
 	}
+
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/item/warehouse/{id}")
 	public ResponseEntity<ResponseObject> getAllInWarehouse(@PathVariable("id") Integer id) {
 		try{
@@ -85,6 +91,7 @@ public class ItemController {
 		}		
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/item/product/{id}/warehouse/{wid}")
 	public ResponseEntity<ResponseObject> getByProductAndWarehouse(@PathVariable("id") Integer id, @PathVariable("wid") Integer wid) {
 		try {
@@ -99,6 +106,7 @@ public class ItemController {
 		}
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/item/product/{id}")
 	public ResponseEntity<ResponseObject> getAllInProducts(@PathVariable("id") Integer id) {
 		try {
@@ -112,7 +120,8 @@ public class ItemController {
 				HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/item/{id}/status")
 	public ResponseEntity<ResponseObject> changeItemStatus(@PathVariable("id") Integer id) {
 		try {
@@ -135,6 +144,7 @@ public class ItemController {
 		}
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/item")
 	public ResponseEntity<ResponseObject> saveItem(@Valid @RequestBody Item item) {
 		try {
@@ -155,6 +165,7 @@ public class ItemController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PutMapping("/api/item/{id}")
 	public ResponseEntity<ResponseObject> updateItem(@PathVariable Integer id, 
 	                                        @RequestBody Item item) {
@@ -180,6 +191,7 @@ public class ItemController {
 				);
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@DeleteMapping("/api/item/{id}")
 	public ResponseEntity<ResponseObject> deleteItem(@PathVariable(value = "id") Integer id) {
 	    if(!itemService.existsById(id)) {

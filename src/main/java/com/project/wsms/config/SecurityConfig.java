@@ -59,27 +59,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, RememberMeServices rememberMeServices) throws Exception {
         http.csrf().disable()
-            .exceptionHandling()
-            .authenticationEntryPoint(authEntryPoint)
-            .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             //.authorizeHttpRequests().anyRequest().permitAll()
             .authorizeHttpRequests()
                 .requestMatchers("/", "/login", "/logout", "/css/**", "/img/**", "/js/**", "/webjars/**").permitAll()
-            .and()
-            .authorizeHttpRequests()
                 .anyRequest().authenticated()
+            .and()
+            .exceptionHandling()
+            .authenticationEntryPoint(authEntryPoint)
             .and()
             .authenticationProvider(authenticationProvider())
             .logout()
             .logoutUrl("/logout")
-            .logoutSuccessUrl("/");
+            .logoutSuccessUrl("/")
+            .invalidateHttpSession(true)
+            .deleteCookies("JSESSIONID", "access-token");
 
         http.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
-        // http.rememberMe((remember) -> remember
-        //     .rememberMeServices(rememberMeServices));
+        http.rememberMe((remember) -> remember
+            .rememberMeServices(rememberMeServices));
         return http.build();
     }
 

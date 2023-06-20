@@ -9,7 +9,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form action="#" enctype="multipart/form-data" method="post">
+                <form action="#" enctype="multipart/form-data" method="post" id="c-form">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-3">
@@ -56,31 +56,31 @@
                                 
                                 <div class="m-box" style="margin-top: 1 rem;">
                                     <div class="table-container">
-                                        <table class="table table-hover table-responsive-xl" id="table" style="text-align: center;">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th>STT</th>
-                                                    <th>Tên SP</th>
-                                                    <th>Hình ảnh</th>
-                                                    <th>Barcode</th>
-                                                    <th>Tồn kho</th>
-                                                    <th>Chênh lệch</th>
-                                                    <th>Điều chỉnh</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody style="display: table-row-group; height: 360px;"></tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>Tổng</th>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th>Tổng chênh</th>
-                                                    <th>Tổng SL</th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
+                                        <div style="display: block; overflow: auto; height: 360px;">
+                                            <table class="table table-hover table-responsive-xl" id="table" style="text-align: center;">
+                                                <thead class="thead-light" style="position: sticky; top: 0; z-index: 1; background-color: #eee;">
+                                                    <tr>
+                                                        <th>STT</th>
+                                                        <th>Tên SP</th>
+                                                        <th>Hình ảnh</th>
+                                                        <th>Barcode</th>
+                                                        <th>Tồn kho</th>
+                                                        <th>Chênh lệch</th>
+                                                        <th>Sau điều chỉnh</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody style="display: table-row-group;"></tbody>
+                                                <tfoot>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                        
+                                        <div style="text-align: right;">
+                                            <span class="font-14 p-r-10 p-l-10">Tổng SP: <span id="t-prod">0</span> </span>
+                                            <span class="font-14 p-r-10 p-l-10" style="border-left: 1px solid #d9d9d9;border-right: 1px solid #d9d9d9;">Tổng chênh: <span id="t-diff">0</span> </span>
+                                            <span class="font-14 p-r-10 p-l-10"></span>Tổng SL sau điều chỉnh: <span id="t-qaa">0</span> </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -100,6 +100,104 @@
 
     </div>
 
+    <div class="modal fade" role="dialog" id="cq-edit-modal">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        Thông tin chi tiết phiếu kiểm hàng
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
+                <form action="#" enctype="multipart/form-data" method="post" id="e-form">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="m-box">
+                                    <div class="form-group ware-e-group">
+                                        <span class="form-title">Kho hàng:<span
+                                                style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
+                                        <select class="form-control" id="e-warehouse"></select>
+                                    </div>
+    
+                                    <!-- <div class="form-group">
+                                        <span class="form-title">Nhà cung cấp:</span>
+                                        <input placeholder="Nha cung cap" class="form-control" type="text"
+                                            >
+                                    </div>
+     -->
+    
+                                    <div class="form-group">
+                                        <span class="form-title">Ngày tạo phiếu:</span>
+                                        <input type="date" class="form-control" id="e-date1" disabled>
+                                    </div>
+                                    
+    								<div class="form-group">
+                                        <span class="form-title">Thời gian kiểm hàng:</span>
+                                        <input type="date" class="form-control" id="e-date2">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <span class="form-title">Ghi chú:</span>
+                                        <textarea rows="4" placeholder="Ghi chú" id="e-note" autosize="[object Object]"
+                                            class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="m-box">
+                                    <div class="input-group">
+                                        <input class="form-control" id="e-searchbox" type="text" autocomplete="off" placeholder="Nhập tên, mã sản phẩm">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-success" type="button">Tìm kiếm</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="m-box" style="margin-top: 1 rem;">
+                                    <div class="table-container">
+                                        <div style="display: block; overflow: auto; height: 360px;">
+                                            <table class="table table-hover table-responsive-xl" id="etable" style="text-align: center;">
+                                                <thead class="thead-light" style="position: sticky; top: 0; z-index: 1; background-color: #eee;">
+                                                    <tr>
+                                                        <th>STT</th>
+                                                        <th>Tên SP</th>
+                                                        <th>Hình ảnh</th>
+                                                        <th>Barcode</th>
+                                                        <th>Tồn kho</th>
+                                                        <th>Chênh lệch</th>
+                                                        <th>Sau điều chỉnh</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody style="display: table-row-group;"></tbody>
+                                                <tfoot>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                        
+                                        <div style="text-align: right;">
+                                            <span class="font-14 p-r-10 p-l-10">Tổng SP: <span id="et-prod">0</span> </span>
+                                            <span class="font-14 p-r-10 p-l-10" style="border-left: 1px solid #d9d9d9;border-right: 1px solid #d9d9d9;">Tổng chênh: <span id="et-diff">0</span> </span>
+                                            <span class="font-14 p-r-10 p-l-10"></span>Tổng SL sau điều chỉnh: <span id="et-qaa">0</span> </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    	<button type="button" class="btn" style="margin-right: 10px; width: 120px;" id="e-statusBtn">
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="ecq-submit">
+                            <span>Lưu</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
    
 </div>

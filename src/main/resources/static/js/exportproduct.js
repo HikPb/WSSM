@@ -1,254 +1,794 @@
+"use strict";
+
+const toast = new bootstrap.Toast($("#toast"));
+const searchbox = document.getElementById("c-searchbox");
+const searchbox2 = document.getElementById("e-searchbox");
+
+const listItemsEl = document.getElementById("ep-items");
+
+const warehouseEl = document.getElementById("c-warehouse");
+const supplierEl = document.getElementById("c-supplier");
+const supplier2El = document.getElementById("e-supplier");
+const createdDateEl = document.getElementById("date1");
+const epDateEl = document.getElementById("date2");
+const noteEl = document.getElementById("c-note");
+const epDate2El = document.getElementById("e-date2");
+const note2El = document.getElementById("e-note");
+
+
+const totalProductEl = document.getElementById("t-prod");
+const totalMoneyEl = document.getElementById("t-money");
+const totalQEl = document.getElementById("t-qty");
+
+const etotalProductEl = document.getElementById("et-prod");
+const etotalMoneyEl = document.getElementById("et-money");
+const etotalQEl = document.getElementById("et-qty");
+
+const ctable = document.getElementById("c-table");
+const etable = document.getElementById("e-table");
+
+const table = $("#epTable").DataTable( {
+    processing: true,
+    responsive: true,
+    fixedHeader: true,
+
+    ajax: {
+        url: "/api/export",
+        dataSrc: 'data',
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json",
+    },
+    columns: [
+        {
+            defaultContent: '',
+            data: null,
+            orderable: false,
+            className: 'select-checkbox',
+        },
+        { 
+            data: 'id',
+            className: 'td-data'
+        },
+        { 
+            data: 'employee.username',
+            className: 'td-data'
+        },
+        { 
+            data: 'note', 
+            searchable: false,
+            className: 'td-data',
+            render: function(data, type, row){
+                if(data!==""){
+                    return data;
+                }
+                return `<span style="color: red;">Chưa có</span>`
+
+            }
+        },
+        { 
+            data: 'warehouse.name', 
+            className: 'td-data'
+            
+        },
+        {
+            data: 'totalQty',
+            className: 'td-data',
+            searchable: false,
+        },
+        {
+            data: 'totalMoney',
+            className: 'td-data',
+            searchable: false,
+        },
+        { 
+            data: 'createdAt',
+            className: 'td-data',
+            searchable: false,
+            render: function(data, type, row){
+                return moment(data).format('HH:mm DD-MM-YYYY')
+            }
+        },
+        { 
+            data: 'expected_at',
+            className: 'td-data',
+            searchable: false,
+            render: function(data, type, row){
+                return moment(data).format('HH:mm DD-MM-YYYY')
+            }
+        },
+        {
+            data: 'status',
+            orderable: false,
+            searchable: false,
+            render: function(data, type, row){
+                if(data==0){
+                    return  `<div class="btn-group">
+                                <button class="btn btn-danger" style="width: 150px;"> Đã hủy </button>
+                            </div>`
+                }else if(data==1){
+                    return  `<div class="btn-group">
+                                <button class="btn btn-primary dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Mới <i class="fa fa-angle-down"></i></button>
+                                <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">
+                                    <li>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${2})">Đã nhập hàng</div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${0})">Hủy</div>
+                                    </li>
+                                </ul>
+                            </div>`
+                }else{
+                    return  `<div class="btn-group">
+                                <button class="btn btn-success" style="width: 150px;"> Đã nhập hàng </button>
+                            </div>`
+                }
+            }
+        },
+    ],
+    columnDefs: [
+       { className: "dt-head-center", targets: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] },
+       { className: "dt-body-center", targets: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] }
+    ],
+    paging: true, 
+    pagingType: 'numbers',
+    lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
+    language: {
+        "search": "_INPUT_",            
+        "searchPlaceholder": "Tìm kiếm",
+        "lengthMenu": "_MENU_/trang",
+        "zeroRecords": "Không có sản phẩm nào!",
+        "info": "Trang _PAGE_/_PAGES_",
+        "infoEmpty": "Không có sản phẩm",
+        "infoFiltered": "(lọc từ _MAX_ kết quả)"
+    },
+    dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
+    select: {
+        style:    'multi',
+        selector: 'td:first-child'
+    },
+    order: [[ 1, 'desc' ]]
+});
+
+var listItems = [];
+var listItems2 = [];
+
+function addToListItems(id) {
+    searchbox.value = "";
+    if (listItems.some((item) => item.itemId === id)) {
+        changeNumberOfUnits("plus", id);
+    } else {
+        const item = itemData.find((product) => product.id === id);
+        const customItem = {
+            itemId: item.id,
+            sprice: item.retailPrice,
+            sku: item.sku,
+            inventory: item.qty,
+            barcode: item.product?.barcode,
+            productName: item.product?.productName
+        };
+        listItems.push({
+        ...customItem,
+        qty: 0,
+        });
+    }
+    updateListItems();
+}
+
+function updateListItems() {
+    renderListItems();
+    renderSubtotal();
+}
+
+// calculate and render subtotal
+function renderSubtotal() {
+    let totalMoney = 0;
+    let totalQty = 0;
+    let totalProduct = listItems.length;
+
+    listItems.forEach((item) => {
+        totalMoney += Math.abs(item.qty * item.sprice);
+        totalQty += item.qty;
+    });
+
+    totalMoneyEl.textContent = `${totalMoney}`;
+    totalProductEl.textContent = `${totalProduct}`;
+    totalQEl.textContent = `${totalQty}`;
+}
+
+// render list items
+function renderListItems() {
+    $("#c-table").find("tbody").empty();
+    if(listItems.length>0){
+        listItems.forEach((item) => {
+            let tr =    `<tr style="height: 20px;">
+                        <td>${ctable.rows.length}</td>
+                        <td>${item.productName}</td>
+                        <td>3</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.inventory}</td>
+                        <td><input type="text" style="border:none; text-align:right; width: 85px; background-color: #eaeaea;" value=${item.sprice} onchange="changeItemPrice(this,${item.itemId})"></td>
+                        <td><input type="text" style="border:none; text-align:right; width: 85px; background-color: #eaeaea;" value=${item.qty} onchange="changeItemQty(this,${item.itemId})"></td>
+                        <td>${item.sprice * item.qty}</td>
+                        <td><i class="fa-regular fa-circle-xmark" style="color: #ff0000;" onclick="removeItem(${item.itemId})"></i></td>
+                        </tr>`
+            $("#c-table").find("tbody").append(tr);
+        });
+    }
+}
+
+// remove item
+function removeItem(id) {
+    listItems = listItems.filter((item) => item.itemId !== id);
+    updateListItems();
+}
+
+function changeItemQty(elm, id) {
+    let newQty = parseInt(elm.value.replace(/\,/g, ''),10);
+    listItems = listItems.map((item)=>{
+        if(item.itemId === id){
+            item.qty = newQty;
+        }
+        return{
+            ...item
+        }
+    });
+
+    updateListItems();
+}
+
+function changeItemPrice(elm, id) {
+    let newPrice = parseInt(elm.value.replace(/\,/g, ''),10);
+    listItems = listItems.map((item)=>{
+        if(item.itemId === id){
+            item.sprice = newPrice;
+        }
+        return{
+            ...item
+        }
+    });
+
+    updateListItems();
+}
+
+function addToListItems2(id) {
+    searchbox2.value = "";
+    if (listItems2.some((item) => item.itemId === id)) {
+        
+    } else {
+        const item = itemData.find((product) => product.id === id);
+        const customItem = {
+            itemId: item.id,
+            sprice: item.retailPrice,
+            sku: item.sku,
+            inventory: item.qty,
+            barcode: item.product?.barcode,
+            productName: item.product?.productName
+        };
+        listItems2.push({
+        ...customItem,
+        qty: 0,
+        });
+    }
+    updateListItems2();
+}
+
+function updateListItems2() {
+    renderListItems2();
+    renderSubtotal2();
+}
+
+// calculate and render subtotal
+function renderSubtotal2() {
+    let totalMoney = 0;
+    let totalQty = 0;
+    let totalProduct = listItems2.length;
+
+    listItems2.forEach((item) => {
+        totalMoney += Math.abs(item.qty * item.sprice);
+        totalQty += item.qty;
+    });
+
+    etotalMoneyEl.textContent = `${totalMoney}`;
+    etotalProductEl.textContent = `${totalProduct}`;
+    etotalQEl.textContent = `${totalQty}`;
+}
+
+// render list items
+function renderListItems2() {
+    $("#e-table").find("tbody").empty();
+    
+    if(listItems2.length>0){
+        listItems2.forEach((item) => {
+            let tr =    `<tr style="height: 20px;">
+                        <td>${etable.rows.length}</td>
+                        <td>${item.productName}</td>
+                        <td>3</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.inventory}</td>
+                        <td><input type="text" style="border:none; text-align:right; width: 85px; background-color: #eaeaea;" value=${item.sprice} onchange="changeItemPrice2(this,${item.itemId})"></td>
+                        <td><input type="text" style="border:none; text-align:right; width: 85px; background-color: #eaeaea;" value=${item.qty} onchange="changeItemQty2(this,${item.itemId})"></td>
+                        <td>${item.sprice * item.qty}</td>
+                        <td><i class="fa-regular fa-circle-xmark" style="color: #ff0000;" onclick="removeItem2(${item.itemId})"></i></td>
+                        </tr>`
+            $("#e-table").find("tbody").append(tr);
+        });
+    }
+}
+
+function renderListItems3() {
+    $("#e-table").find("tbody").empty();
+    if(listItems2.length>0){
+        listItems2.forEach((item) => {
+            let tr =    `<tr style="height: 20px;">
+                        <td>${etable.rows.length}</td>
+                        <td>${item.productName}</td>
+                        <td>3</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.inventory}</td>
+                        <td><input type="text" style="border:none; text-align:right; width: 85px; background-color: #eaeaea;" value=${item.sprice} disabled></td>
+                        <td><input type="text" style="border:none; text-align:right; width: 85px; background-color: #eaeaea;" value=${item.qty} disabled></td>
+                        <td>${item.sprice * item.qty}</td>
+                        </tr>`
+            $("#e-table").find("tbody").append(tr);
+        });
+    }
+}
+
+// remove item
+function removeItem2(id) {
+    listItems2 = listItems2.filter((item) => item.itemId !== id);
+    updateListItems2();
+}
+
+function changeItemQty2(elm, id) {
+    let newQty = parseInt(elm.value.replace(/\,/g, ''),10);
+    listItems2 = listItems2.map((item)=>{
+        if(item.itemId === id){
+            item.qty = newQty;
+        }
+        return{
+            ...item
+        }
+    });
+
+    updateListItems2();
+}
+
+function changeItemPrice2(elm, id) {
+    let newPrice = parseInt(elm.value.replace(/\,/g, ''),10);
+    listItems2 = listItems2.map((item)=>{
+        if(item.itemId === id){
+            item.sprice = newPrice;
+        }
+        return{
+            ...item
+        }
+    });
+
+    updateListItems2();
+}
+
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+        var context = this, args = arguments;
+        var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+};
+
+function closeAllLists(elmnt) {
+    var x = document.getElementsByClassName("search-items");
+    var inp = document.getElementById("c-searchbox");
+    for (var i = 0; i < x.length; i++) {
+    if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+    }
+    }
+}
+
+document.addEventListener("click", function (e) {
+    closeAllLists(e.target);
+});
+
+function searchItem(){
+    let key = searchbox.value;
+    let wh = $("#c-warehouse").select2("data")[0].id;
+    let searchResult=[];
+    let li = "";
+    $("#c-searchbox").parent().find('.search-items').remove();
+    $("#c-searchbox").parent().append('<div class="search-items" id="listresult"></div>');
+    if(key.length>0){
+        searchResult = itemData.filter(function(s){
+            return s.active == true && 
+            (s.product.productName.includes(key) || s.product.barcode.includes(key)) &&
+            s.warehouse.id == wh;
+        })
+        if(searchResult.length>0){
+            $("#listresult").empty();
+            searchResult.forEach(rs=>{
+                $("#listresult").append($(`<div class="s-item media" onclick="addToListItems(${rs.id})">
+                            <div class="media-img">
+                                <img src="/img/product.jpg" width="50" height="50" >
+                            </div>
+                            <div class="media-body">
+                                <div class="media-heading" style="margin-bottom:0px;">
+                                    <span class="badge badge-info m-r-5 m-b-5">${rs.product.barcode}</span>
+                                    <span class="font-14">${rs.product.productName}</span>
+                                </div>
+                                <div>
+                                <span><i class="fa-solid fa-weight-scale"></i> <span style="color:#0af;">${rs.product.weight} g</span></span>
+                                <span style="color:#0af; right:15px; position:absolute;">${numberWithCommas(rs.retailPrice)}đ</span>
+                                </div>
+                                <div class="font-13">
+                                    <span class="m-r-20"><i class="fa-solid fa-warehouse m-r-5"></i><strong>Kho hàng: </strong>${rs.warehouse.name}</span>
+                                    <span class="m-r-20"><strong>Tồn kho: </strong>${rs.qty}</span>
+                                </div>
+                            </div>
+                        </div>`));
+            })
+        }else{
+            $("#listresult").empty();
+            $("#listresult").append($(`<div class="s-item media">
+                                        Không tìm thấy kết quả nào
+                                    </div>)`));
+        }
+    }
+}
+
+function searchItem2(){
+    let key = searchbox2.value;
+    let wh = $("#e-warehouse").select2("data")[0].id;
+    let searchResult=[];
+    let li = "";
+    $("#e-searchbox").parent().find('.search-items').remove();
+    $("#e-searchbox").parent().append('<div class="search-items" id="elistresult"></div>');
+    if(key.length>0){
+        searchResult = itemData.filter(function(s){
+            return s.active == true && 
+            (s.product.productName.includes(key) || s.product.barcode.includes(key)) &&
+            s.warehouse.id == wh;
+        })
+        if(searchResult.length>0){
+            $("#elistresult").empty();
+            searchResult.forEach(rs=>{
+                $("#elistresult").append($(`<div class="s-item media" onclick="addToListItems2(${rs.id})">
+                            <div class="media-img">
+                                <img src="/img/product.jpg" width="50" height="50" >
+                            </div>
+                            <div class="media-body">
+                                <div class="media-heading" style="margin-bottom:0px;">
+                                    <span class="badge badge-info m-r-5 m-b-5">${rs.product.barcode}</span>
+                                    <span class="font-14">${rs.product.productName}</span>
+                                </div>
+                                <div>
+                                <span><i class="fa-solid fa-weight-scale"></i> <span style="color:#0af;">${rs.product.weight} g</span></span>
+                                <span style="color:#0af; right:15px; position:absolute;">${numberWithCommas(rs.retailPrice)}đ</span>
+                                </div>
+                                <div class="font-13">
+                                    <span class="m-r-20"><i class="fa-solid fa-warehouse m-r-5"></i><strong>Kho hàng: </strong>${rs.warehouse.name}</span>
+                                    <span class="m-r-20"><strong>Tồn kho: </strong>${rs.qty}</span>
+                                </div>
+                            </div>
+                        </div>`));
+            })
+        }else{
+            $("#elistresult").empty();
+            $("#elistresult").append($(`<div class="s-item media">
+                                        Không tìm thấy kết quả nào
+                                    </div>)`));
+        }
+    }
+}
+
+async function loadItemData() {
+    try {
+        await fetch("/api/item", {
+            method: "GET", // or 'PUT'
+            headers: {
+            "Content-Type": "application/json",
+            }
+        }).then(response =>{
+            return response.json();
+        }).then(data=>{
+            itemData = data.data;
+        })
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+async function changeStatus(id, status){
+    let url = "/api/export/"+id+"/status/"+status;
+    await fetch(url, {
+            method: "POST"
+        })
+        .then(response => {
+            if (!response.ok) throw Error(response.statusText);
+            return response.json();
+        })
+        .then(data => {
+            if(status==2){loadItemData();}
+            table.ajax.reload(null, false) 
+            $("#toast-content").html("Cập nhật thành công: # "+data.data['id']);
+            toast.show()
+        })
+        .catch(error => console.log(error));
+}
+
 $(document).ready(function () {
-    var toast = new bootstrap.Toast($("#toast"));
-    // let table = $("#cqTable").DataTable( {
-    //     responsive: true,
-    //     ajax: {
-    //         url: "/products/api",
-    //         dataSrc: '',
-    //         type: "GET",
-    //         dataType: "json",
-    //         contentType: "application/json",
-    //         },
-    //     columns: [
-    //         {
-    //             defaultContent: '',
-    //             data: null,
-    //             orderable: false,
-    //             className: 'select-checkbox',
-    //         },
-    //         { 
-    //             data: 'isSell', 
-    //             orderable: false,
-    //             render: function(data, type, row){
-    //             if(data == true){
-    //                 return `<label class="switch"><input class="issell" data="`+data +`" type="checkbox" checked><span class="slider round"></span></label>`
-    //             }
-    //             if(data == false){
-    //                 return `<label class="switch"><input class="issell" data="`+data +`"type="checkbox"><span class="slider round"></span></label>`
-    //             }
-    //         }},
-    //         { 
-    //             data: 'cqId',
-    //             className: 'td-data'
-    //         },
-    //         { 
-    //             data: '',
-    //             className: 'td-data'
-    //         },
-    //         { 
-    //             data: 'barcode', 
-    //             className: 'td-data'
-    //         },
-    //         { 
-    //             data: 'cateId', 
-    //             className: 'td-data'
-    //         },
-    //         { 
-    //             data: 'importPrice',
-    //             className: 'td-data'
-    //         },
-    //         { 
-    //             data: 'sellPrice', 
-    //             className: 'td-data'
-    //         },
-    //         { 
-    //             data: 'created_at',
-    //             className: 'td-data',
-    //             render: function(data, type, row){
-    //             return moment(data).format('HH:mm DD-MM-YYYY')
-    //         }
-    //         },
-    //         {
-    //             defaultContent: '<button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>'
-    //         },
-    //     ],
-    //     paging: true, 
-    //     pagingType: 'numbers',
-    //     lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
-    //     language: {
-    //         "search": "_INPUT_",            
-    //         "searchPlaceholder": "Search",
-    //         "lengthMenu": "_MENU_/trang",
-    //         "zeroRecords": "Không có sản phẩm nào!",
-    //         "info": "Trang _PAGE_/_PAGES_",
-    //         "infoEmpty": "Không có sản phẩm",
-    //         "infoFiltered": "(filtered from _MAX_ total records)"
-    //     },
-    //     dom: '<"top"if>rt<"bottom"pl><"clear">',
-    //     search: {
-    //         "addClass": 'form-control input-lg col-xs-12'
-    //     },
-    //     select: {
-    //         style:    'multi',
-    //         selector: 'td:first-child'
-    //     },
-    //     order: [[ 8, 'desc' ]]
-    // });
+    new $.fn.dataTable.Buttons( table, {
+        buttons: [             
+            {
+            extend:    'print',
+            text:      '<i class="fa fa-print"></i> In',
+            titleAttr: 'Print',
+            className: 'btn-tools',
+            exportOptions: {
+                columns: ':visible'
+            }
+            },  
+            {
+                extend:    'excel',
+                text:      '<i class="fa-solid fa-file-export"></i><span>Xuất excel</span>',
+                titleAttr: 'Excel',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: ':visible'
+                }
+                },
+        ]
+    } );
+    table.buttons().container().appendTo('#action-tools');
 
-    // new $.fn.dataTable.Buttons( table, {
-    //     buttons: [             
-    //         {
-    //         extend:    'print',
-    //         text:      '<i class="fa fa-print"></i> In',
-    //         titleAttr: 'Print',
-    //         className: 'btn-tools',
-    //         exportOptions: {
-    //             columns: ':visible'
-    //         }
-    //         },  
-    //         {
-    //             extend:    'excel',
-    //             text:      '<i class="fa-solid fa-file-export"></i><span>Xuất excel</span>',
-    //             titleAttr: 'Excel',
-    //             className: 'btn-tools',
-    //             exportOptions: {
-    //                 columns: ':visible'
-    //             }
-    //             },
-    //     ]
-    // } );
-    // table.buttons().container().appendTo('#action-tools');
-
-    // table.on("click", "th.select-checkbox", function() {
-    //     if ($("th.select-checkbox").hasClass("selected")) {
-    //         table.rows().deselect();
-    //         $("th.select-checkbox").removeClass("selected");
-    //     } else {
-    //         table.rows().select();
-    //         $("th.select-checkbox").addClass("selected");
-    //     }
-    // }).on("select deselect", function() {
-    //     ("Some selection or deselection going on")
-    //     if (table.rows({
-    //             selected: true
-    //         }).count() !== table.rows().count()) {
-    //         $("th.select-checkbox").removeClass("selected");
-    //     } else {
-    //         $("th.select-checkbox").addClass("selected");
-    //     }
-    // });
+    table.on("click", "th.select-checkbox", function() {
+        if ($("th.select-checkbox").hasClass("selected")) {
+            table.rows().deselect();
+            $("th.select-checkbox").removeClass("selected");
+        } else {
+            table.rows().select();
+            $("th.select-checkbox").addClass("selected");
+        }
+    }).on("select deselect", function() {
+        ("Some selection or deselection going on")
+        if (table.rows({
+                selected: true
+            }).count() !== table.rows().count()) {
+            $("th.select-checkbox").removeClass("selected");
+        } else {
+            $("th.select-checkbox").addClass("selected");
+        }
+    });
 
     $('#epTable').on('click', 'tbody tr .td-data', function (e) {
         e.preventDefault();
         // var data = table.row($(this).parents('tr')).data();
-        data = table.row(this).data();
-        href = "products/api/"+data["productId"];
-        $.get(href, function(product, status){
-            $("#id-val").val(product.productId);
-            $("#name-val").val(product.productName);
-            $("#barcode-val").val(product.barcode);
-            $("#ip-val").val(product.importPrice);
-            $("#sp-val").val(product.sellPrice);
-            $("#cate-val").val(product.cateId);
-            // $("#time-val").innerHTML += 'Hello';
+        let data = table.row(this).data();
+        let href = "/api/export/"+data["id"];
+        $.get(href, function(res){
+            $("#e-form").attr("rid", data["id"]);
+            $("#e-date1").val(moment(data.createdAt).format('YYYY-MM-DD'));
+            $("#e-date2").val(moment(data.expectedAt).format('YYYY-MM-DD'));
+            $("#e-warehouse").val(data.warehouse.id).trigger('change');
+            $("#e-warehouse").prop("disabled", true);
+            //$("#e-supplier").val(data.supplier.id).trigger('change');
+            $("#e-note").val(res.data.note);
+            
+            listItems2.splice(0,listItems2.length);
+            data.items.map(item=>{
+                let customItem = {
+                    id: item.id,
+                    itemId: item.item.id,
+                    sprice: item.item.retailPrice,
+                    sku: item.sku,
+                    inventory: item.item.qty,
+                    barcode: item.item.product.barcode,
+                    productName: item.item.product.productName,
+                    qty: item.qty,
+                };
+                listItems2.push({
+                ...customItem,
+                });
+            })
+            if(data.status==0){
+                $("#eep-submit").prop('disabled', true);
+                $("#e-statusBtn").text("Đã hủy");
+                $("#e-statusBtn").removeClass();
+                $("#e-statusBtn").addClass('btn btn-danger');
+                renderListItems3();
+                renderSubtotal2();
+            }else if(data.status==1){
+                $("#eep-submit").prop('disabled', false);
+                $("#e-statusBtn").text("Mới");
+                $("#e-statusBtn").removeClass();
+                $("#e-statusBtn").addClass('btn btn-primary');
+                updateListItems2();
+            }else{
+                $("#eep-submit").prop('disabled', true);
+                $("#e-statusBtn").text("Đã nhập hàng");
+                $("#e-statusBtn").removeClass();
+                $("#e-statusBtn").addClass('btn btn-success');
+                renderListItems3();
+                renderSubtotal2();
+            }
+            
         })
         $("#ep-edit-modal").modal("show");
     });
 
     $("#btnCreate").on("click", function(e){
         e.preventDefault();
-        $("#ep-create-modal").modal("show");
-        
-    });
-	$("#cate-create").autocomplete("option", "appendTo", ".modal-body")
-    $("#cate-create").autocomplete({ 
-        source: [ "c++", "java", "php", "coldfusion", "javascript", "asp", "ruby" ]
-        // source: function (request, response) {  
-        //     $.ajax({  
-        //         url: "api/category/search/",  
-        //         method: "get",  
-        //         contentType: "application/json;charset=utf-8", 
-        //         data : {
-        //             key : request.term,
-        //         },   
-        //         success: function (data) {  
-        //             console.log(data);
-		// 			response(data);  
-        //         },  
-        //         error: function (err) {  
-        //             alert(err);  
-        //         }  
-        //     });  
-        // }  
-    });  
-
-
-    // $('#productTable tbody').on('click', '.btn-edit', function(e) {
-    //     e.preventDefault();
-    //     href = $(this).attr("href");
-    //     $.get(href, function(product, status){
-    //         $("#id-val").val(product.productId);
-    //         $("#name-val").val(product.productName);
-    //         $("#barcode-val").val(product.barcode);
-    //         $("#ip-val").val(product.importPrice);
-    //         $("#sp-val").val(product.sellPrice);
-    //         $("#cate-val").val(product.cateId);
-    //         // $("#time-val").innerHTML += 'Hello';
-    //     })
-    //     $("#product-modal-edit").modal("show");
-        
-    //     });
-
-    $("#epTable tbody").on("click", ".btn-delete", function (e) {
-        e.preventDefault();
-        data = table.row($(this).parents('tr')).data();
-        href = "products/api/"+data["productId"]+"";
-        console.log(data);
-        // link = $(this);
-        // href = "products/delete/"+link.attr("productId")+"";
-        $("#yesBtn").attr("href", href);
-        $("#yesBtn").attr("productId", data["productId"]);
-
-        $("#confirmText").html("Bạn muốn xoá sản phẩm này: \<strong\>" + data["productName"] + "\<\/strong\>?");
-        $("#confirmModal").modal("show");
+        $("#ep-create-modal").modal("show"); 
     });
 
-    $("#yesBtn").on("click", function (e) {
+    $("#c-form").on("submit", function (e) {
         e.preventDefault();
-        url = $(this).attr("href");
-        id = $(this).attr("productId");
+        
+        let items = [];
+        let totalQty = 0;
+        let totalMoney = 0;
+        listItems.map(function (elem) {
+            totalQty += elem.qty;
+            totalMoney += elem.qty * elem.sprice;
+
+            let obj = {
+                itemId : elem.itemId,
+                qty: elem.qty,
+                sprice : elem.sprice,
+                sku : elem.sku,
+            }
+            items.push(obj)
+        });
+        let payload = JSON.stringify({
+          note: noteEl.value,
+          status: 1,
+          empId: user.id,
+          wareId: warehouseEl.value,
+          supId: supplierEl.value,
+          expectedAt: epDateEl.value,
+          totalQty: totalQty,
+          totalMoney: totalMoney,
+          items: items
+        });
         $.ajax({
-            url: url,
-            method: "GET",
-            success: function (data) {  
-                window.location.href = "/products"
+            url: "/api/export",
+            method: "post",
+            data: payload,
+            contentType: "application/json",
+            success: function (response) { 
+                table.ajax.reload(null, false) 
+                $('#ep-create-modal form').trigger("reset")
+                listItems.splice(0,listItems.length);
+                $("#ep-create-modal").modal("hide");
+                $("#ep-create-modal").find('form').trigger('reset');
+                $("#toast-content").html("Tạo mới thành công: # "+response.data['id'])
+                toast.show()
+                //window.location.href = "/products"
             },  
             error: function (err) {  
                 alert(err);  
             } 
         });
         
-      });
+    });
 
+    $("#e-form").on("submit", function (e) {
+        e.preventDefault();
+
+        let items = [];
+        let totalQty = 0;
+        let totalMoney = 0;
+        listItems2.map(function (elem) {
+            totalQty += elem.qty;
+            totalMoney += elem.qty * elem.sprice;
+
+            let obj = {
+                id: elem.id,
+                itemId : elem.itemId,
+                qty: elem.qty,
+                sprice : elem.sprice,
+                sku : elem.sku,
+            }
+            items.push(obj)
+        });
+
+        let payload = JSON.stringify({
+            note: note2El.value,
+            supId: supplier2El.value,
+            expectedAt: epDate2El.value,
+            totalQty: totalQty,
+            totalMoney: totalMoney,
+            items: items
+        });
+        $.ajax({
+            url: "/api/export/"+$("#e-form").attr("rid"),
+            method: "put",
+            data: payload,
+            contentType: "application/json",
+            success: function (response) { 
+                table.ajax.reload(null, false) 
+                $('#ep-edit-modal form').trigger("reset")
+                listItems2.splice(0,listItems2.length);
+                $("#ep-edit-modal").modal("hide");
+                $("#ep-edit-modal").find('form').trigger('reset');
+                $("#toast-content").html("Chỉnh sửa thành công: # "+response.data['id']);
+                toast.show()
+            },  
+            error: function (err) {  
+                alert(err);  
+            } 
+        });
+        
+    });
+
+    $("#c-warehouse").select2({
+        data: $.map(wareData, function(s) {
+            return {
+                text: s.name,
+                id: s.id
+            }
+        }),
+        placeholder: "Chọn kho hàng",
+        width: '100%',
+        minimumResultsForSearch: Infinity,
+        dropdownParent: ".ware-c-group"
+    });
+
+    $("#e-warehouse").select2({
+        data: $.map(wareData, function(s) {
+            return {
+                text: s.name,
+                id: s.id
+            }
+        }),
+        placeholder: "Chọn kho hàng",
+        width: '100%',
+        minimumResultsForSearch: Infinity,
+        dropdownParent: ".ware-e-group"
+    });
+    $("#c-supplier").select2({
+        data: $.map(supData, function(s) {
+            return {
+                text: s.supName,
+                id: s.id
+            }
+        }),
+        placeholder: "Chọn nhà cung cấp",
+        width: '100%',
+        minimumResultsForSearch: Infinity,
+        dropdownParent: ".sup-c-group"
+    });
+
+    $("#e-supplier").select2({
+        data: $.map(supData, function(s) {
+            return {
+                text: s.supName,
+                id: s.id
+            }
+        }),
+        placeholder: "Chọn nhà cung cấp",
+        width: '100%',
+        minimumResultsForSearch: Infinity,
+        dropdownParent: ".sup-e-group"
+    });
+
+    $("#date1").val(moment().format('YYYY-MM-DD'));
+
+    $("#c-searchbox").on("keyup", debounce(searchItem, 500));
+    $("#e-searchbox").on("keyup", debounce(searchItem2, 500));
     $("#btnClear").on("click", function (e) {
       e.preventDefault();
       table.ajax.reload(null, false)
-    //   window.location="/products"
-    });
-  
-    $('#date1').datepicker({
-        dateFormat: 'dd-mm-yy',
-        defaultDate: new Date(),
-        //calendarWeeks: true,
-        autoclose: true
-    });
-    
-    $('#date2').datepicker({
-        dateFormat: 'dd-mm-yy',
-        calendarWeeks: true,
-    });
-
-    const popover = new bootstrap.Popover('#statusBtn', {
-        container: 'body',
-        html: true,
-        sanitize: false,
-        placement: 'top',
-        trigger: 'hover focus',
-        content: function(){
-                    return "<div style='display: grid;'>"+
-                            "<button class='btn btn-secondary'>Da xac nhan</button>"+
-                            "<button class='btn btn-success'>Da nhap hang</button>"+
-                            "</div>"
-        }
     });
 });

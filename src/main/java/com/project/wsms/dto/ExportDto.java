@@ -18,6 +18,8 @@ public class ExportDto {
     private Integer status;
     private Integer wareId;
     private Integer empId;
+    private Integer totalQty;
+    private Integer totalMoney;
     private Date expectedAt;
     private Set<ExportItemDto> items;
 
@@ -25,6 +27,8 @@ public class ExportDto {
         Export newItem = new Export();
         newItem.setNote(this.note);
         newItem.setStatus(this.status);
+        newItem.setTotalQty(this.totalQty);
+        newItem.setTotalMoney(this.totalMoney);
         newItem.setExpected_at(this.expectedAt);
         return newItem;
     }
@@ -33,6 +37,8 @@ public class ExportDto {
         this.id = item.getId();
         this.status = item.getStatus();
         this.note = item.getNote();
+        this.totalQty = item.getTotalQty();
+        this.totalMoney = item.getTotalMoney();
         this.expectedAt = item.getExpected_at();
     }
 }

@@ -1,8 +1,10 @@
 package com.project.wsms.model;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -48,12 +50,19 @@ public class Supplier extends AuditModel {
 	@JsonIgnore
 	private Set<Product> products = new HashSet<>();
 
-	@JsonIgnore
+	@JsonBackReference(value = "supplier-import")
 	@OneToMany(mappedBy="supplier")
 	private Set<Import> importItems = new HashSet<>();
 
 	public void addImportItem(Import item) {
 		this.importItems.add(item);
+		item.setSupplier(this);
 	}
 
+	public void removeItem(Integer itemId) {
+		Import item = this.importItems.stream().filter(c -> Objects.equals(c.getId(), itemId)).findFirst().orElse(null);
+		if(item!=null) {
+			this.importItems.remove(item);
+		}
+	}
 }

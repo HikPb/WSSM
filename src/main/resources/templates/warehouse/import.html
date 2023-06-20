@@ -135,6 +135,16 @@
      <!-- END PAGA BACKDROPS-->
     <!-- SCRIPT -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        
+            const wareData = /*[[${wareData}]]*/ 'default';
+            const supData = /*[[${supData}]]*/ 'default';
+            const user = /*[[${user}]]*/ 'default';
+            var itemData = /*[[${itemData}]]*/ 'default';
+
+        /*]]>*/
+    </script>
     <script th:src="@{/js/importproduct.js}"></script>
 </body>
 

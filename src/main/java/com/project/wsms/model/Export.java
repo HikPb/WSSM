@@ -10,6 +10,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
@@ -44,19 +46,27 @@ public class Export extends AuditModel{
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ware_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
+	@JsonManagedReference(value = "warehouse-export")
+	@JsonIgnoreProperties(value = {
+		"createdAt", "updatedAt", "phone", "address", "hibernateLazyInitializer"})
 	private Warehouse warehouse;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "emp_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
+	@JsonManagedReference(value = "emp-export")
+	@JsonIgnoreProperties(value = {
+		"role", "fullname", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 	
 	@Column(name = "note", nullable = true, columnDefinition="TEXT")
 	private String note;
 	@Column(name = "status", nullable = false)
 	private Integer status;
+	@Column(name = "total_qty", nullable = true)
+	private Integer totalQty;
+	@Column(name = "total_money", nullable = true)
+	private Integer totalMoney;
 	@Column(name = "expected_at", nullable = true)
 	private Date expected_at;
 

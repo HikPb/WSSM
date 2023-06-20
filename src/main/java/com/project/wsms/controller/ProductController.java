@@ -1,11 +1,13 @@
 package com.project.wsms.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,18 +20,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.project.wsms.dto.EmployeeDto;
 import com.project.wsms.dto.ProductDto;
 import com.project.wsms.model.Category;
+import com.project.wsms.model.Employee;
 import com.project.wsms.model.Item;
 import com.project.wsms.model.Product;
 import com.project.wsms.model.Supplier;
 import com.project.wsms.model.Warehouse;
 import com.project.wsms.payload.response.ResponseObject;
 import com.project.wsms.service.CategoryService;
+import com.project.wsms.service.EmployeeService;
 import com.project.wsms.service.ItemService;
 import com.project.wsms.service.ProductService;
 import com.project.wsms.service.SupplierService;
 import com.project.wsms.service.WarehouseService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class ProductController {
@@ -47,10 +54,19 @@ public class ProductController {
 	private SupplierService supplierService;
 
 	@Autowired
+	private EmployeeService employeeService;
+
+	@Autowired
 	private ItemService itemService;
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/products")
-	public String getAllProduct(Model model) {
+	public String getAllProduct(Model model, HttpServletRequest request) {
+		Principal user = request.getUserPrincipal();
+		Employee emp = employeeService.getByUsername(user.getName()).get();
+		EmployeeDto employee = new EmployeeDto();
+		employee.convertToDto(emp);
+		model.addAttribute("user", employee);
 		model.addAttribute("pageTitle", "QUẢN LÝ SẢN PHẨM");
 		//model.addAttribute("warehouses", warehouseService.getAll());
 		return "products/products";
@@ -70,6 +86,8 @@ public class ProductController {
 //		 }
 //		return "redirect:/products";
 //	 }
+
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/products/create")
 	public String addProduct(Model model) {
 		model.addAttribute("product", new Product());
@@ -81,6 +99,7 @@ public class ProductController {
 		return new Product();
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("products/create")
 	public String saveProduct(@ModelAttribute("product") Product product) {
 		try {
@@ -92,7 +111,7 @@ public class ProductController {
 		return "redirect:/products";
 	}
 
-	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/products")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> findProducts() {
@@ -107,6 +126,7 @@ public class ProductController {
 				HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/products/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable Integer id) {
@@ -121,6 +141,7 @@ public class ProductController {
 				HttpStatus.NOT_FOUND);
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/products/search")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> findProductByKeyword(@RequestParam("keyword") String keyword) {
@@ -138,6 +159,7 @@ public class ProductController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/products/new")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> createProduct(@RequestBody ProductDto productDto) {
@@ -200,6 +222,7 @@ public class ProductController {
 	}
 
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@DeleteMapping("/api/products/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> deleteProduct(@PathVariable("id") Integer id) {
@@ -215,6 +238,7 @@ public class ProductController {
 				HttpStatus.NOT_FOUND);
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PutMapping("/api/products/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> updateOne(@RequestBody ProductDto productDto, @PathVariable Integer id) {

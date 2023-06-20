@@ -1,12 +1,15 @@
 package com.project.wsms.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import org.springframework.ui.Model;
-
+import com.project.wsms.dto.EmployeeDto;
+import com.project.wsms.model.Employee;
 import com.project.wsms.model.Supplier;
 import com.project.wsms.payload.response.ResponseObject;
+import com.project.wsms.service.EmployeeService;
 import com.project.wsms.service.SupplierService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @Controller
@@ -29,14 +34,24 @@ public class SupplierController {
 	
 	@Autowired
 	private SupplierService supplierService;
+
+	@Autowired
+	private EmployeeService employeeService;
 	
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/supplier")
-    public String view(Model model){
+    public String view(Model model, HttpServletRequest request){
+		Principal user = request.getUserPrincipal();
+		Employee emp = employeeService.getByUsername(user.getName()).get();
+		EmployeeDto employee = new EmployeeDto();
+		employee.convertToDto(emp);
+		model.addAttribute("user", employee);
         model.addAttribute("pageTitle", "QUẢN LÝ NHÀ CUNG CẤP");
 		return "supplier/supplier";
     }
-	
+
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/supplier")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllSupplier(){
@@ -52,6 +67,7 @@ public class SupplierController {
 		}	
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/supplier/search")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> searchSupplier(@RequestParam("key") String key){
@@ -69,6 +85,7 @@ public class SupplierController {
 		}		
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/supplier/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
@@ -83,6 +100,7 @@ public class SupplierController {
 				HttpStatus.NOT_FOUND);
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/supplier")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> saveSupplier(@Valid @RequestBody Supplier supplier) {
@@ -103,6 +121,7 @@ public class SupplierController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PutMapping("/api/supplier/{id}")
 	public ResponseEntity<ResponseObject> updateSupplier(@PathVariable Integer id, 
 	                                        @RequestBody Supplier supplier) {
@@ -128,6 +147,7 @@ public class SupplierController {
 				);
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@DeleteMapping("/api/supplier/{id}")
 	public ResponseEntity<ResponseObject> deleteSupplier(@PathVariable(value = "id") Integer id) {
 	    if(!supplierService.existsById(id)) {

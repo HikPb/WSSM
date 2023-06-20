@@ -1,11 +1,13 @@
 package com.project.wsms.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.project.wsms.dto.EmployeeDto;
 import com.project.wsms.model.Customer;
+import com.project.wsms.model.Employee;
 import com.project.wsms.payload.response.ResponseObject;
 import com.project.wsms.service.CustomerService;
+import com.project.wsms.service.EmployeeService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @Controller
@@ -29,13 +35,22 @@ public class CustomerController {
     @Autowired
 	private CustomerService customerService;
 	
+	@Autowired
+	private EmployeeService employeeService;
 
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/customer")
-    public String view(Model model){
+    public String view(Model model, HttpServletRequest request){
+		Principal user = request.getUserPrincipal();
+		Employee emp = employeeService.getByUsername(user.getName()).get();
+		EmployeeDto employee = new EmployeeDto();
+		employee.convertToDto(emp);
+		model.addAttribute("user", employee);
         model.addAttribute("pageTitle", "QUẢN LÝ KHÁCH HÀNG");
 		return "customer/customer";
     }
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/customer")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllCustomer(){
@@ -51,13 +66,32 @@ public class CustomerController {
 				HttpStatus.OK);
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/customer/search")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> searchCustomer(@RequestParam("key") String key){
+	public ResponseEntity<ResponseObject> searchCustomerByPhone(@RequestParam("phone") String key){
 		try {
 			List<Customer> listCustomer = customerService.getByPhone(key);
 			return new ResponseEntity<>( 
-					new ResponseObject("ok", "Query categories successfully", listCustomer), 
+					new ResponseObject("ok", "Query customer successfully", listCustomer), 
+					HttpStatus.OK);
+			
+		} catch (Exception e) {
+			return new ResponseEntity<>(
+					new ResponseObject("failed", "Exception when searching for: "+ key, ""), 
+					HttpStatus.BAD_REQUEST
+					);
+		}		
+	}
+
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@GetMapping("/api/customer/searchname")
+	@ResponseBody
+	public ResponseEntity<ResponseObject> searchCustomerByName(@RequestParam("name") String key){
+		try {
+			List<Customer> listCustomer = customerService.getByName(key);
+			return new ResponseEntity<>( 
+					new ResponseObject("ok", "Query customer successfully", listCustomer), 
 					HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -68,6 +102,7 @@ public class CustomerController {
 		}		
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@GetMapping("/api/customer/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
@@ -82,6 +117,7 @@ public class CustomerController {
 				HttpStatus.NOT_FOUND);
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PostMapping("/api/customer")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> saveCustomer(@Valid @RequestBody Customer customer) {
@@ -103,6 +139,7 @@ public class CustomerController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@PutMapping("/api/customer/{id}")
 	public ResponseEntity<ResponseObject> updateCustomer(@PathVariable Integer id, 
 	                                        @RequestBody Customer customer) {
@@ -130,6 +167,7 @@ public class CustomerController {
 				);
 	}
 	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	@DeleteMapping("/api/customer/{id}")
 	public ResponseEntity<ResponseObject> deleteCustomer(@PathVariable(value = "id") Integer id) {
 	    if(!customerService.existsById(id)) {

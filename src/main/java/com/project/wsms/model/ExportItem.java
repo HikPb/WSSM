@@ -38,7 +38,7 @@ public class ExportItem {
 	@JsonIgnore
 	private Export exportProduct;
 	
-	@JsonManagedReference
+	@JsonManagedReference(value = "eitem-item")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "item_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

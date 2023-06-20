@@ -18,7 +18,7 @@
             <!-- PAGE CONTENT -->
             <div class="content-wrapper2">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-5">
                         <div class="ibox" style="height: 700px; overflow-y: scroll;">
                             <div class="ibox-head">
 
@@ -29,9 +29,9 @@
                                         </span>
                                     </button>
                                 </div>
-                                <div class="has-search">
+                                <div class="has-search" style="width: 90%;">
                                     <span class="fa fa-search form-control-feedback"></span>
-                                    <input type="text" id="wh-search" onkeyup="searchWh()" class="form-control" placeholder="Tìm kiếm">
+                                    <input type="text" id="wh-search" onkeyup="search()" class="form-control" placeholder="Tìm kiếm">
                                 </div>
                                 <div class="ibox-tools">
                                     <a class="ibox-collapse">
@@ -44,19 +44,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-7">
                         <div class="ibox">
                             <div class="ibox-head">
                                 <ul class="nav nav-tabs tabs-line" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link active" data-bs-target="#tab-1" data-bs-toggle="tab" aria-expanded="true">
-                                            <i class="fa-brands fa-product-hunt"></i>
-                                            Sản phẩm</a>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <a class="nav-link" data-bs-target="#tab-2" data-bs-toggle="tab" aria-expanded="false">
-                                            <i class="fa-solid fa-sliders"></i>
-                                            Cấu hình</a>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                            Chỉnh sửa</a>
                                     </li>
                                 </ul>
                                 <div class="ibox-tools">
@@ -70,36 +65,32 @@
                             </div>
                             <div class="ibox-body">
                                 <div class="tab-content">
-                                    <div class="tab-pane fade active show" id="tab-1" aria-expanded="true">
-                                        <table class="table table-striped table-hover" id="whpTable">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th>Id</th>
-                                                    <th>Tên sản phẩm</th>
-                                                    <th>Sku</th>
-                                                    <th>Tồn kho</th>
-                                                    <th>Giá nhập</th>
-                                                    <th>Giá bán</th>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                    </div>
-                                    <div class="tab-pane fade" id="tab-2" aria-expanded="false">
-                                        <form id="e-wform">
+                                    <div class="" id="tab-1" aria-expanded="true">
+                                        <form id="e-form">
                                             <div class="row">
                                                 <div class="col-sm-6 form-group">
-                                                    <label>Tên kho hàng:</label>
-                                                    <input class="form-control" id="e-wname" type="text" placeholder="Tên kho hàng" required>
+                                                    <label>Họ và tên:</label>
+                                                    <input class="form-control" id="e-fullname" type="text" placeholder="Họ và tên" disabled>
                                                 </div>
                                                 <div class="col-sm-6 form-group">
                                                     <label>Số điện thoại:</label>
-                                                    <input class="form-control" id="e-wphone" type="text" placeholder="Số điện thoại" required>
+                                                    <input class="form-control" id="e-phone" type="text" placeholder="Số điện thoại" disabled>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label>Địa chỉ kho hàng:</label>
-                                                <input class="form-control" id="e-waddress" type="text" placeholder="Nhập địa chỉ kho hàng" required>
+                                            <div class="row">
+                                                <div class="col-sm-6 form-group">
+                                                    <label>Mật khẩu:</label>
+                                                    <input class="form-control" id="e-password" type="text" placeholder="Nhập mật khẩu mới" required>
+                                                </div>
+                                                <div class="col-sm-6 form-group">
+                                                    <label>Role:</label>
+                                                    <select class="form-control" id="e-role" disabled>
+                                                        <option>---</option>
+                                                        <option value="ROLE_ADMIN">ADMIN</option>
+                                                        <option value="ROLE_USER">USER</option>
+                                                    </select>
+                                                    <!-- <input class="form-control" id="e-wphone" type="text" placeholder="Số điện thoại" required> -->
+                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <button class="btn btn-primary" type="submit">Lưu</button>

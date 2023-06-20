@@ -41,7 +41,7 @@ public class CqItem {
 	@JsonIgnore
 	private CheckQty cqtyProduct;
 	
-	@JsonManagedReference
+	@JsonManagedReference(value = "cqitem-item")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "item_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

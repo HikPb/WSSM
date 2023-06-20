@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -17,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 
 @Entity
 @Setter
@@ -43,12 +45,14 @@ public class Customer {
 	@Column(name = "total_money", nullable = true)
 	private Integer tmoney = 0;
 	
+	// @JsonBackReference(value = "customer-order")
 	@JsonIgnore
 	@OneToMany(mappedBy="customer")
 	private Set<Order> orders = new HashSet<>();
 	
 	public void addOrder(Order order) {
 		this.orders.add(order);
+		order.setCustomer(this);
 	}
 
 

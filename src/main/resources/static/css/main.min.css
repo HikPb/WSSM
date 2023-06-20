@@ -1278,6 +1278,7 @@ body.fullscreen-mode {
 .dropdown-menu .dropdown-item,
 .dropdown-menu>li>a {
     padding: 8px 15px;
+    cursor: pointer;
     color: inherit
 }
 
@@ -4127,6 +4128,33 @@ table.dataTable {
     display: inline;
 }
 
+.cus-search-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    z-index: 99;
+    max-height: 220px;
+    overflow-y: scroll;
+}
+  
+.cus-search-items .cus-item {
+    padding: 3px;
+    cursor: pointer;
+    background-color: #fff; 
+    border-bottom: 1px solid #d4d4d4; 
+    display: flex;
+    align-items: center;
+}
+  
+  /*when hovering an item:*/
+.cus-search-items .cus-item:hover {
+    background-color: #e9e9e9; 
+}
+
+.cus-search-items .cus-item:hover .hide-btn {
+    display: inline;
+}
+
   /*when navigating through the items using the arrow keys:*/
 .search-active {
     background-color: DodgerBlue !important; 
@@ -4157,4 +4185,47 @@ table.dataTable {
 {
 	background-color: #ccc;
 	border: 1px solid #bbb;
+}
+
+.avatar-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;  
+}
+
+.avatar-btn{
+    border-radius: 50%;
+    border: 1px solid rgb(218,220,224);
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    width: auto;
+    display: block;
+    background: none;
+    padding: 0;
+}
+
+.avatar-figure{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    border-radius: 50%;
+    height: 140px;
+    width: 140px;
+}
+.avatar-edit-box{
+    position: absolute;
+    background-color: rgb(32 33 36 / 60%);
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    height: 20%;
+    width: 100%;
+    transition: opacity 0.2s ease-in-out;
+}
+.avatar-btn:hover > .avatar-edit-box{
+    opacity: 1;
 }

@@ -1,12 +1,18 @@
 package com.project.wsms.model;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +36,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "orders")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Order extends AuditModel{
 	private static final long serialVersionUID = 1L;
 	
@@ -40,13 +47,16 @@ public class Order extends AuditModel{
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cus_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
+	@JsonManagedReference(value = "customer-order")
+	@JsonIgnoreProperties(value = {"hibernateLazyInitializer"}) 
 	private Customer customer;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "emp_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
+	@JsonManagedReference(value = "emp-order")
+	@JsonIgnoreProperties(value = {
+		"role", "fullname", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 	
 	private Integer status;
@@ -73,14 +83,17 @@ public class Order extends AuditModel{
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ware_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
+	@JsonManagedReference(value = "warehouse-order")
+	@JsonIgnoreProperties(value = {
+		"createdAt", "updatedAt", "phone", "address", "hibernateLazyInitializer"})
 	private Warehouse warehouse;
 	
 	@OneToMany(mappedBy="order")
-	private Set<OrderItem> orderItems;
+	private Set<OrderItem> orderItems = new HashSet<>();
 	
 	public void addOrderItem(OrderItem item) {
 		this.orderItems.add(item);
+		item.setOrder(this);
 	}
 	
 	public void removeOrderItem(Integer itemId) {
