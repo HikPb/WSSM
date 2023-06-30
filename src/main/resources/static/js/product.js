@@ -64,7 +64,9 @@ $(document).ready(function () {
             	}
             },
             {
-                defaultContent: '<button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>'
+                defaultContent: `<div>
+                                    <button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                </div>`
             },
         ],
         paging: true, 
@@ -454,8 +456,9 @@ $(document).ready(function () {
                 toast.show()
                 //window.location.href = "/products"
             },  
-            error: function (err) {  
-                alert(err);  
+            error: function (error) {  
+
+                alert(error.message);  
             } 
         });
         

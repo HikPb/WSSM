@@ -64,7 +64,7 @@ public class Import extends AuditModel{
     @OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonManagedReference(value = "emp-import")
 	@JsonIgnoreProperties(value = {
-		"role", "fullname", "phone", "hibernateLazyInitializer"})
+		"role", "fullname", "password", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 
 	@OneToMany(mappedBy = "importProduct")

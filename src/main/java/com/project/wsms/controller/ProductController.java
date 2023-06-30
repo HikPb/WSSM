@@ -59,7 +59,8 @@ public class ProductController {
 	@Autowired
 	private ItemService itemService;
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/products")
 	public String getAllProduct(Model model, HttpServletRequest request) {
 		Principal user = request.getUserPrincipal();
@@ -87,7 +88,8 @@ public class ProductController {
 //		return "redirect:/products";
 //	 }
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/products/create")
 	public String addProduct(Model model) {
 		model.addAttribute("product", new Product());
@@ -99,7 +101,8 @@ public class ProductController {
 		return new Product();
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("products/create")
 	public String saveProduct(@ModelAttribute("product") Product product) {
 		try {
@@ -111,7 +114,8 @@ public class ProductController {
 		return "redirect:/products";
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/products")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> findProducts() {
@@ -126,7 +130,8 @@ public class ProductController {
 				HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/products/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable Integer id) {
@@ -141,7 +146,8 @@ public class ProductController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/products/search")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> findProductByKeyword(@RequestParam("keyword") String keyword) {
@@ -159,15 +165,18 @@ public class ProductController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("/api/products/new")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> createProduct(@RequestBody ProductDto productDto) {
 		try {
 			Product newProduct = productDto.convertToEntity();
+
 			newProduct.setTSale(0);
 			newProduct.setTImport(0);
 			newProduct.setTInventory(0);
+			productService.save(newProduct);
 			if(!productDto.getCategories().isEmpty()){
 				productDto.getCategories().forEach(c->{
 					if(categoryService.existsById(c.getId())) {
@@ -198,12 +207,12 @@ public class ProductController {
 					newProduct.setTImport(newProduct.getTImport() + it.getQty());
 					newProduct.setTInventory(newProduct.getTInventory() + it.getQty());
 					Warehouse wh = warehouseService.getById(it.getWareId()).get();
-					newItem.setProduct(newProduct);
-					newItem.setWarehouse(wh);
+					// newItem.setProduct(newProduct);
+					// newItem.setWarehouse(wh);
 					newProduct.addItem(newItem);
 					wh.addItem(newItem);
-					warehouseService.save(wh);
 					itemService.save(newItem);
+					warehouseService.save(wh);
 				});
 
 			}
@@ -222,7 +231,8 @@ public class ProductController {
 	}
 
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@DeleteMapping("/api/products/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> deleteProduct(@PathVariable("id") Integer id) {
@@ -238,7 +248,8 @@ public class ProductController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PutMapping("/api/products/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> updateOne(@RequestBody ProductDto productDto, @PathVariable Integer id) {
@@ -281,8 +292,8 @@ public class ProductController {
 					newItem.setWarehouse(wh);
 					p.addItem(newItem);
 					wh.addItem(newItem);
-					warehouseService.save(wh);
 					itemService.save(newItem);
+					warehouseService.save(wh);
 				} else {
 					Optional<Item> it = itemService.getById(i.getId());
 					p.setTInventory(p.getTInventory() - it.get().getQty() + i.getQty());

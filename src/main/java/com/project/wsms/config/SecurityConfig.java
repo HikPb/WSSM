@@ -46,6 +46,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider authProvider=new DaoAuthenticationProvider();
+        authProvider.setHideUserNotFoundExceptions(false);
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
@@ -58,28 +59,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, RememberMeServices rememberMeServices) throws Exception {
-        http.csrf().disable()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            //.authorizeHttpRequests().anyRequest().permitAll()
-            .authorizeHttpRequests()
-                .requestMatchers("/", "/login", "/logout", "/css/**", "/img/**", "/js/**", "/webjars/**").permitAll()
-                .anyRequest().authenticated()
-            .and()
-            .exceptionHandling()
-            .authenticationEntryPoint(authEntryPoint)
-            .and()
+        http
+            .cors(cors -> cors.disable())
+            .csrf(csrf -> csrf.disable())
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests( auth -> {
+                auth.requestMatchers("/", "/login", "/logout", "/css/**", "/img/**", "/js/**", "/webjars/**").permitAll();
+                auth.anyRequest().authenticated();
+            })
             .authenticationProvider(authenticationProvider())
-            .logout()
-            .logoutUrl("/logout")
-            .logoutSuccessUrl("/")
-            .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID", "access-token");
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID", "access-token")
+            );
+            
 
         http.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.rememberMe((remember) -> remember
-            .rememberMeServices(rememberMeServices));
+        http.rememberMe((remember) -> remember.rememberMeServices(rememberMeServices));
         return http.build();
     }
 

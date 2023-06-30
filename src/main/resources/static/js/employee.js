@@ -5,15 +5,15 @@ $(document).ready(function () {
     
     $("#e-form").on("submit", function (e) {
         e.preventDefault();
-        let customer = JSON.stringify({
-            name: $("#e-wname").val(),
-            phone: $("#e-wphone").val(),
-            address: $("#e-waddress").val(),
+        let payload = JSON.stringify({
+            id: $(this).attr("wid"),
+            newPassword: $("#e-password").val(),
+            role: $("#e-role").val(),
         });
         $.ajax({
-            url: "/api/employee/"+$(this).attr("wid"),
+            url: "/api/employee/admin-change",
             method: "put",
-            data: customer,
+            data: payload,
             contentType: "application/json",
             success: function (response) {  
                 showListEmployee()
@@ -107,6 +107,26 @@ $(document).ready(function () {
     $("#e-fullname").val(empData.fullname);
     $("#e-phone").val(empData.phone);    
     //$("#e-password").val(empData.username);
+    if(empData.role =="ROLE_ADMIN"){
+        let elm =  `<select class="form-control" id="e-role" disabled>
+                        <option>---</option>
+                        <option value="ROLE_ADMIN">ADMIN</option>
+                        <option value="ROLE_MODERATOR">MODERATOR</option>
+                        <option value="ROLE_USER">USER</option>
+                    </select>`;
+        $("#div-role").empty()
+        $("#div-role").append(elm);
+    } else{
+        let elm =  `<select class="form-control" id="e-role">
+                        <option>---</option>
+                        <option value="ROLE_ADMIN">ADMIN</option>
+                        <option value="ROLE_MODERATOR">MODERATOR</option>
+                        <option value="ROLE_USER">USER</option>
+                    </select>`;
+        $("#div-role").empty();
+        $("#div-role").append(elm);
+    }
+    
     $("#e-role").val(empData.role);    
   }
 

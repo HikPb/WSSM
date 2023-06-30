@@ -13,6 +13,8 @@ public interface OrderService{
 
     public List<Order> getAll();
 
+	public List<Order> getByCustomer(Integer id);
+
     public void delete(Integer orderId);	
 	
 	public Optional<Order> getById(Integer orderId);

@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -53,7 +54,7 @@ public class Product extends AuditModel {
 	@Column(name = "total_inventory", nullable = true)
 	private Integer tInventory;
 	
-	//@JsonIgnore
+	@JsonIgnore
 	@JsonBackReference(value = "product-item")
 	@OneToMany(mappedBy="product")
 	private Set<Item> items = new HashSet<>();
@@ -82,6 +83,7 @@ public class Product extends AuditModel {
 
 	public void addItem(Item item) {
 		this.items.add(item);
+		item.setProduct(this);
 	}
 	
 	public void addCategory(Category category) {

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -118,6 +119,22 @@ public class OrderController {
 				HttpStatus.NOT_FOUND);
 	}
 
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@ResponseBody
+	@GetMapping("/api/order/customer/{id}")
+	public ResponseEntity<ResponseObject> getOrderByCustomer(@PathVariable("id") Integer id) {
+		try{
+			List<Order> listOrder = orderService.getByCustomer(id);
+			return new ResponseEntity<>(
+					new ResponseObject("ok", "Query item successfully", listOrder),
+					HttpStatus.OK);		
+		} catch (Exception e){
+			return new ResponseEntity<>(
+				new ResponseObject("Failed", "Error when searching with id = ", ""),
+				HttpStatus.BAD_REQUEST);
+		}		
+	}
+
 	@PostMapping("/api/order/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeOrderStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
@@ -152,7 +169,7 @@ public class OrderController {
 
 				if(object.getStatus()==2){
 					switch(st){
-						case 0:
+						case 0:    //Chuan bi hang -> huy don
 							object.setStatus(st);
 							object.getOrderItems().forEach(it->{
 								Item item = it.getItem();
@@ -160,7 +177,7 @@ public class OrderController {
 								itemService.save(item);
 							});
 							break;
-						case 1:
+						case 1:   //chuan bi hang -> moi
 							object.setStatus(st);
 							object.getOrderItems().forEach(it->{
 								Item item = it.getItem();

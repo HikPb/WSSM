@@ -38,12 +38,26 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="login-wrap p-0">
                         <!-- <h3 class="mb-4 text-center">Đăng nhập</h3> -->
-                        <form action="#" class="signin-form" th:action="@{/login}" method="post" th:object="${loginRequest}">
+                        <div id="caution" 
+                            style="position: absolute;
+                                    display: none;
+                                    background-color: #ffceb6;
+                                    border: 1px solid #ff00f4;
+                                    border-radius: 5px;
+                                    padding: 10px;
+                                    width: 100%;
+                                    top: -3.5rem;">
+                            <i class="fa-solid fa-circle-xmark" style="color: #c70000;"></i>
+                            <span style="color: #c70000;" id="caution-text"></span>
+                        </div>
+                        <form action="login" class="signin-form" name="f" id="login-form" method="post">
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Tên đăng nhập" name="username" autocomplete="off" th:field="*{username}" required>
+                                <input type="text" class="form-control" placeholder="Tên đăng nhập" name="username" autocomplete="off"
+                                oninvalid="this.setCustomValidity('Không bỏ trống tên đăng nhập')" oninput="setCustomValidity('')" required>
                             </div>
                             <div class="form-group">
-                                <input id="password-field" type="password" class="form-control" placeholder="Mật khẩu" name="password" autocomplete="off" th:field="*{password}" required>
+                                <input id="password-field" type="password" class="form-control" placeholder="Mật khẩu" name="password" autocomplete="off"
+                                oninvalid="this.setCustomValidity('Không bỏ trống mật khẩu')" oninput="setCustomValidity('')" required>
                                 <span toggle="#password-field" class="fa fa-fw field-icon toggle-password fa-eye"></span>
                             </div>
                             <div class="form-group d-md-flex">
@@ -67,43 +81,6 @@
         </div>
 
     </section>
-
-    <!-- <div class="content">
-        <div class="brand">
-            <a class="link" th:href="@{/}">WSSM</a>
-        </div>
-        <form id="login-form" th:action="@{/login}" method="post" th:object="${loginRequest}">
-            <h2 class="login-title">Đăng nhập</h2>
-
-            <div class="form-group">
-                <div class="input-group">
-                    <div class="input-group-addon"><i class="fa-solid fa-user"></i></div>
-                    <input class="form-control" type="text" name="username" placeholder="Tên tài khoản" autocomplete="off"
-                    th:field="*{username}" required oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group">
-                    <div class="input-group-addon"><i class="fa-solid fa-lock"></i></div>
-                    <div style="display: flex;position: absolute;right: 10px;transform: translate(0px, 10px);z-index: 100;" onclick="showhidePassword('pw','icon')">
-                        <i id="icon" class="fa-solid fa-eye-slash"></i>
-                    </div>
-                    <input class="form-control" type="password" id ="pw" name="password" placeholder="Mật khẩu" autocomplete="off"
-                    th:field="*{password}" required oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')">
-                </div>
-            </div>
-            
-            <div class="form-group d-flex justify-content-between">
-                <label class="ui-checkbox ui-checkbox-info">
-                    <input type="checkbox" name="remember-me">
-                    <span class="input-span"></span>Ghi nhớ</label>
-                <a href="forgot_password.html">Forgot password?</a>
-            </div>
-            <div class="form-group">
-                <button class="btn btn-info btn-block" type="submit" style="width: 100%;">Đăng nhập</button>
-            </div>
-        </form>
-    </div> -->
     <!-- END PAGA BACKDROPS-->
     <!-- CORE PLUGINS -->
     <script th:src="@{/webjars/jquery/3.6.1/jquery.js}"></script> 

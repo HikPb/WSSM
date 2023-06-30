@@ -56,7 +56,7 @@ public class Order extends AuditModel{
     @OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonManagedReference(value = "emp-order")
 	@JsonIgnoreProperties(value = {
-		"role", "fullname", "phone", "hibernateLazyInitializer"})
+		"role", "fullname", "password", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 	
 	private Integer status;
@@ -65,12 +65,14 @@ public class Order extends AuditModel{
 	
 	private Integer totalWeight;
 	private Integer shippingFee; //tien ship
-	private Integer totalDiscount; // tong tien giam gia
+	private Integer totalDiscount; // tong tien giam gia = giam gia tren don + giam tren san pham
 	private Integer receivedMoney; // tien da thanh toan truoc, dat coc vv
+	private Integer discount; // giam gia tren don
 	private Integer owe;	// tien khach con nợ
-	private Integer total;
-	private Integer revenue; // doanh thu
-	private Integer sales; // doanh so
+	private Integer total;  // tong so sp tren don
+	private Integer revenue; // doanh thu = doanh so - tong tien giam gia
+	private Integer sales; // doanh so = gia ban * sluong + phi van chuyen
+	private Integer profit; // loi nhuan = doanh thu - gia goc san pham
 	
 	private String receiverName;
 	private String receiverPhone;

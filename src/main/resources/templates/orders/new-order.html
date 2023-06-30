@@ -37,20 +37,9 @@
                     </div>
                     <div style="display: flex;">
                         <div class="status-info" style="background: rgb(0, 162, 174); margin-right: 8px; flex: 1 1 0%; cursor: pointer;">Mới</div>
-                        <!-- <span class="order-action-button" style="margin-right: 8px;">
-                            <button type="button" class="btn btn-outline-primary" style="height: 100%; border: 1px solid rgb(0, 162, 174); color: rgb(0, 162, 174);">
-                                <i class="fa-solid fa-copy"></i>
-                                <span>Tạo đơn trùng lặp</span>
-                            </button>
-                        </span>
-                        <span class="order-action-button" style="margin-right: 8px;">
-                            <button type="button" class="btn btn-warning" style="font-size: 14px; height: 100%; background: rgb(250, 173, 20); border-color: rgb(250, 173, 20);">
-                                <i class="fa-solid fa-print"></i>
-                                <span>In</span>
-                            </button>
-                        </span> -->
+                    
                         <span class="order-action-button">
-                            <button type="button" class="btn btn-primary" style="font-size: 14px; height: 100%; background: rgb(14, 86, 255); border-color: rgb(13, 26, 217);" id="c-submit-btn">
+                            <button type="submit" form="c-form" class="btn btn-primary" style="font-size: 14px; height: 100%; background: rgb(14, 86, 255); border-color: rgb(13, 26, 217);" id="c-submit-btn">
                                 <i class="fa-solid fa-floppy-disk"></i>
                                 <span>Lưu</span>
                             </button>
@@ -62,6 +51,26 @@
             
         </div>
         <th:block th:include="~{fragments/modal :: toast-modal}"></th:block>
+
+        <div class="modal fade" id="draftModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Nhắc nhở</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: white;">
+                    <div class="px-4">
+                        <span>Bạn có một đơn hàng chưa hoàn thành. Bạn có muốn tiếp tục nó?</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Không</button>
+                  <button type="button" class="btn btn-primary" onclick="loadDraftData()">Đồng ý</button>
+                </div>
+              </div>
+            </div>
+        </div>
 
         <!-- FOOTER -->
         <div th:replace="fragments/footer :: footer"></div>

@@ -51,6 +51,7 @@ public class Supplier extends AuditModel {
 	private Set<Product> products = new HashSet<>();
 
 	@JsonBackReference(value = "supplier-import")
+	@JsonIgnore
 	@OneToMany(mappedBy="supplier")
 	private Set<Import> importItems = new HashSet<>();
 

@@ -1,9 +1,9 @@
 <div th:fragment="order-modal">
     
     <div class="modal fade" role="dialog" id="edit-modal">
-        <div class="modal-dialog modal-fullscreen" role="document">
+        <div class="modal-dialog" style="--bs-modal-width: 95vw; height: 100vh;">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="height: 6vh;">
                     <div class="modal-title">
                         Thông tin chi tiết đơn hàng
                     </div>
@@ -12,7 +12,7 @@
 
                 <form action="#" enctype="multipart/form-data" method="post" id="e-form">
                     
-                    <div class="modal-body" style="overflow-y: auto; height: 800px;">
+                    <div class="modal-body" style="overflow-y: auto; height: 80vh;">
                         <div class="formbox-container">
                             <div class="boxes-model">
                                 <div class="box-row-order">
@@ -37,7 +37,7 @@
                                                                     <span class="ant-input-wrapper ant-input-group">
                                                                         <div class="form-group">
                                                                             <div class="input-group" style="background-color: #fff;border: 1px solid #cecece;">
-                                                                                <input class="form-control" id="c-searchbox" type="text" placeholder="Nhập tên sản phẩm hoặc barcode" style="border: none;">
+                                                                                <input class="form-control" id="c-searchbox" type="text" autocomplete="off" placeholder="Nhập tên sản phẩm hoặc barcode" style="border: none;">
                                                                                 <div class="input-group-addon" style="display: flex;align-items: center;margin-left: 3px;">
                                                                                     <input type="checkbox" id="c-checkbox" style="margin-right: 2px;">
                                                                                     <label class="form-check-label" for="c-checkbox">Còn hàng</label>
@@ -204,7 +204,7 @@
                                                             <div class="processor" id="processor-insert-at">
                                                                 <div>Tạo lúc:</div>
                                                                 <div>
-                                                                    <span style="color: rgb(9, 109, 217); font-weight: 500;" th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}">
+                                                                    <span style="color: rgb(9, 109, 217); font-weight: 500;" id="c-createdAt">
                     
                                                                     </span>
                                                                 </div>
@@ -242,15 +242,12 @@
                                                         <div class="row mt-2">
                                                             <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
                                                                 <div class="form-group px-1">
-                                                                    <input class="form-control" type="text" placeholder="Tên khách hàng" id="c-cusName">
-                                                                    <!-- <select class="form-control" id="c-cusName">
-                                                                        <option></option>
-                                                                    </select> -->
+                                                                    <input class="form-control" type="text" placeholder="Tên khách hàng" id="c-cusName" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
                                                                 </div>
                                                             </div>
                                                             <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
                                                                 <div class="form-group px-1">
-                                                                    <input class="form-control" type="tel" placeholder="Số điện thoại" id="c-cusPhone">
+                                                                    <input class="form-control" type="tel" pattern="[0-9]{10}" placeholder="Số điện thoại" id="c-cusPhone" required="required">
                                                                 </div>
                                                             </div>
                                                             <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
@@ -349,9 +346,9 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer">
-                        <div class="d-flex justify-content-between" style="width: 100%; margin: 0 10px;">
-                            <div style="font-size: 16px;">
+                    <div class="modal-footer" style="height: 8vh;">
+                        <div class="d-flex justify-content-between" style="width: 100%; height: 100%; margin: 0 10px;">
+                            <div style="display: flex; flex-direction: column;">
                                 <div>Tổng số tiền:
                                     <span style="font-weight: 500;"><span id="subTotal"></span> ₫</span>
                                 </div>
@@ -360,15 +357,12 @@
                                 </div>
                             </div>
                             <div style="display: flex;">
-                                <button style="background: rgb(0, 162, 174); width: 100px; margin-right: 8px; flex: 1 1 0%; cursor: pointer;">
+                                <button style="background: rgb(0, 162, 174); width: 6vw; margin-right: 8px; flex: 1 1 0%; cursor: pointer; border: none;">
                                     Mới
                                 </button>
-                                <span class="order-action-button">
-                                    <button type="submit" class="btn btn-primary" style="font-size: 14px; height: 100%; background: rgb(14, 86, 255); border-color: rgb(13, 26, 217);" id="e-submit-btn">
-                                        <i class="fa-solid fa-floppy-disk"></i>
-                                        <span>Lưu</span>
-                                    </button>
-                                </span>
+                                <button type="submit" class="btn btn-primary" style=" background: rgb(14, 86, 255); border-color: rgb(13, 26, 217);" id="e-submit-btn">
+                                    <i class="fa-solid fa-floppy-disk"></i><span> Lưu</span>
+                                </button>
                             </div>
                         </div>
                     </div>

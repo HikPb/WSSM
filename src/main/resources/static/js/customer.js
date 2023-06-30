@@ -146,6 +146,33 @@ $(document).ready(function () {
             $("#e-oc").text(data.npCus-data.nsoCus);
             $("#e-tm").text(data.tmoney);
         })
+        $("#co-table").DataTable().clear().destroy();
+        $("#co-table").DataTable({
+            processing: true,
+            responsive: true,
+            paging: false,
+            scrollCollapse: true,
+            //scrollX: true,
+            //scrollY: "200px",
+            ajax: {
+                url: "/api/order/customer/"+data["id"],
+                dataSrc: '',
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                dataSrc: 'data'
+            },
+            columns: [
+                {defaultContent: '',data: null,},
+                { data: "id"},
+                { data: "owe"},
+                { data: "revenue" },
+                { data: "createdAt", render: function(data, type, row){ return moment(data).format("DD/MM/YYYY");}},
+                { data: "status"}
+            ],
+            dom: "t",
+            //order: [[ 1, 'desc' ]],
+        })
         $("#e-cus-modal").modal("show");
     });
 

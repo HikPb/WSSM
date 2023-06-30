@@ -5,10 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,29 +41,29 @@ public class Warehouse extends AuditModel {
 	@Column(name = "address", nullable = true)
 	private String address;
 
-	//@JsonBackReference(value = "warehouse-export")
+	@JsonBackReference(value = "warehouse-export")
 	@JsonIgnore
 	@OneToMany(mappedBy = "warehouse")
 	private Set<Export> exports = new HashSet<>();
 
-	//@JsonBackReference(value = "warehouse-import")
+	@JsonBackReference(value = "warehouse-import")
 	@JsonIgnore
 	@OneToMany(mappedBy = "warehouse")
 	private Set<Import> imports = new HashSet<>();
 
-	//@JsonBackReference(value = "warehouse-checkqty")
+	@JsonBackReference(value = "warehouse-checkqty")
 	@JsonIgnore
 	@OneToMany(mappedBy = "warehouse")
 	private Set<CheckQty> checkqtys = new HashSet<>();
 	
-	//@JsonBackReference(value = "warehouse-item")
+	@JsonBackReference(value = "warehouse-item")
 	@JsonIgnore
 	@OneToMany(mappedBy = "warehouse")
 	private Set<Item> items = new HashSet<>();
 
 	@Transient
 	@JsonIgnore
-	//@JsonBackReference(value = "warehouse-order")
+	@JsonBackReference(value = "warehouse-order")
 	@OneToMany(mappedBy = "warehouse")
 	private Set<Order> orders = new HashSet<>();
 

@@ -42,22 +42,22 @@ public class Employee {
 	private String phone;
 	private String password;
 	
-	//@JsonBackReference(value = "emp-order")
+	@JsonBackReference(value = "emp-order")
 	@JsonIgnore
 	@OneToMany(mappedBy="employee")
 	private Set<Order> orders = new HashSet<>();
 	
-	//@JsonBackReference(value = "emp-import")
+	@JsonBackReference(value = "emp-import")
 	@JsonIgnore
 	@OneToMany(mappedBy="employee")
 	private Set<Import> imports  = new HashSet<>();
 	
-	//@JsonBackReference(value = "emp-export")
+	@JsonBackReference(value = "emp-export")
 	@JsonIgnore
 	@OneToMany(mappedBy="employee")
 	private Set<Export> exports  = new HashSet<>();
 	
-	//@JsonBackReference(value = "emp-checkqty")
+	@JsonBackReference(value = "emp-checkqty")
 	@JsonIgnore
 	@OneToMany(mappedBy="employee")
 	private Set<CheckQty> checkqtys = new HashSet<>();

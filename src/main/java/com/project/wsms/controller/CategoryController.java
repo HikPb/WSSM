@@ -89,12 +89,12 @@ public class CategoryController {
 			newCategory.setCateName(category.getCateName());
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Save new category successfully", categoryService.save(newCategory)), 
-					HttpStatus.BAD_REQUEST
+					HttpStatus.CREATED
 					);
 		} catch (Exception e) {
 			return new ResponseEntity<>(
 					new ResponseObject("failed", "Exception when saving new category", ""), 
-					HttpStatus.BAD_REQUEST
+					HttpStatus.NOT_FOUND
 					);
 		}
 	}

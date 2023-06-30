@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>Lỗi</title>
+    <!-- GLOBAL MAINLY STYLES-->
+    <link th:href="@{/img/favicon.ico}" rel="icon">
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css} " />
+    <!-- THEME STYLES-->
+    <link th:rel="stylesheet" th:href="@{/css/main.min.css} " />
+</head>
+
+<body class="bg-silver-100">
+    <div class="content">
+        <h1 class="m-t-20"></h1>
+        <p class="error-title">Lỗi</p>
+        <p class="m-b-20">Xin lỗi, không thể chuyển đến trang này. Hãy kiểm tra lại URL và thử lại hoặc
+            <a class="color-green" href="/">bấm vào đây</a> để chuyển về trang chủ</p>
+    </div>
+    <style>
+        .content {
+            max-width: 450px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .content h1 {
+            font-size: 160px
+        }
+
+        .error-title {
+            font-size: 22px;
+            font-weight: 500;
+            margin-top: 30px
+        }
+    </style>
+    <!-- BEGIN PAGA BACKDROPS-->
+    <div class="sidenav-backdrop backdrop"></div>
+    <div class="preloader-backdrop">
+        <div class="page-preloader">Loading</div>
+    </div>
+    <!-- END PAGA BACKDROPS-->
+    <script th:src="@{/webjars/jquery/3.6.1/jquery.js}"></script> 
+    <script th:src="@{/webjars/popper.js/2.9.3/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.min.js}"></script>
+    <!-- CORE PLUGINS -->
+    <!-- <script th:src="@{/js/app.min.js}"></script> -->
+    <script type="text/javascript">
+        $(window).on("load", function() {
+            setTimeout(function() {
+                $(".preloader-backdrop").fadeOut(200), $("body").addClass("has-animation")
+            }, 0)
+        });
+    </script>
+</body>
+
+</html>

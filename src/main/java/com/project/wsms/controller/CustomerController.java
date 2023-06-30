@@ -38,7 +38,8 @@ public class CustomerController {
 	@Autowired
 	private EmployeeService employeeService;
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/customer")
     public String view(Model model, HttpServletRequest request){
 		Principal user = request.getUserPrincipal();
@@ -50,7 +51,8 @@ public class CustomerController {
 		return "customer/customer";
     }
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/customer")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllCustomer(){
@@ -66,7 +68,8 @@ public class CustomerController {
 				HttpStatus.OK);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/customer/search")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> searchCustomerByPhone(@RequestParam("phone") String key){
@@ -84,7 +87,8 @@ public class CustomerController {
 		}		
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/customer/searchname")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> searchCustomerByName(@RequestParam("name") String key){
@@ -102,7 +106,8 @@ public class CustomerController {
 		}		
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/customer/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
@@ -117,7 +122,8 @@ public class CustomerController {
 				HttpStatus.NOT_FOUND);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("/api/customer")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> saveCustomer(@Valid @RequestBody Customer customer) {
@@ -139,7 +145,8 @@ public class CustomerController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PutMapping("/api/customer/{id}")
 	public ResponseEntity<ResponseObject> updateCustomer(@PathVariable Integer id, 
 	                                        @RequestBody Customer customer) {
@@ -167,7 +174,8 @@ public class CustomerController {
 				);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@DeleteMapping("/api/customer/{id}")
 	public ResponseEntity<ResponseObject> deleteCustomer(@PathVariable(value = "id") Integer id) {
 	    if(!customerService.existsById(id)) {

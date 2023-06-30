@@ -23,7 +23,7 @@
 	  }
 	});
 
-	$("#loginBtn").on("click", async function(e){
+	$("#login-form").on("submit", async function(e){
 		e.preventDefault();
 		await fetch ("/login", {
 			method: "POST",
@@ -39,31 +39,44 @@
 			if(!response.ok) {
 				throw Error(response.statusText);
 			}
-			console.log(response)
 			return response.json();
 		})
 		.then(data =>{
-			if(data.status=="ok"){
-				// let redirectUrl = "/overview";
-				// console.log(data)
-				// fetch(redirectUrl, {
-				// 	headers: {
-				// 	  'Authorization': `Bearer ${data.data.token}`
-				// 	}
-				//   })
-				//   .then(() => {
-				// 	window.location.href = redirectUrl;
-				//   })
-				//   .catch((error) => {
-				// 	console.error(error);
-				//   });
-				//document.cookie = "token="+data.data.token+";expires=Thu, 15 Jun 2023 23:00:00 UTC;"
-				window.location="/overview";
-			}else if(data.status=="failed"){
-				window.location.href="/login"
+			if(data.status == "OK"){
+				window.location.href ="/overview";
+			} else if(data.status == "USERNAME_NOT_FOUND"){
+				$("#caution-text").text('Tên đăng nhập không chính xác');
+				$("#caution").css("display", "block");
+				setTimeout(()=>{
+					$("#caution").css("display", "none");
+				},3000);
+			} else if(data.status == "BAD_CREDENTIALS"){
+				$("#caution-text").text('Mật khẩu không chính xác');
+				$("#caution").css("display", "block");
+				setTimeout(()=>{
+					$("#caution").css("display", "none");
+				},3000);
 			}
-			//console.log(data);
 		})
 		.catch(error => console.log(error));
-	})
+	});
+
+	function validate() {
+		if (document.f.username.value == "" && document.f.password.value == "") {
+			alert("Username and password are required");
+			document.f.username.focus();
+			return false;
+		}
+		if (document.f.username.value == "") {
+			alert("Username is required");
+			document.f.username.focus();
+			return false;
+		}
+		if (document.f.password.value == "") {
+		alert("Password is required");
+		document.f.password.focus();
+			return false;
+		}
+	}
+
 })(jQuery);

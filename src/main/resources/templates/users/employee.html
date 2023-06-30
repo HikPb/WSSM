@@ -80,15 +80,18 @@
                                             <div class="row">
                                                 <div class="col-sm-6 form-group">
                                                     <label>Mật khẩu:</label>
-                                                    <input class="form-control" id="e-password" type="text" placeholder="Nhập mật khẩu mới" required>
+                                                    <input class="form-control" id="e-password" type="text" placeholder="Nhập mật khẩu mới">
                                                 </div>
                                                 <div class="col-sm-6 form-group">
                                                     <label>Role:</label>
-                                                    <select class="form-control" id="e-role" disabled>
-                                                        <option>---</option>
-                                                        <option value="ROLE_ADMIN">ADMIN</option>
-                                                        <option value="ROLE_USER">USER</option>
-                                                    </select>
+                                                    <div id="div-role"> 
+                                                        <select class="form-control" id="e-role">
+                                                            <option>---</option>
+                                                            <option value="ROLE_ADMIN">ADMIN</option>
+                                                            <option value="ROLE_MODERATOR">MODERATOR</option>
+                                                            <option value="ROLE_USER">USER</option>
+                                                        </select>
+                                                    </div>
                                                     <!-- <input class="form-control" id="e-wphone" type="text" placeholder="Số điện thoại" required> -->
                                                 </div>
                                             </div>

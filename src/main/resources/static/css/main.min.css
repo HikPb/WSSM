@@ -4229,3 +4229,46 @@ table.dataTable {
 .avatar-btn:hover > .avatar-edit-box{
     opacity: 1;
 }
+
+.customer-info-container{
+    position: relative; 
+    cursor: pointer;
+    padding: 6px; 
+    background-color: rgba(240, 245, 255, .4); 
+    border: 1px solid #adc6ff;
+  }
+  .customer-profile{
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #bae7ff;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+  }
+  .customer-profile-info{
+      display: inline-flex;
+      flex-direction: column;
+      font-weight: 500;
+  }
+  .customer-profile-dob{
+      display: inline-flex;
+      flex-direction: column;
+      margin-left: 10px;
+      justify-content: center;
+      align-items: flex-end;
+  }
+  .customer-info-history{
+    display: flex;
+    flex: 1 1 0%;
+    justify-content: space-between;
+  }
+  .close-box{
+      position: absolute;
+      background-color: rgba(240, 245, 255, .4); 
+      top: -6px;
+      right: -6px;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+  }
+  .customer-info-container:hover > .close-box{
+      opacity: 1;
+  }

@@ -39,7 +39,8 @@ public class SupplierController {
 	private EmployeeService employeeService;
 	
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/supplier")
     public String view(Model model, HttpServletRequest request){
 		Principal user = request.getUserPrincipal();
@@ -51,7 +52,8 @@ public class SupplierController {
 		return "supplier/supplier";
     }
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/supplier")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllSupplier(){
@@ -67,7 +69,8 @@ public class SupplierController {
 		}	
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/supplier/search")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> searchSupplier(@RequestParam("key") String key){
@@ -85,7 +88,8 @@ public class SupplierController {
 		}		
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/supplier/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
@@ -100,7 +104,8 @@ public class SupplierController {
 				HttpStatus.NOT_FOUND);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("/api/supplier")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> saveSupplier(@Valid @RequestBody Supplier supplier) {
@@ -121,7 +126,8 @@ public class SupplierController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PutMapping("/api/supplier/{id}")
 	public ResponseEntity<ResponseObject> updateSupplier(@PathVariable Integer id, 
 	                                        @RequestBody Supplier supplier) {
@@ -147,7 +153,8 @@ public class SupplierController {
 				);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@DeleteMapping("/api/supplier/{id}")
 	public ResponseEntity<ResponseObject> deleteSupplier(@PathVariable(value = "id") Integer id) {
 	    if(!supplierService.existsById(id)) {

@@ -130,6 +130,195 @@ const table = $("#epTable").DataTable( {
        { className: "dt-head-center", targets: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] },
        { className: "dt-body-center", targets: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] }
     ],
+    buttons: [
+        {
+            text: '<i class="fa-solid fa-rotate"></i><span> Tải lại</span>',
+            className: 'btn-tools',
+            action: function ( e, dt, node, config ) {
+                dt.ajax.reload(null, false);
+            }
+        },
+        {
+            extend:    'excel',
+            text:      '<i class="fa-solid fa-file-export"></i><span> Xuất excel</span>',
+            titleAttr: 'Excel',
+            className: 'btn-tools',
+            exportOptions: {
+                columns: ':visible'
+            }
+        },
+        {
+            extend: "selected",
+            text: '<i class="fa fa-print"></i><span> In phiếu </span>',
+            className: 'btn-tools',
+            action: function ( e, dt, node, config ) {
+                var data = table.rows( { selected: true } ).data();
+                var printElem = "";
+                if(data.length>0){
+                    data.each(obj =>{
+                        var tbBody = "";
+                        if(obj.items.length>0){
+                            var i = 1;
+                            obj.items.forEach(it =>{
+                                let tbRow = 
+                                `
+                                <tr>
+                                    <td>${i}</td>
+                                    <td class="text-center">${it.item.product.productName}</td>
+                                    <td class="text-center">${it.item.product.barcode}</td>
+                                    <td class="text-center">${numberWithCommas(it.retailPrice)}</td>
+                                    <td class="text-center">${it.qty}</td>
+                                    <td class="text-center">${numberWithCommas(it.retailPrice*it.qty)}</td>
+                                </tr>
+                                `
+                                i++;
+                                tbBody += tbRow;
+                            })
+                        }
+                        var elem = 
+                        `<div class="page-break"></div>
+                        <div class="container px-1 py-5">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="text-center mb-5">
+                                        <span class="fw-bold fs-3">PHIẾU XUẤT KHO</span>
+                                        <br>
+                                        <span class="fst-italic">Mã phiếu: #
+                                            <span>${obj.id}</span>
+                                        </span>
+                                    </div>
+                                    <div class="row gx-5 pb-1">
+                                        <div class="col">
+                                            <span class="fw-bold">Người tạo phiếu:
+                                            </span>
+                                            <span>${obj.employee.username}</span>
+                                        </div>
+                                        <div class="col">
+                                            <span class="fw-bold">Ngày tạo phiếu:
+                                            </span>
+                                            <span>${moment(obj.createdAt).format('DD/MM/YYYY')}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row gx-5 pb-1">
+                                        <div class="col">
+                                            <span class="fw-bold">Kho hàng:
+                                            </span>
+                                            <span>${obj.warehouse.name}</span>
+                                        </div>
+                                        <div class="col">
+                                            <span class="fw-bold">Sđt:
+                                            </span>
+                                            <span>${obj.warehouse.phone}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row pb-4">
+                                        <span class="fw-bold">Địa chỉ: ${obj.warehouse.address}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered border-primary">
+                                            <thead class="table-active">
+                                                <tr>
+                                                    <td>
+                                                        <strong>#</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Tên sản phẩm</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Barcode</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Giá xuất</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Số lượng</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Thành tiền</strong>
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                `+ tbBody +
+                                                `
+                                            </tbody>
+                                            <tfooter>
+                                                <tr>
+                                                    <td colspan="2" class="text-center fw-bold">Phí vận chuyển</td>
+                                                    <td colspan="3"></td>
+                                                    <td class="text-center"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2" class="text-center fw-bold">Tổng cộng</td>
+                                                    <td colspan="3"></td>
+                                                    <td class="text-center">${numberWithCommas(obj.totalMoney)}</td>
+                                                </tr>
+                                            </tfooter>
+                                        </table>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <span>Tổng tiền bằng chữ: ${numberToWords(obj.totalMoney)} đồng
+                                        </span>
+                                    </div>
+                                   
+                                    <div class="row">
+                                        <div class="col-sm-3 text-center">
+                                            <span></span><br>
+                                            <span class="fw-bold">Người lập phiếu</span>
+                                            <br>
+                                            <span class="fst-italic">(Ký họ tên)</span>
+                                        </div>
+                                        <div class="col-sm-3 text-center">
+                                            <span></span><br>
+                                            <span class="fw-bold">Người giao hàng</span>
+                                            <br>
+                                            <span class="fst-italic">(Ký họ tên)</span>
+                                        </div>
+
+                                        <div class="col-sm-3 text-center">
+                                            <span></span><br>
+                                            <span class="fw-bold">Thủ kho</span>
+                                            <br>
+                                            <span class="fst-italic">(Ký họ tên)</span>
+                                        </div>
+
+                                        <div class="col-sm-3 text-center">
+                                            <span>${moment(obj.createdAt).locale('vi').format('LL')}</span>
+                                            <br>
+                                            <span class="fw-bold">Kế toán trưởng</span>
+                                            <br>
+                                            <span class="fst-italic">(Ký họ tên)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `
+
+                        printElem += elem;
+                    })
+
+                    var openWindow = window.open("", "title", "attributes");
+                    openWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
+                    openWindow.document.write('<style>@media print{.page-break  { display:block; page-break-before:always; }}</style>');
+                    openWindow.document.write(printElem);
+                    openWindow.document.close();
+                    openWindow.focus();
+                    // openWindow.print();
+                    setTimeout(function () {
+                        openWindow.print();
+                        openWindow.close();
+                    }, 500);
+                }
+            }
+        },
+    ],
     paging: true, 
     pagingType: 'numbers',
     lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
@@ -142,7 +331,7 @@ const table = $("#epTable").DataTable( {
         "infoEmpty": "Không có sản phẩm",
         "infoFiltered": "(lọc từ _MAX_ kết quả)"
     },
-    dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
+    dom: '<"tabletop"Bif>tr<"pagetable"lp><"clear">',
     select: {
         style:    'multi',
         selector: 'td:first-child'
@@ -372,6 +561,82 @@ function changeItemPrice2(elm, id) {
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
+
+function numberToWords(number) {
+    var digit = [
+      'không',
+      'một',
+      'hai',
+      'ba',
+      'bốn',
+      'năm',
+      'sáu',
+      'bảy',
+      'tám',
+      'chín',
+    ];
+    var elevenSeries = [
+      'mười',
+      'mười một',
+      'mười hai',
+      'mười ba',
+      'mười bốn',
+      'mười lăm',
+      'mười sáu',
+      'mười bảy',
+      'mười tám',
+      'mười chín',
+    ];
+    var countingByTens = [
+      'hai mươi',
+      'ba mươi',
+      'bốn mươi',
+      'năm mươi',
+      'sáu mươi',
+      'bảy mươi',
+      'tám mươi',
+      'chín mươi',
+    ];
+    var shortScale = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ'];
+  
+    number = number.toString();
+    number = number.replace(/[\, ]/g, '');
+    if (number != parseFloat(number)) return 'not a number';
+    var x = number.indexOf('.');
+    if (x == -1) x = number.length;
+    if (x > 15) return 'too big';
+    var n = number.split('');
+    var str = '';
+    var sk = 0;
+    for (var i = 0; i < x; i++) {
+      if ((x - i) % 3 == 2) {
+        if (n[i] == '1') {
+          str += elevenSeries[Number(n[i + 1])] + ' ';
+          i++;
+          sk = 1;
+        } else if (n[i] != 0) {
+          str += countingByTens[n[i] - 2] + ' ';
+          sk = 1;
+        }
+      } else if (n[i] != 0) {
+        str += digit[n[i]] + ' ';
+        if ((x - i) % 3 == 0) str += 'trăm ';
+        sk = 1;
+      }
+      if ((x - i) % 3 == 1) {
+        if (sk) str += shortScale[(x - i - 1) / 3] + ' ';
+        sk = 0;
+      }
+    }
+    if (x != number.length) {
+      var y = number.length;
+      str += 'phẩy ';
+      for (var i = x + 1; i < y; i++) str += digit[n[i]] + ' ';
+    }
+    str = str.replace(/\number+/g, ' ');
+    var str2 = str.charAt(0).toUpperCase() + str.slice(1);
+    return str2.trim();
+  }
 
 function debounce(func, wait, immediate) {
     var timeout;
@@ -787,8 +1052,4 @@ $(document).ready(function () {
 
     $("#c-searchbox").on("keyup", debounce(searchItem, 500));
     $("#e-searchbox").on("keyup", debounce(searchItem2, 500));
-    $("#btnClear").on("click", function (e) {
-      e.preventDefault();
-      table.ajax.reload(null, false)
-    });
 });

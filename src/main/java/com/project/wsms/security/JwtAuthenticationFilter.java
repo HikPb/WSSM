@@ -52,15 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
         //     return bearerToken.substring(7, bearerToken.length());
         // }
-        String bearerToken = "";
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals("access-token"))
-            bearerToken = cookie.getValue();
-        }
-        
-        if(StringUtils.hasText(bearerToken)) {
-            return bearerToken;
-        }
-        return null;
+        String jwt = jwtUtils.getJwtFromCookies(request);
+        return jwt;
     }
 }

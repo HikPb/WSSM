@@ -57,7 +57,7 @@ public class CheckQty extends AuditModel{
     @OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonManagedReference(value = "emp-checkqty")
 	@JsonIgnoreProperties(value = {
-		"role", "fullname", "phone", "hibernateLazyInitializer"})
+		"role", "fullname", "password", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 	
 	@Column(name = "note", nullable = true, columnDefinition="TEXT")

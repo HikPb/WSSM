@@ -24,18 +24,25 @@
 		<!-- START TOOLBAR -->
         <div class="tools-container">
             <div>
-                <div style="display: inline-block;">
-                    <button type="button" class="btn-tools" id="btnCreate">
-                        <span><i class="fa-solid fa-plus"></i></span>
-                    </button>
-                </div>
-
-                <button type="button" class="btn-tools" id="btnClear">
-                    <i class="fa-solid fa-rotate"></i>
-                    <span>Tải lại</span>
-                </button>
-
                 <div id="action-tools" style="display: inline-block;">
+
+                    <div th:if="${#strings.equals(user.role, 'ROLE_USER')}" style="display: inline-block;">
+                        <button type="button" class="btn-tools" id="btnCreate" disabled>
+                            <span><i class="fa-solid fa-plus"></i></span>
+                        </button>
+                    </div>
+                    <div th:unless="${#strings.equals(user.role, 'ROLE_USER')}" style="display: inline-block;">
+                        <button type="button" class="btn-tools" id="btnCreate">
+                            <span><i class="fa-solid fa-plus"></i></span>
+                        </button>
+                    </div>
+                    
+    
+                    <button type="button" class="btn-tools" id="btnClear">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span>Tải lại</span>
+                    </button>
+
                     <span id="import_excel" style="display: inline-block;">
                         <div style="display: inline-block;">
                             <button type="button" class="btn-tools">
@@ -53,13 +60,6 @@
                             </button>
                         </div>
                     </span>
-
-                    <!-- <span id="export_excel" style="display: inline-block;">
-          <button type="button" class="btn-tools">
-            <i class="fa-solid fa-file-export"></i>
-            <span>Xuất excel</span>
-          </button>
-        </span> -->
 
                     <span id="multi_delete" style="display: inline-block;">
                         <div style="display: inline-block;">

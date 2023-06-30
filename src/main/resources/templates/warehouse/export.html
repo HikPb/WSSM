@@ -24,79 +24,24 @@
         <div class="content-wrapper">
             <!-- START TOOLBAR -->
             <div class="tools-container">
-                <div>
-                    <div style="display: inline-block;">
-                        <button type="button" class="btn-tools" id="btnCreate">
-                            <span><i class="fa-solid fa-plus"></i></span>
-                        </button>
-                    </div>
-
-                    <button type="button" class="btn-tools" id="btnClear">
-                        <i class="fa-solid fa-rotate"></i>
-                        <span>Tải lại</span>
+                <div id="action-tools" style="display: inline-block;">  
+                    <button type="button" class="btn-tools" id="btnCreate">
+                        <span><i class="fa-solid fa-plus"></i></span>
                     </button>
+                </div>
 
-                    <div id="action-tools" style="display: inline-block;">
-                        <span id="iexcel" style="display: inline-block;">
-                            <div style="display: inline-block;">
-                                <button type="button" class="btn-tools">
-                                    <i class="fa-solid fa-file-import"></i>
-                                    <span>Nhập excel</span>
-                                </button>
-                            </div>
-                        </span>
-
-                        <span id="print">
-                            <div style="display: inline-block;">
-                                <button type="button" class="btn-tools">
-                                    <i class="fa-solid fa-tags"></i>
-                                    <span>In phiếu</span>
-                                </button>
-                            </div>
-                        </span>
-
-                        <!-- <span id="export_excel" style="display: inline-block;">
-              <button type="button" class="btn-tools">
-                <i class="fa-solid fa-file-export"></i>
-                <span>Xuất excel</span>
-              </button>
-            </span> -->
-
-                        <span id="multi_delete" style="display: inline-block;">
-                            <div style="display: inline-block;">
-                                <button type="button" class="btn-tools">
-                                    <i class="fa-solid fa-trash"></i>
-                                    <span>Xóa</span>
-                                </button>
-                            </div>
-                        </span>
-                    </div>
-
-                    <div class="filter">
-                        <div>
-                            <button id="btn-filter" tabindex="0" type="button" class="btn-tools">
-                                <i class="fa-solid fa-filter"></i>
-                                <span>Thêm lọc</span>
-                                </span>
-                            </button>
-                        </div>
+                <div class="filter">
+                    <div>
+                        <button id="cq-btn-filter" tabindex="0" type="button" class="btn-tools">
+                            <i class="fa-solid fa-filter"></i>
+                            <span>Thêm lọc</span>
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>
             <!-- END TOOLBAR -->
 
-            <div th:if="${message!=null}" class="toast-container position-fixed bottom-0 end-0 p-3">
-                <div id="p-toast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="toast-header">
-                        <strong class="me-auto">Thông báo</strong>
-                        <small></small>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body">
-                        [[${message}]]
-                    </div>
-                </div>
-            </div>
 
             <div class="table-container">
                 <table class="table table-hover table-responsive-xl" id="epTable">

@@ -1,113 +1,247 @@
-/*$(function() {
+"use strict";
+var startDate = moment().subtract(6, 'days').format('MM/DD/YYYY'),
+    endDate = moment().format('MM/DD/YYYY');
+var sbd = getAjaxResponse("/api/sbd?start="+startDate+"&end="+endDate), 
+    sbw = getAjaxResponse("/api/sbw?start="+startDate+"&end="+endDate), 
+    sbp = getAjaxResponse("/api/sbp?start="+startDate+"&end="+endDate), 
+    sbe = getAjaxResponse("/api/sbe?start="+startDate+"&end="+endDate);
+
+const barchart = document.getElementById("bar_chart").getContext("2d");
+const ctx4 = document.getElementById("doughnut_chart").getContext("2d");
+const wtable = $("#w-table").DataTable({
+    data: sbw,
+    columns: [
+        { data: 'name' },
+        { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'torder' },
+        { data: 'tproduct' },
+    ],
+    dom: 't',
+    order: [[ 4, 'desc' ]]
+});
+const ptable = $("#p-table").DataTable({
+    data: sbp,
+    columns: [
+        { data: 'productName' },
+        { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tproduct' },
+        { data: 'torder' },
+    ],
+    scrollY: 200,
+    scrollCollapse: true,
+    dom: 't',
+    order: [[ 3, 'desc' ]]
+});
+const etable = $("#e-table").DataTable({
+    data: sbe,
+    columns: [
+        { data: 'username' },
+        { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'torder' },
+    ],
+    scrollY: 200,
+    scrollCollapse: true,
+    dom: 't',
+    order: [[ 4, 'desc' ]]
+});
+
+renderChart();
+
+function renderChart(){
+    var profit = [], 
+        revenue = [],
+        sales = [], 
+        order = [], 
+        product = [],
+        day = [];
+    sbd.map(it =>{
+        day.push(moment(it.day).format("DD/MM"));
+        profit.push(it.tprofit);
+        revenue.push(it.trevenue);
+        sales.push(it.tsales);
+        order.push(it.torder);
+        product.push(it.tproduct);
+    })
+
     var a = {
-            labels: ["Sunday", "Munday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            datasets: [{
-                label: "Data 1",
-                borderColor: 'rgba(52,152,219,1)',
-                backgroundColor: 'rgba(52,152,219,1)',
-                pointBackgroundColor: 'rgba(52,152,219,1)',
-                data: [29, 48, 40, 19, 78, 31, 85]
-            },{
-                label: "Data 2",
-                backgroundColor: "#DADDE0",
-                borderColor: "#DADDE0",
-                data: [45, 80, 58, 74, 54, 59, 40]
-            }]
-        },
-        t = {
-            responsive: !0,
-            maintainAspectRatio: !1
-        },
-        e = document.getElementById("bar_chart").getContext("2d");
-    new Chart(e, {
+        labels: day,
+        datasets: [{
+            label: "Doanh số",
+            borderColor: "#15aebf",
+            backgroundColor:"#000fff",
+            fill: false,
+            tension: 0.4,
+            data: sales
+        }, {
+            label: "Doanh thu",
+            borderColor: "#1246c9",
+            backgroundColor:"#03133b",
+            fill: false,
+            tension: 0.4,
+            data: revenue
+        }, {
+            label: "Lợi nhuận",
+            borderColor: "rbg(13,13,13)",
+            backgroundColor:"#03133b",
+            fill: false,
+            tension: 0.4,
+            data: profit
+        }, {
+            label: "SL đơn",
+            borderColor: "#1246c9",
+            backgroundColor:"#03133b",
+            fill: false,
+            tension: 0.4,
+            data: order
+        },{
+            label: "SL sản phẩm",
+            borderColor: "#1246c9",
+            backgroundColor:"#03133b",
+            fill: false,
+            tension: 0.4,
+            data: product
+        }]
+    };
+
+    new Chart(barchart, {
         type: "line",
         data: a,
-        options: t
+        options: {
+            responsive: true,
+            maintainAspectRatio: !1,
+            plugins: {
+                subtitle: {
+                    display: false,
+                    text: 'Custom Chart Subtitle'
+                },
+                title: {
+                    display: false,
+                    text: 'Custom Chart Title'
+                }
+            }
+        }
     });
 
-    // World Map
-  var mapData = {
-    "US": 7402,
-    'RU': 5105,
-    "AU": 4700,
-    "CN": 4650,
-    "FR": 3800,
-    "DE": 3780,
-    "GB": 2400,
-    "SA": 2350,
-    "BR": 2270,
-    "IN": 1870,
-  }
-  $('#world-map').vectorMap({
-    map: 'world_mill_en',
-    backgroundColor: 'transparent',
-    regionStyle: {
-        initial: {
-            fill: '#DADDE0',
+
+    var doughnutData = {
+        labels: ["Desktop", "Tablet", "Mobile"],
+        datasets: [{
+            data: [47, 30, 23],
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"]
+        }]
+    };
+
+
+    var doughnutOptions = {
+        responsive: true,
+        legend: {
+            display: false
+        },
+    };
+
+    new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+
+}
+
+async function loadData(url){
+    try{
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.data;
+    }catch (error){
+        console.error(error);
+    }
+}
+
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function getAjaxResponse( url ){
+    let result= jQuery.ajax({
+        url: url,
+        type: 'get',
+        async:false,
+        contentType: "application/json",
+        dataType: 'json',
+        success:function(response){
+            return response.data;
+        } 
+    }).responseJSON;
+    return result.data;
+}
+
+$(document).ready(function () {
+
+    $("#daterange").daterangepicker({
+        // parentEl: ".daterange-group",
+        showCustomRangeLabel: true,
+        minDate: moment().subtract(2, "years").subtract(1, "days"),
+        ranges: {
+            'Hôm nay': [moment(), moment()],
+            'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            '7 ngày trước': [moment().subtract(6, 'days'), moment()],
+            '30 ngày trước': [moment().subtract(29, 'days'), moment()],
+            'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+            'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        startDate: moment().subtract(6, 'days'),
+        endDate: moment(),
+        opens: "right", 
+        locale: {
+            format: "DD/MM/YYYY",
+            separator: " - ",
+            applyLabel: "Đồng ý",
+            cancelLabel: "Hủy",
+            fromLabel: "Từ",
+            toLabel: "Đến",
+            customRangeLabel: "Tùy chỉnh",
+            daysOfWeek: [
+                "CN",
+                "T2",
+                "T3",
+                "T4",
+                "T5",
+                "T6",
+                "T7"
+            ],
+            monthNames: [
+                "Tháng 1",
+                "Tháng 2",
+                "Tháng 3",
+                "Tháng 4",
+                "Tháng 5",
+                "Tháng 6",
+                "Tháng 7",
+                "Tháng 8",
+                "Tháng 9",
+                "Tháng 10",
+                "Tháng 11",
+                "Tháng 12"
+            ],
+            firstDay: 1
         }
-    },
-    showTooltip: true,
-    onRegionTipShowx: function(e, el, code){
-        el.html(el.html()+' (Visits - '+mapData[code]+')');
-    },
-    markerStyle: {
-      initial: {
-        fill  : '#3498db',
-        stroke: '#333'
-      }
-    },
-    markers: [
-      {
-        latLng: [1.3, 103.8],
-        name: 'Singapore : 203'
-      },
-      {
-        latLng: [38, -105],
-        name: 'USA : 755',
-      },
-      {
-        latLng: [58, -115],
-        name: 'Canada : 700',
-      },
-      {
-        latLng: [-25, 140],
-        name: 'Australia : 304',
-      },
-      {
-        latLng: [55.00, -3.50],
-        name: 'UK : 202',
-      },
-      {
-        latLng: [21, 78],
-        name: 'India : 410',
-      },
-      {
-        latLng: [25.00, 54.00],
-        name: 'UAE : 180',
-      }
-    ]
-  });
+    }, async function(start, end, label) {
+        let startDate = moment(start).format("MM/DD/YYYY");
+        let endDate = moment(end).format("MM/DD/YYYY");
+        sbd = await loadData("/api/sbd?start="+startDate+"&end="+endDate);
+        sbw = await loadData("/api/sbw?start="+startDate+"&end="+endDate);
+        sbp = await loadData("/api/sbp?start="+startDate+"&end="+endDate);
+        sbe = await loadData("/api/sbe?start="+startDate+"&end="+endDate);
 
-  
-  var doughnutData = {
-      labels: ["Desktop","Tablet","Mobile" ],
-      datasets: [{
-          data: [47,30,23],
-          backgroundColor: ["rgb(255, 99, 132)","rgb(54, 162, 235)","rgb(255, 205, 86)"]
-      }]
-  } ;
+        wtable.clear().rows.add(sbw).draw();
+        ptable.clear().rows.add(sbp).draw();
+        etable.clear().rows.add(sbe).draw();
 
+        barchart.reset();
+        ctx4.reset();
 
-  var doughnutOptions = {
-      responsive: true,
-      legend: {
-        display: false
-      },
-  };
+        renderChart()
+    });
+});
 
-
-  var ctx4 = document.getElementById("doughnut_chart").getContext("2d");
-  new Chart(ctx4, {type: 'doughnut', data: doughnutData, options:doughnutOptions});
-
-
-});*/

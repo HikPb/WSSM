@@ -3,6 +3,7 @@ package com.project.wsms.controller;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
@@ -57,7 +58,8 @@ public class EmployeeController {
 		return "users/employee";
     }
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
     @GetMapping("/profile")
 	public String overview(Model model, HttpServletRequest request) {
 		Principal user = request.getUserPrincipal();
@@ -69,7 +71,8 @@ public class EmployeeController {
 		return "users/profile";
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
     @GetMapping("/api/currentuser")
     @ResponseBody
     public ResponseEntity<ResponseObject> currentUserName(@CurrentSecurityContext(expression = "authentication") 
@@ -79,21 +82,28 @@ public class EmployeeController {
             new ResponseObject("ok", "mess",""), HttpStatus.OK );
     }
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@RequestMapping(value = "/username", method = RequestMethod.GET)
     @ResponseBody
     public String currentUserName(Principal principal) {
         return principal.toString();
     }
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/employee")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllEmployee(){
 		try{
 			List<Employee> listSup= employeeService.getAll();
+			List<EmployeeDto> listEmpDto = listSup.stream().map( emp -> {
+				EmployeeDto empDto = new EmployeeDto();
+				empDto.convertToDto(emp);
+				return empDto;
+			}).collect(Collectors.toList());
 			return new ResponseEntity<>(
-				new ResponseObject("ok", "Query successfully", listSup), 
+				new ResponseObject("ok", "Query successfully", listEmpDto), 
 				HttpStatus.OK);
 		} catch(Exception e){
 			return new ResponseEntity<>(
@@ -101,14 +111,16 @@ public class EmployeeController {
 					HttpStatus.BAD_REQUEST);
 		}	
 	}
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	@GetMapping("/api/employee/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
 		Optional<Employee> employee = employeeService.getById(id);
 		if (employee.isPresent()) {
+			EmployeeDto employeeDto = new EmployeeDto();
+			employeeDto.convertToDto(employee.get());
 			return new ResponseEntity<>(
-					new ResponseObject("ok", "Query product successfully", employee.get()),
+					new ResponseObject("ok", "Query product successfully", employeeDto),
 					HttpStatus.OK);
 		}
 		return new ResponseEntity<>(
@@ -143,7 +155,8 @@ public class EmployeeController {
 					);
 		}
 	}
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PutMapping("/api/employee/{id}")
 	public ResponseEntity<ResponseObject> updateEmployee(@PathVariable Integer id, 
 	                                        @RequestBody EmployeeRequest employee) {
@@ -165,7 +178,8 @@ public class EmployeeController {
 				);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PutMapping("/api/employee/{id}/changepassword")
 	public ResponseEntity<ResponseObject> changePassword(@PathVariable(value = "id") Integer id, @RequestBody ChangePwRequest cqRequest, HttpServletRequest request) {
 	    Optional<Employee> uEmployee = employeeService.getById(id);
@@ -196,11 +210,14 @@ public class EmployeeController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@PutMapping("/api/employee/changepassword")
+	@PutMapping("/api/employee/admin-change")
 	public ResponseEntity<ResponseObject> changePasswordByAdmin(@RequestBody PwRequest request) {
 	    Optional<Employee> uEmployee = employeeService.getById(request.getId());
 		if(uEmployee.isPresent()){
-			uEmployee.get().setPassword(request.getNewPassword());
+			if(request.getNewPassword()!= null && request.getNewPassword() != "") {
+				uEmployee.get().setPassword(request.getNewPassword());
+			}
+			uEmployee.get().setRole(request.getRole());
 			employeeService.save(uEmployee.get());
 			return new ResponseEntity<>(
 				new ResponseObject("ok", "Update employee password successfully", ""),

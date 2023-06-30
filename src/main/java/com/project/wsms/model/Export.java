@@ -56,7 +56,7 @@ public class Export extends AuditModel{
     @OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonManagedReference(value = "emp-export")
 	@JsonIgnoreProperties(value = {
-		"role", "fullname", "phone", "hibernateLazyInitializer"})
+		"role", "fullname", "password", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 	
 	@Column(name = "note", nullable = true, columnDefinition="TEXT")

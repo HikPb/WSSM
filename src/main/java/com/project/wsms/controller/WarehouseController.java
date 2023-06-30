@@ -88,7 +88,8 @@ public class WarehouseController {
 	@Autowired
 	private CqItemService cqItemService;
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/warehouse")
     public String view(Model model, HttpServletRequest request){
 		Principal user = request.getUserPrincipal();
@@ -98,7 +99,8 @@ public class WarehouseController {
 		return "warehouse/warehouse";
     }
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/warehouse")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllWarehouse(){
@@ -114,7 +116,8 @@ public class WarehouseController {
 		}		
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/warehouse/search")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> searchWarehouse(@RequestParam("key") String key){
@@ -132,7 +135,8 @@ public class WarehouseController {
 		}		
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/warehouse/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
@@ -147,7 +151,8 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping(value = "/api/warehouse", consumes = {"application/xml","application/json"})
 	@ResponseBody
 	public ResponseEntity<ResponseObject> saveWarehouse(@RequestBody Warehouse warehouse) {
@@ -168,7 +173,8 @@ public class WarehouseController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PutMapping("/api/warehouse/{id}")
 	public ResponseEntity<ResponseObject> updateWarehouse(@PathVariable Integer id, 
 	                                        @RequestBody Warehouse warehouse) {
@@ -195,7 +201,8 @@ public class WarehouseController {
 				);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@DeleteMapping("/api/warehouse/{id}")
 	public ResponseEntity<ResponseObject> deleteWarehouse(@PathVariable(value = "id") Integer id) {
 	    if(!warehouseService.existsById(id)) {
@@ -211,7 +218,8 @@ public class WarehouseController {
 	}
 
 	// VIEW KIỂM KHO
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/checkqty")
 	public String getAllCheckQuantity(Model model, HttpServletRequest request) {
 		Principal user = request.getUserPrincipal();
@@ -225,7 +233,8 @@ public class WarehouseController {
 		return "warehouse/check-quantity";
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/checkqty")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllCheckQtyForm(){
@@ -241,7 +250,8 @@ public class WarehouseController {
 		}	
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/checkqty/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOneCheckQty(@PathVariable Integer id) {
@@ -256,7 +266,8 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("/api/checkqty/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeCheckQtyStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
@@ -296,7 +307,8 @@ public class WarehouseController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("/api/checkqty")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> createCheckQtyForm(@RequestBody CheckQtyDto objectDto) {
@@ -347,7 +359,8 @@ public class WarehouseController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PutMapping("/api/checkqty/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> editCheckQtyForm(@PathVariable("id") Integer id, @RequestBody CheckQtyDto objectDto) {
@@ -374,6 +387,7 @@ public class WarehouseController {
 		
 								Item item = itemService.getById(it.getItemId()).get();
 								item.addCqItem(newItem);
+								uObject.addItem(newItem);
 			
 								//newItem.setItem(item);
 								//newItem.setCqtyProduct(uObject);
@@ -417,7 +431,8 @@ public class WarehouseController {
 	}
 
 	// VIEW NHAP KHO
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/import")
 	public String getAllImportProduct(Model model, HttpServletRequest request) {
 		Principal user = request.getUserPrincipal();
@@ -434,7 +449,8 @@ public class WarehouseController {
 		return "warehouse/import";
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/import")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllImportForm(){
@@ -450,7 +466,8 @@ public class WarehouseController {
 		}	
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/import/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOneImport(@PathVariable Integer id) {
@@ -465,7 +482,8 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("/api/import/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeImportStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
@@ -514,7 +532,8 @@ public class WarehouseController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("/api/import")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> createImportForm(@RequestBody ImportDto objectDto) {
@@ -572,7 +591,8 @@ public class WarehouseController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PutMapping("/api/import/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> editImportForm(@PathVariable("id") Integer id, @RequestBody ImportDto objectDto) {
@@ -648,7 +668,8 @@ public class WarehouseController {
 
 	// VIEW XUẤT KHO
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/export")
 	public String getAllExportProduct(Model model, HttpServletRequest request) {
 		Principal user = request.getUserPrincipal();
@@ -663,7 +684,8 @@ public class WarehouseController {
 		return "warehouse/export";
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/export")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllExportForm(){
@@ -679,7 +701,8 @@ public class WarehouseController {
 		}	
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@GetMapping("/api/export/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOneExport(@PathVariable Integer id) {
@@ -694,7 +717,8 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("/api/export/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeExportStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
@@ -743,7 +767,8 @@ public class WarehouseController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PostMapping("/api/export")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> createExportForm(@RequestBody ExportDto objectDto) {
@@ -794,7 +819,8 @@ public class WarehouseController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+
 	@PutMapping("/api/export/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> editExportForm(@PathVariable("id") Integer id, @RequestBody ExportDto objectDto) {

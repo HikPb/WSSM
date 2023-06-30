@@ -3,7 +3,7 @@
         <div class="boxes-model">
             <div class="box-row-order">
                 <div class="col-100">
-                    <div class="box-row-order">
+                    <form class="box-row-order" enctype="multipart/form-data" method="post" id="c-form">
                         <div class="col-65">
                             <div class="box-row-order">
                                 <div class="col-100">
@@ -23,7 +23,7 @@
                                                 <span class="ant-input-wrapper ant-input-group">
                                                     <div class="form-group">
                                                         <div class="input-group" style="background-color: #fff;border: 1px solid #cecece;">
-                                                            <input class="form-control" id="c-searchbox" type="text" placeholder="Nhập tên sản phẩm hoặc barcode" style="border: none;">
+                                                            <input class="form-control" id="c-searchbox" type="text" autocomplete="off" placeholder="Nhập tên sản phẩm hoặc barcode" style="border: none;">
                                                             <div class="input-group-addon" style="display: flex;align-items: center;margin-left: 3px;">
                                                                 <input type="checkbox" id="c-checkbox" style="margin-right: 2px;">
                                                                 <label class="form-check-label" for="c-checkbox">Còn hàng</label>
@@ -228,7 +228,7 @@
                                     <div class="row mt-2">
                                         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
                                             <div class="form-group px-1">
-                                                <input class="form-control" type="text" placeholder="Tên khách hàng" id="c-cusName">
+                                                <input class="form-control" type="text" placeholder="Tên khách hàng" id="c-cusName" oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')" oninput="setCustomValidity('')" required="required">
                                                 <!-- <select class="form-control" id="c-cusName">
                                                     <option></option>
                                                 </select> -->
@@ -236,7 +236,7 @@
                                         </div>
                                         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
                                             <div class="form-group px-1">
-                                                <input class="form-control" type="tel" placeholder="Số điện thoại" id="c-cusPhone">
+                                                <input class="form-control" type="tel" pattern="[0-9]{10}" placeholder="Số điện thoại" id="c-cusPhone" required="required">
                                             </div>
                                         </div>
                                         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
@@ -249,7 +249,7 @@
                                     </div>
                                     <div class="customer-info" id="c-cusInfo">
                                         <div style="position: relative; padding: 6px; text-align: center; background-color: rgba(240, 245, 255, .4); border: 1px solid #adc6ff;">
-                                            <i class="fa-solid fa-diamond-exclamation"></i>
+                                            <i class="fa-solid fa-exclamation"></i>
                                             <span>Chưa có thông tin</span>
                                         </div>
                                     </div>
@@ -328,7 +328,7 @@
                                 </div>
                             </section>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

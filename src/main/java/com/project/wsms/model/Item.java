@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -59,22 +60,22 @@ public class Item {
     @OnDelete(action = OnDeleteAction.CASCADE)
 	private Product product;
  
-	//@JsonIgnore
+	@JsonIgnore
 	@JsonBackReference(value = "oitem-item")
 	@OneToMany(mappedBy="item")
 	private Set<OrderItem> orderItems = new HashSet<>();
 
-	//@JsonIgnore
+	@JsonIgnore
 	@JsonBackReference(value = "cqitem-item")
 	@OneToMany(mappedBy="item")
 	private Set<CqItem> cqItems = new HashSet<>();
 
-	//@JsonIgnore
+	@JsonIgnore
 	@JsonBackReference(value = "iitem-item")
 	@OneToMany(mappedBy="item")
 	private Set<ImportItem> importItems = new HashSet<>();
 
-	//@JsonIgnore
+	@JsonIgnore
 	@JsonBackReference(value = "eitem-item")
 	@OneToMany(mappedBy="item")
 	private Set<ExportItem> exportItems = new HashSet<>();

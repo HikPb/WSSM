@@ -30,7 +30,7 @@ var owe = 0;
 var discount = 0;
 var receivedMoney = 0;
 var revenue = 0;
-updateCart();
+
 
 const table = $("#orderTable").DataTable( {
     processing: true,
@@ -123,7 +123,22 @@ const table = $("#orderTable").DataTable( {
                                 <button class="btn btn-primary dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Mới <i class="fa fa-angle-down"></i></button>
                                 <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">
                                     <li>
-                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${2})">Đã nhập hàng</div>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${2})">Chờ chuyển hàng</div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${0})">Hủy</div>
+                                    </li>
+                                </ul>
+                            </div>`
+                }else if(data==2){
+                    return  `<div class="btn-group">
+                                <button class="btn btn-primary dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Chờ chuyển hàng <i class="fa fa-angle-down"></i></button>
+                                <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">
+                                    <li>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${1})">Mới</div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${3})">Đã gửi hàng</div>
                                     </li>
                                     <li>
                                         <div class="dropdown-item" onclick="changeStatus(${row.id},${0})">Hủy</div>
@@ -132,7 +147,7 @@ const table = $("#orderTable").DataTable( {
                             </div>`
                 }else{
                     return  `<div class="btn-group">
-                                <button class="btn btn-success" style="width: 150px;"> Đã nhập hàng </button>
+                                <button class="btn btn-success" style="width: 150px;"> Đã gửi hàng </button>
                             </div>`
                 }
             }
@@ -172,11 +187,7 @@ function addToCart(id) {
         const customItem = {
             itemId: item.id,
             sprice: item.retailPrice,
-            inventory: item.qty,
             sku: item.sku,
-            weight: item.product?.weight,
-            barcode: item.product?.barcode,
-            productName: item.product?.productName
         };
         cart.push({
         ...customItem,
@@ -234,6 +245,7 @@ function renderCartItems() {
     cartItemsEl.innerHTML = ""; // clear cart element
     if(cart.length>0){
         cart.forEach((item) => {
+            let itemDto = itemData.find(x => x.id === item.itemId);
             cartItemsEl.innerHTML += 
                 `<div class="cart-item media">
                     <div style="display:flex; align-item:center;">
@@ -242,12 +254,12 @@ function renderCartItems() {
                         </div>
                         <div class="media-body">
                             <div class="media-heading" style="margin-bottom:0px;">
-                                <span class="badge badge-info m-r-5 m-b-5">${item.barcode}</span>
-                                <span class="font-14">${item.productName}</span>
+                                <span class="badge badge-info m-r-5 m-b-5">${itemDto.product.barcode}</span>
+                                <span class="font-14">${itemDto.product.productName}</span>
                                 <span style="position: absolute; right: 22px;"><i class="fa-regular fa-circle-xmark" style="color: #ff0000;" onclick="removeItemFromCart(${item.itemId})"></i></span>
                             </div>
                             <div style="display:flex; align-items:center;>
-                                <span><i class="fa-solid fa-weight-scale"></i> <span style="color:#0af;">${item.weight} g</span></span>
+                                <span><i class="fa-solid fa-weight-scale"></i> <span style="color:#0af;">${itemDto.product.weight} g</span></span>
                                 <div style="display:inline-block; right:25px; position:absolute;">
                                     <input type="number" style="border:none; text-align:right; width: 60px; background-color: #eaeaea;" value="${item.qty}" min="1" max="9999" onchange="changeItemQty(this,${item.itemId})">
                                     <span> x </span>
@@ -289,12 +301,13 @@ function removeItemFromCart(id) {
 
     // change number of units for an item
 function changeNumberOfUnits(action, id) {
+    let itemDto = itemData.find(x => x.id === id);
     cart = cart.map((item) => {
         let qty = item.qty;
         if (item.itemId === id) {
             if (action === "minus" && qty > 1) {
                 qty--;
-            } else if (action === "plus" && qty < item.inventory) {
+            } else if (action === "plus" && qty < itemDto.qty) {
                 qty++;
             }
         }
@@ -303,7 +316,6 @@ function changeNumberOfUnits(action, id) {
         qty,
         };
     });
-    console.log(cart)
     updateCart();
 }
 
@@ -362,14 +374,85 @@ async function selectCustomer(id){
         }
     })
     .catch(error => console.error(error));
-
+    let dob = "Chưa có";
     $("#c-cusName").val(customer.name);
     $("#c-cusPhone").val(customer.phone);
-    $("#c-cusDob").val(moment(customer.dob).format('YYYY-MM-DD'))
+    if(customer.dob!="" && customer.dob!=null){
+        dob = moment(customer.dob).format('DD-MM-YYYY');
+        $("#c-cusDob").val(moment(customer.dob).format('YYYY-MM-DD'))
+    }
     $("#c-receiverName").val(customer.name);
     $("#c-receiverPhone").val(customer.phone);
     $("#c-receiverAddress").val(customer.address);
+    let cusInfoElem = 
+    `
+    <div class="customer-info-container">
+        <div class="close-box" onclick="closeCustomerInfo()"><i class="fa-regular fa-circle-xmark" style="color: #ff0000;"></i></div>
+        <div class="customer-profile">
+            <div class="customer-profile-info">
+                <span><i class="fa-solid fa-user"></i>
+                    ${customer.name}</span>
+                <span><i class="fa-solid fa-phone"></i>
+                    ${customer.phone}</span>
+            </div>
+            <div class="customer-profile-dob">
+                <span>${dob}</span>
+            </div>
+        </div>
+        
+        <div class="customer-info-history">
+            <div>
+                <span>
+                    Tổng: <span>${numberWithCommas(customer.tmoney)}</span> đ
+                    </soan>
+            </div>
+            <div>
+                <span>
+                    Thành công:
+                    <span>${customer.nsoCus}</span>/
+                    <span>${customer.npCus}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+    `
+    $("#c-cusInfo").empty();
+    $("#c-cusInfo").append(cusInfoElem);
 }
+
+function closeCustomerInfo(){
+    //e.preventDefault();
+    customer = null;
+    $("#c-cusName").val('');
+    $("#c-cusPhone").val('');
+    $("#c-cusDob").val('');
+    $("#c-receiverName").val('');
+    $("#c-receiverPhone").val('');
+    $("#c-receiverAddress").val('');
+    $("#c-cusInfo").empty();
+    $("#c-cusInfo").append(
+        `<div style="position: relative; padding: 6px; text-align: center; background-color: rgba(240, 245, 255, .4); border: 1px solid #adc6ff;">
+            <i class="fa-solid fa-exclamation"></i>
+            <span>Chưa có thông tin</span>
+        </div> `);
+}
+
+async function loadItemData() {
+    try {
+        await fetch("/api/item", {
+            method: "GET", // or 'PUT'
+            headers: {
+            "Content-Type": "application/json",
+            }
+        }).then(response =>{
+            return response.json();
+        }).then(data=>{
+            itemData = data.data;
+        })
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
 async function changeStatus(id, status){
     let url = "/api/order/"+id+"/status/"+status;
@@ -381,7 +464,7 @@ async function changeStatus(id, status){
             return response.json();
         })
         .then(data => {
-            if(status==2){loadItemData();}
+            loadItemData();
             table.ajax.reload(null, false) 
             $("#toast-content").html("Cập nhật thành công: # "+data.data['id']);
             toast.show()
@@ -433,20 +516,97 @@ $(document).ready(function () {
         }
     });
 
-    $('#orderTable').on('click', 'tbody tr .td-data', function (e) {
+    $('#orderTable').on('click', 'tbody tr .td-data', async function (e) {
         e.preventDefault();
         // var data = table.row($(this).parents('tr')).data();
         let data = table.row(this).data();
-        let href = "/api/order/"+data["id"];
-        $.get(href, function(res){
-            $("#e-form").attr("rid", data["id"]);
-            $("#e-date1").val(moment(data.createdAt).format('YYYY-MM-DD'));
-            $("#e-date2").val(moment(data.expectedAt).format('YYYY-MM-DD'));
-            $("#e-warehouse").val(data.warehouse.id).trigger('change');
-            $("#e-warehouse").prop("disabled", true);
-            //$("#e-supplier").val(data.supplier.id).trigger('change');
-            $("#e-note").val(res.data.note);
+        let url = "/api/order/"+data["id"];
+
+        await fetch(url, {
+            method: "GET",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+            },
         })
+        .then(response => {
+            if(!response.ok) throw Error(response.statusText);
+            return response.json();
+        })
+        .then(data =>{
+            if(data.status=="ok") {
+                let dob = "Chưa có";
+                let dt = data.data;
+                if(dt.customer.dob!=null){ dob = moment(dt.customer.dob).format("DD-MM-YYYY")}
+                $("#e-form").attr("rid", dt.id);
+                $("#c-createdAt").html(moment(dt.createdAt).locale('vi').format('LLL'));
+                $("#c-cusName").val(dt.customer.name);
+                $("#c-cusPhone").val(dt.customer.phone);
+                $("#c-cusDob").val(moment(dt.customer.dob).format('YYYY-MM-DD'));
+                $("#c-receiverName").val(dt.receiverName);
+                $("#c-receiverPhone").val(dt.receiverPhone);
+                $("#c-receiverAddress").val(dt.address);
+                $("#c-warehouse").val(dt.warehouse.id).trigger('change');
+                $("#c-internalNote").val(dt.internalNote);
+                $("#c-printNote").val(dt.printedNote);
+                $("#c-shippingFee").val(dt.shippingFee);
+                $("#c-discount").val(dt.totalDiscount);
+                $("#c-receivedMoney").val(dt.receivedMoney);
+
+                let cusInfoElem = 
+                `
+                <div class="customer-info-container">
+                    <div class="close-box" onclick="closeCustomerInfo()"><i class="fa-regular fa-circle-xmark" style="color: #ff0000;"></i></div>
+                    <div class="customer-profile">
+                        <div class="customer-profile-info">
+                            <span><i class="fa-solid fa-user"></i>
+                                ${dt.customer.name}</span>
+                            <span><i class="fa-solid fa-phone"></i>
+                                ${dt.customer.phone}</span>
+                        </div>
+                        <div class="customer-profile-dob">
+                            <span>${dob}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="customer-info-history">
+                        <div>
+                            <span>
+                                Tổng: <span>${numberWithCommas(dt.customer.tmoney)}</span> đ
+                                </soan>
+                        </div>
+                        <div>
+                            <span>
+                                Thành công:
+                                <span>${dt.customer.nsoCus}</span>/
+                                <span>${dt.customer.npCus}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                `
+                $("#c-cusInfo").empty();
+                $("#c-cusInfo").append(cusInfoElem);
+
+                cart.splice(0,cart.length);
+                
+                if(dt.orderItems.length>0){
+                    dt.orderItems.forEach(i =>{
+                        let obj = {
+                            id: i.id,
+                            itemId: i.item.id,
+                            sprice: i.price,
+                            sku: i.sku,
+                            qty: i.qty,
+                            discount: i.discount
+                        }
+                        cart.push(obj)
+                    })
+                }
+                updateCart();
+            }
+        })
+        .catch(error => console.error(error));
 
         $("#edit-modal").modal("show");
     });

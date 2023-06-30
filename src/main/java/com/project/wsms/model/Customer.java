@@ -2,6 +2,7 @@ package com.project.wsms.model;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -45,7 +46,7 @@ public class Customer {
 	@Column(name = "total_money", nullable = true)
 	private Integer tmoney = 0;
 	
-	// @JsonBackReference(value = "customer-order")
+	@JsonBackReference(value = "customer-order")
 	@JsonIgnore
 	@OneToMany(mappedBy="customer")
 	private Set<Order> orders = new HashSet<>();
@@ -53,6 +54,13 @@ public class Customer {
 	public void addOrder(Order order) {
 		this.orders.add(order);
 		order.setCustomer(this);
+	}
+
+	public void removeOrder(Integer id) {
+		Order item = this.orders.stream().filter(c -> Objects.equals(c.getId(), id)).findFirst().orElse(null);
+		if(item!=null) {
+			this.orders.remove(item);
+		}
 	}
 
 
