@@ -40,11 +40,6 @@ public class CategoryController {
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllCategory(){
 		List<Category> listCategory= categoryService.getAll();
-		if(listCategory.isEmpty()) {
-			return new ResponseEntity<>(
-					new ResponseObject("empty", "No content", ""),
-					HttpStatus.NO_CONTENT);
-		}
 		return new ResponseEntity<>(
 				new ResponseObject("ok", "Query successfully", listCategory), 
 				HttpStatus.OK);

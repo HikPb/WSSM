@@ -7,6 +7,7 @@ $(document).ready(function () {
     const table = $("#productTable").DataTable( {
         processing: true,
         responsive: true,
+        //serverSide: true,
         ajax: {
             url: "/api/products",
             dataSrc: '',

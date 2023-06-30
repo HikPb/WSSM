@@ -40,7 +40,7 @@ public class Product extends AuditModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	@Column(name = "product_name", nullable = false, length = 50)
+	@Column(name = "product_name", nullable = false, length = 100)
 	private String productName;
 	@Column(name = "barcode", nullable = false, length = 8)
 	private String barcode;
