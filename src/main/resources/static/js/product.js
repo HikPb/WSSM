@@ -151,6 +151,149 @@ $(document).ready(function () {
 
     $('#productTable').on('click', 'tbody tr .td-data', function (e) {
         e.preventDefault();
+        $("#editModalDiv").empty();
+        $("#editModalDiv").append(editModalElem);
+
+        $("#e-categories").select2({
+            data: $.map(cateData, function(s) {
+                return {
+                    text: s.cateName,
+                    id: s.id
+                }
+            }),
+            placeholder: "Chọn danh mục sản phẩm",
+            allowClear: true,
+            tags: true,
+            tokenSeparators: [','],
+            width: '100%',
+            height: '34px',
+            dropdownParent: ".cate-e-group"
+        });
+    
+        $("#e-supplier").select2({
+            placeholder: {id: '',text: "Chọn đơn vị cung cấp"},
+            allowClear: true,
+            data: $.map(supData, function(s) {
+                return {
+                    text: s.supName,
+                    id: s.id
+                }
+            }),
+            tags: true,
+            width: '100%',
+            height: '34px',
+            dropdownParent: ".sup-e-group"
+        }).val('').trigger('change');
+    
+        $("#e-warehouse").select2({
+            data: $.map(wareData, function(s) {
+                return {
+                    text: s.name,
+                    id: s.id
+                }
+            }),
+            placeholder: "Chọn kho hàng",
+            allowClear: true,
+            width: '100%',
+            height: '34px',
+            dropdownParent: ".ware-e-group"
+        });
+    
+        $("#e-warehouse").on("select2:select" , function(e){
+            let insert = "";
+            let pid = $("#pme-form").attr("pid");
+            let wpItem = getAjaxResponse("/api/item/product/"+pid+"/warehouse/"+e.params.data.id);
+    
+            if(wpItem!=null){
+                if(wpItem?.active === true){
+                    st = '<div class="form-check form-switch"><input class="form-check-input e-status" type="checkbox" onclick="setItemStatus('+ wpItem?.id +')" role="switch" checked></div>'
+                }else {
+                    st = '<div class="form-check form-switch"><input class="form-check-input e-status" type="checkbox" onclick="setItemStatus('+ wpItem?.id +')" role="switch"></div>'
+                }
+                insert =    '<tr class="tb-data" id="er'+ e.params.data.id +'" wid="'+ e.params.data.id +'" iid="'+ wpItem?.id +'">' +
+                                '<td class="cell-align" style="font-weight: 700; border-right: 1px solid #ccc;">'+ e.params.data.text +'</td>'+
+                                '<td class="cell-align">'+ st +
+                                '</td>'+
+                                //'<td class="cell-align"></td>'+
+                                '<td class="input-val cell-align"><input class="form-control ip-70 e-pprice" type="number" value="'+ wpItem?.purcharsePrice +'"></td>'+
+                                '<td class="input-val cell-align"><input class="form-control ip-70 e-sprice" type="number" value="'+ wpItem?.retailPrice +'"></td>'+
+                                '<td class="input-val cell-align"><input class="form-control ip-70 e-qty"  type="number" value="'+ wpItem?.qty +'"></td>'+
+                            '</tr>'
+            }else{
+                insert =    '<tr class="tb-data" id="er'+ e.params.data.id +'" wid="'+ e.params.data.id +'" iid="">' +
+                                '<td class="cell-align" style="font-weight: 700; border-right: 1px solid #ccc;">'+ e.params.data.text +'</td>'+
+                                '<td class="cell-align">'+
+                                    '<div class="form-check form-switch"><input class="form-check-input e-status" type="checkbox" role="switch" checked></div>'+
+                                '</td>'+
+                                //'<td class="cell-align"></td>'+
+                                '<td class="input-val cell-align"><input class="form-control ip-70 e-pprice" type="number"></td>'+
+                                '<td class="input-val cell-align"><input class="form-control ip-70 e-sprice" type="number"></td>'+
+                                '<td class="input-val cell-align"><input class="form-control ip-70 e-qty"  type="number"></td>'+
+                            '</tr>'
+            }
+            $("#e-tb").find('tbody').append(insert);
+        });
+    
+        $("#e-warehouse").on("select2:unselect", function(e){
+            id="er"+e.params.data.id
+            $("#"+id).remove()
+        });
+
+        $("#pme-form").on("submit", function (e) {
+            e.preventDefault();
+            e_cate = $("#e-categories").select2("data").map(c=>{
+                return{
+                    id: c.id,
+                    cateName: c.text
+                }
+            })
+            e_sup = $("#e-supplier").select2("data").map(c=>{
+                return{
+                    id: c.id,
+                    supName: c.text
+                }
+            })
+            let items = [];
+            $("#e-tb tr.tb-data").map(function (index, elem) {
+                obj = {
+                    id: $(this).attr("iid"),
+                    active : $(this).find('.e-status').is(":checked"),
+                    wareId : $(this).attr("wid"),
+                    sku: "",
+                    pprice : $(this).find('.e-pprice').val(),
+                    sprice : $(this).find('.e-sprice').val(),
+                    qty : $(this).find('.e-qty').val()
+                }
+                items.push(obj)
+            });
+            let product = JSON.stringify({
+              barcode: $("#e-barcode").val(),
+              productName: $("#e-pname").val(),
+              weight: $("#e-weight").val(),
+              link: $("#e-link").val(),
+              note: $("#e-note").val(),
+              categories: e_cate,
+              suppliers: e_sup,
+              items: items
+            });
+            $.ajax({
+                url: "/api/products/" + $("#pme-form").attr("pid"),
+                method: "put",
+                data: product,
+                contentType: "application/json",
+                success: function (response) { 
+                    table.ajax.reload(null, false) 
+                    $("#product-modal-edit").modal("hide");
+                    $("#toast-content").html("Chỉnh sửa thành công: # "+response.data['id']+' - '+ response.data['productName'])
+                    toast.show()
+                },  
+                error: function (err) {  
+                    alert(err);  
+                } 
+            });
+            
+        });
+
         data = table.row(this).data();
         href = "/api/products/"+data["id"];
         $.get(href, function(response, status){
@@ -201,218 +344,140 @@ $(document).ready(function () {
         })
         $("#product-modal-edit").modal("show");
     });
-
-    $("#pme-form").on("submit", function (e) {
-        e.preventDefault();
-        e_cate = $("#e-categories").select2("data").map(c=>{
-            return{
-                id: c.id,
-                cateName: c.text
-            }
-        })
-        e_sup = $("#e-supplier").select2("data").map(c=>{
-            return{
-                id: c.id,
-                supName: c.text
-            }
-        })
-        let items = [];
-        $("#e-tb tr.tb-data").map(function (index, elem) {
-            obj = {
-                id: $(this).attr("iid"),
-                active : $(this).find('.e-status').is(":checked"),
-                wareId : $(this).attr("wid"),
-                sku: "",
-                pprice : $(this).find('.e-pprice').val(),
-                sprice : $(this).find('.e-sprice').val(),
-                qty : $(this).find('.e-qty').val()
-            }
-            items.push(obj)
-        });
-        let product = JSON.stringify({
-          barcode: $("#e-barcode").val(),
-          productName: $("#e-pname").val(),
-          weight: $("#e-weight").val(),
-          link: $("#e-link").val(),
-          note: $("#e-note").val(),
-          categories: e_cate,
-          suppliers: e_sup,
-          items: items
-        });
-        $.ajax({
-            url: "/api/products/" + $("#pme-form").attr("pid"),
-            method: "put",
-            data: product,
-            contentType: "application/json",
-            success: function (response) { 
-                table.ajax.reload(null, false) 
-                $("#product-modal-edit").modal("hide");
-                $("#toast-content").html("Chỉnh sửa thành công: # "+response.data['id']+' - '+ response.data['productName'])
-                toast.show()
-                //window.location.href = "/products"
-            },  
-            error: function (err) {  
-                alert(err);  
-            } 
-        });
-        
-      });
 	
-    $("#c-categories").select2({
-        data: $.map(cateData, function(s) {
-            return {
-                text: s.cateName,
-                id: s.id
-            }
-        }),
-        placeholder: "Chọn danh mục sản phẩm",
-        allowClear: true,
-        tags: true,
-        tokenSeparators: [','],
-        width: '100%',
-        height: '34px',
-        //dropdownAutoWidth: true,
-        dropdownParent: ".cate-c-group"
-    });
-
-	$("#c-supplier").select2({
-        placeholder: {id: '',text: "Chọn đơn vị cung cấp"},
-        allowClear: true,
-        data: $.map(supData, function(s) {
-            return {
-                text: s.supName,
-                id: s.id
-            }
-        }),
-        tags: true,
-        width: '100%',
-        height: '34px',
-        dropdownParent: ".sup-c-group"
-    }).val('').trigger('change');
-
-    $("#c-warehouse").select2({
-        data: $.map(wareData, function(s) {
-            return {
-                text: s.name,
-                id: s.id
-            }
-        }),
-        placeholder: "Chọn kho hàng",
-        allowClear: true,
-        width: '100%',
-        height: '34px',
-        dropdownParent: ".ware-c-group"
-    });
-    
-    $("#c-warehouse").on("select2:select" , function(e){
-        let insert =    '<tr class="tb-data" id="r'+ e.params.data.id +'" wid="'+ e.params.data.id +'">' +
-                            '<td class="cell-align" style="font-weight: 700; border-right: 1px solid #ccc;">'+ e.params.data.text +'</td>'+
-                            '<td class="cell-align">'+
-                                '<div class="form-check form-switch"><input class="form-check-input status" type="checkbox" role="switch" checked></div>'+
-                            '</td>'+
-                            //'<td class="cell-align"></td>'+
-                            '<td class="input-val cell-align"><input class="form-control ip-70 pprice" type="number"></td>'+
-                            '<td class="input-val cell-align"><input class="form-control ip-70 sprice" type="number"></td>'+
-                            '<td class="input-val cell-align"><input class="form-control ip-70 qty"  type="number"></td>'+
-                        '</tr>'
-        
-        $("#c-tb").find('tbody').append(insert);
-    });
-      
-    $("#c-warehouse").on("select2:unselect", function(e){
-        id="r"+e.params.data.id;
-        $("#"+id).remove()
-        //$("#c-tb").deleteRow(id);
-    });
-	
-    $("#e-categories").select2({
-        data: $.map(cateData, function(s) {
-            return {
-                text: s.cateName,
-                id: s.id
-            }
-        }),
-        placeholder: "Chọn danh mục sản phẩm",
-        allowClear: true,
-        tags: true,
-        tokenSeparators: [','],
-        width: '100%',
-        height: '34px',
-        dropdownParent: ".cate-e-group"
-    });
-
-	$("#e-supplier").select2({
-        placeholder: {id: '',text: "Chọn đơn vị cung cấp"},
-        allowClear: true,
-        data: $.map(supData, function(s) {
-            return {
-                text: s.supName,
-                id: s.id
-            }
-        }),
-        tags: true,
-        width: '100%',
-        height: '34px',
-        dropdownParent: ".sup-e-group"
-    }).val('').trigger('change');
-
-    $("#e-warehouse").select2({
-        data: $.map(wareData, function(s) {
-            return {
-                text: s.name,
-                id: s.id
-            }
-        }),
-        placeholder: "Chọn kho hàng",
-        allowClear: true,
-        width: '100%',
-        height: '34px',
-        dropdownParent: ".ware-e-group"
-    });
-
-    $("#e-warehouse").on("select2:select" , function(e){
-        let insert = "";
-        let pid = $("#pme-form").attr("pid");
-        let wpItem = getAjaxResponse("/api/item/product/"+pid+"/warehouse/"+e.params.data.id);
-
-        console.log(wpItem)
-        if(wpItem!=null){
-            if(wpItem?.active === true){
-                st = '<div class="form-check form-switch"><input class="form-check-input e-status" type="checkbox" onclick="setItemStatus('+ wpItem?.id +')" role="switch" checked></div>'
-            }else {
-                st = '<div class="form-check form-switch"><input class="form-check-input e-status" type="checkbox" onclick="setItemStatus('+ wpItem?.id +')" role="switch"></div>'
-            }
-            insert =    '<tr class="tb-data" id="er'+ e.params.data.id +'" wid="'+ e.params.data.id +'" iid="'+ wpItem?.id +'">' +
-                            '<td class="cell-align" style="font-weight: 700; border-right: 1px solid #ccc;">'+ e.params.data.text +'</td>'+
-                            '<td class="cell-align">'+ st +
-                            '</td>'+
-                            //'<td class="cell-align"></td>'+
-                            '<td class="input-val cell-align"><input class="form-control ip-70 e-pprice" type="number" value="'+ wpItem?.purcharsePrice +'"></td>'+
-                            '<td class="input-val cell-align"><input class="form-control ip-70 e-sprice" type="number" value="'+ wpItem?.retailPrice +'"></td>'+
-                            '<td class="input-val cell-align"><input class="form-control ip-70 e-qty"  type="number" value="'+ wpItem?.qty +'"></td>'+
-                        '</tr>'
-        }else{
-            insert =    '<tr class="tb-data" id="er'+ e.params.data.id +'" wid="'+ e.params.data.id +'" iid="">' +
-                            '<td class="cell-align" style="font-weight: 700; border-right: 1px solid #ccc;">'+ e.params.data.text +'</td>'+
-                            '<td class="cell-align">'+
-                                '<div class="form-check form-switch"><input class="form-check-input e-status" type="checkbox" role="switch" checked></div>'+
-                            '</td>'+
-                            //'<td class="cell-align"></td>'+
-                            '<td class="input-val cell-align"><input class="form-control ip-70 e-pprice" type="number"></td>'+
-                            '<td class="input-val cell-align"><input class="form-control ip-70 e-sprice" type="number"></td>'+
-                            '<td class="input-val cell-align"><input class="form-control ip-70 e-qty"  type="number"></td>'+
-                        '</tr>'
-        }
-        $("#e-tb").find('tbody').append(insert);
-    });
-
-    $("#e-warehouse").on("select2:unselect", function(e){
-        id="er"+e.params.data.id
-        $("#"+id).remove()
-    });
-
     $("#btnCreate").on("click", function(e){
         e.preventDefault();
+        $("#createModalDiv").empty();
+        $("#createModalDiv").append(createModalElem);
+
+
+        $("#c-categories").select2({
+            data: $.map(cateData, function(s) {
+                return {
+                    text: s.cateName,
+                    id: s.id
+                }
+            }),
+            placeholder: "Chọn danh mục sản phẩm",
+            allowClear: true,
+            tags: true,
+            tokenSeparators: [','],
+            width: '100%',
+            height: '34px',
+            //dropdownAutoWidth: true,
+            dropdownParent: ".cate-c-group"
+        });
+    
+        $("#c-supplier").select2({
+            placeholder: {id: '',text: "Chọn đơn vị cung cấp"},
+            allowClear: true,
+            data: $.map(supData, function(s) {
+                return {
+                    text: s.supName,
+                    id: s.id
+                }
+            }),
+            tags: true,
+            width: '100%',
+            height: '34px',
+            dropdownParent: ".sup-c-group"
+        }).val('').trigger('change');
+    
+        $("#c-warehouse").select2({
+            data: $.map(wareData, function(s) {
+                return {
+                    text: s.name,
+                    id: s.id
+                }
+            }),
+            placeholder: "Chọn kho hàng",
+            allowClear: true,
+            width: '100%',
+            height: '34px',
+            dropdownParent: ".ware-c-group"
+        });
+        
+        $("#c-warehouse").on("select2:select" , function(e){
+            let insert =    '<tr class="tb-data" id="r'+ e.params.data.id +'" wid="'+ e.params.data.id +'">' +
+                                '<td class="cell-align" style="font-weight: 700; border-right: 1px solid #ccc;">'+ e.params.data.text +'</td>'+
+                                '<td class="cell-align">'+
+                                    '<div class="form-check form-switch"><input class="form-check-input status" type="checkbox" role="switch" checked></div>'+
+                                '</td>'+
+                                //'<td class="cell-align"></td>'+
+                                '<td class="input-val cell-align"><input class="form-control ip-70 pprice" type="number"></td>'+
+                                '<td class="input-val cell-align"><input class="form-control ip-70 sprice" type="number"></td>'+
+                                '<td class="input-val cell-align"><input class="form-control ip-70 qty"  type="number"></td>'+
+                            '</tr>'
+            
+            $("#c-tb").find('tbody').append(insert);
+        });
+          
+        $("#c-warehouse").on("select2:unselect", function(e){
+            id="r"+e.params.data.id;
+            $("#"+id).remove()
+            //$("#c-tb").deleteRow(id);
+        });
+        $("#c-pform").on("submit", function (e) {
+            e.preventDefault();
+            c_cate = $("#c-categories").select2("data").map(c=>{
+                return{
+                    id: c.id,
+                    cateName: c.text
+                }
+            })
+            c_sup = $("#c-supplier").select2("data").map(c=>{
+                return{
+                    id: c.id,
+                    supName: c.text
+                }
+            })
+            let items = [];
+            $("#c-tb tr.tb-data").map(function (index, elem) {
+                obj = {
+                    active : $(this).find('.status').is(":checked"),
+                    wareId : $(this).attr("wid"),
+                    sku: "",
+                    pprice : $(this).find('.pprice').val(),
+                    sprice : $(this).find('.sprice').val(),
+                    qty : $(this).find('.qty').val()
+                }
+                items.push(obj)
+            });
+            let product = JSON.stringify({
+              barcode: $("#c-barcode").val(),
+              productName: $("#c-pname").val(),
+              weight: $("#c-weight").val(),
+              link: $("#c-link").val(),
+              note: $("#c-note").val(),
+              categories: c_cate,
+              suppliers: c_sup,
+              items: items
+            });
+            $.ajax({
+                url: "/api/products/new",
+                method: "post",
+                data: product,
+                contentType: "application/json",
+                success: function (response) { 
+                    table.ajax.reload(null, false) 
+                    $('#product-modal form').trigger("reset")
+                    // $("#c-categories").select2().val("");
+                    // $("#c-supplier").select2().val([]).trigger("change");
+                    // $("#c-warehouse").select2().val("");
+                    $("#product-modal").modal("hide");
+                    $("#product-modal").find('form').trigger('reset');
+                    $("#toast-content").html("Tạo mới thành công: # "+response.data['id']+' - '+ response.data['productName'])
+                    toast.show()
+                    //window.location.href = "/products"
+                },  
+                error: function (error) {  
+    
+                    alert(error.message);  
+                } 
+            });
+            
+        });
+        
         $("#product-modal").modal("show");
     });
 
@@ -459,68 +524,6 @@ $(document).ready(function () {
             toast.show()
         }).catch(error => {console.error(error)});
     })
-
-    $("#c-pform").on("submit", function (e) {
-        e.preventDefault();
-        c_cate = $("#c-categories").select2("data").map(c=>{
-            return{
-                id: c.id,
-                cateName: c.text
-            }
-        })
-        c_sup = $("#c-supplier").select2("data").map(c=>{
-            return{
-                id: c.id,
-                supName: c.text
-            }
-        })
-        let items = [];
-        $("#c-tb tr.tb-data").map(function (index, elem) {
-            obj = {
-                active : $(this).find('.status').is(":checked"),
-                wareId : $(this).attr("wid"),
-                sku: "",
-                pprice : $(this).find('.pprice').val(),
-                sprice : $(this).find('.sprice').val(),
-                qty : $(this).find('.qty').val()
-            }
-            items.push(obj)
-        });
-        let product = JSON.stringify({
-          barcode: $("#c-barcode").val(),
-          productName: $("#c-pname").val(),
-          weight: $("#c-weight").val(),
-          link: $("#c-link").val(),
-          note: $("#c-note").val(),
-          categories: c_cate,
-          suppliers: c_sup,
-          items: items
-        });
-        $.ajax({
-            url: "/api/products/new",
-            method: "post",
-            data: product,
-            contentType: "application/json",
-            success: function (response) { 
-                table.ajax.reload(null, false) 
-                $('#product-modal form').trigger("reset")
-                // $("#c-categories").select2().val("");
-                // $("#c-supplier").select2().val([]).trigger("change");
-                // $("#c-warehouse").select2().val("");
-                $("#product-modal").modal("hide");
-                $("#product-modal").find('form').trigger('reset');
-                $("#toast-content").html("Tạo mới thành công: # "+response.data['id']+' - '+ response.data['productName'])
-                toast.show()
-                //window.location.href = "/products"
-            },  
-            error: function (error) {  
-
-                alert(error.message);  
-            } 
-        });
-        
-      });
-	
       
     $("#productTable tbody").on("click", ".btn-delete", function (e) {
         e.preventDefault();
@@ -732,3 +735,208 @@ function getAjaxResponse( url ){
     }).responseJSON;
     return result.data;
 }
+
+const createModalElem =
+`<div class="modal fade" role="dialog" id="product-modal">
+<div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title" id="pmTitle">
+                <h3>Thông tin sản phẩm</h3>
+            </div>
+            <button type="submit" class="btn btn-primary" style="position: absolute; right: 40px;" form="c-pform"><span>Lưu</span></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <form action="#" enctype="multipart/form-data" method="post" id="c-pform">
+            <div class="modal-body">
+                <div class="steps-container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span class="form-title">Mã sản phẩm <span
+                                        style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
+                                <input placeholder="Mã sản phẩm, barcode" class="form-control" type="text" 
+                                        oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')"
+                                         oninput="setCustomValidity('')" id="c-barcode" autocomplete="off" required>
+                            </div>
+
+                            <div class="form-group">
+                                <span class="form-title">Tên sản phẩm <span
+                                        style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
+                                <input placeholder="Tên sản phẩm" class="form-control" type="text" id="c-pname" 
+                                        oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộcbuộc')"
+                                         oninput="setCustomValidity('')" autocomplete="off" required>
+                            </div>
+
+                            <div class="form-group row">
+                                <span class="col-sm-4 form-title">Khối lượng (gram):</span>
+                                <div class="col-sm-8">
+                                    <input class="form-control" role="combobox" type="number" id="c-weight" 
+                                        oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộcbuộc')"
+                                         oninput="setCustomValidity('')" autocomplete="off" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group ware-c-group">
+                                <span class="form-title">Kho hàng:</span>
+                                <select class="form-control" id="c-warehouse" role="combobox" multiple></select>
+                            </div>
+
+                            <div class="form-group">
+                                <div>
+                                    <div class="form-title">Link nhập hàng:</div>
+                                    <div>
+                                        <input placeholder="Enter để thêm link sản phẩm" class="form-control"
+                                            type="text" autocomplete="off" id="c-link">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group cate-c-group">
+                                <span class="form-title">Danh mục:</span>
+                                <select class="form-control" id="c-categories" multiple></select>
+                            </div>
+
+                            <div class="form-group sup-c-group">
+                                <span class="form-title">Nhà cung cấp:</span>
+                                <select id="c-supplier" class="form-control" multiple></select>
+                            </div>
+
+                            <div class="form-group">
+                                <span class="form-title">Ghi chú:</span>
+                                <textarea rows="4" placeholder="Ghi chú SP" autocomplete="off" id="c-note"
+                                    class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table table-hover table-responsive-xl" id="c-tb">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="border-right: 1px solid #ccc;">Kho hàng</th>
+                                <th>Trạng thái</th>
+                                <!-- <th>Hình ảnh</th> -->
+                                <th>Giá nhập</th>
+                                <th>Giá bán</th>
+                                <th>Số lượng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+</div>`
+
+const editModalElem = 
+`<div class="modal fade" role="dialog" id="product-modal-edit">
+<div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">
+                <h3>Thông tin sản phẩm</h3>
+            </div>
+            <button type="submit" class="btn btn-primary" style="position: absolute; right: 40px;" form="pme-form"><span>Lưu</span></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="pme-form" enctype="multipart/form-data" method="put">
+            <div style="display: flex; flex-direction: row-reverse;background-color: #fff; padding: 12px; align-items: center;">
+                <div style="position: absolute; left: 15px">
+                     <span>Cập nhật: </span>
+                     <span  id="created-val"></span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="steps-container">
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <div class="form-group">
+                                <span class="form-title">Mã sản phẩm <span
+                                        style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
+                                <input placeholder="Mã sản phẩm, barcode" class="form-control" type="text" 
+                                        oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộc')"
+                                         oninput="setCustomValidity('')" id="e-barcode" autocomplete="off" required>
+                            </div>
+
+                            <div class="form-group">
+                                <span class="form-title">Tên sản phẩm <span
+                                        style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
+                                <input placeholder="Tên sản phẩm" class="form-control" type="text" id="e-pname" 
+                                        oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộcbuộc')"
+                                         oninput="setCustomValidity('')" autocomplete="off" required>
+                            </div>
+
+                            <div class="form-group row">
+                                <span class="col-sm-4 form-title">Khối lượng (gram):</span>
+                                <div class="col-sm-8">
+                                    <input class="form-control" role="combobox" type="number" id="e-weight" 
+                                        oninvalid="this.setCustomValidity('Hãy nhập đầy đủ thông tin bắt buộcbuộc')"
+                                         oninput="setCustomValidity('')" autocomplete="off" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group ware-e-group">
+                                <span class="form-title">Kho hàng:</span>
+                                <select class="form-control" id="e-warehouse" role="combobox" multiple></select>
+                            </div>
+
+                            <div class="form-group">
+                                <div>
+                                    <div class="form-title">Link nhập hàng:</div>
+                                    <div>
+                                        <input placeholder="Enter để thêm link sản phẩm" class="form-control"
+                                            type="text" value="" autocomplete="off" id="e-link">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+
+                            <div class="form-group cate-e-group">
+                                <span class="form-title">Danh mục:</span>
+                                <select class="form-control" id="e-categories" multiple></select>
+                            </div>
+
+                            <div class="form-group sup-e-group">
+                                <span class="form-title">Nhà cung cấp:</span>
+                                <select id="e-supplier" class="form-control" multiple></select>
+                            </div>
+
+                            <div class="form-group">
+                                <span class="form-title">Ghi chú:</span>
+                                <textarea rows="4" placeholder="Ghi chú SP" autocomplete="off" id="e-note"
+                                    class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="table-container">
+                    <table class="table table-hover table-responsive-xl" id="e-tb">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="border-right: 1px solid #ccc;">Kho hàng</th>
+                                <th>Trạng thái</th>
+                                <!-- <th>Hình ảnh</th> -->
+                                <th>Giá nhập</th>
+                                <th>Giá bán</th>
+                                <th>Số lượng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>`

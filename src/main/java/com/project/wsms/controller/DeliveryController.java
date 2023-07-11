@@ -57,7 +57,7 @@ public class DeliveryController {
 		employee.convertToDto(emp);
 		model.addAttribute("user", employee);
         model.addAttribute("pageTitle", "QUẢN LÝ GIAO HÀNG");
-		return "/delivery/delivery";
+		return "delivery/delivery";
     }
 
 	@PreAuthorize("hasRole('DELIVERY_MAN')")
