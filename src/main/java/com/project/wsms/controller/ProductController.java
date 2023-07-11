@@ -59,7 +59,7 @@ public class ProductController {
 	@Autowired
 	private ItemService itemService;
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/products")
 	public String getAllProduct(Model model, HttpServletRequest request) {
@@ -68,6 +68,7 @@ public class ProductController {
 		EmployeeDto employee = new EmployeeDto();
 		employee.convertToDto(emp);
 		model.addAttribute("user", employee);
+		model.addAttribute("categories", categoryService.getAll());
 		model.addAttribute("pageTitle", "QUẢN LÝ SẢN PHẨM");
 		//model.addAttribute("warehouses", warehouseService.getAll());
 		return "products/products";
@@ -88,7 +89,7 @@ public class ProductController {
 //		return "redirect:/products";
 //	 }
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/products/create")
 	public String addProduct(Model model) {
@@ -101,7 +102,7 @@ public class ProductController {
 		return new Product();
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@PostMapping("products/create")
 	public String saveProduct(@ModelAttribute("product") Product product) {
@@ -114,7 +115,7 @@ public class ProductController {
 		return "redirect:/products";
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/products")
 	@ResponseBody
@@ -130,7 +131,7 @@ public class ProductController {
 				HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/products/{id}")
 	@ResponseBody
@@ -146,8 +147,7 @@ public class ProductController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 	@GetMapping("/api/products/search")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> findProductByKeyword(@RequestParam("keyword") String keyword) {
@@ -165,8 +165,7 @@ public class ProductController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@PostMapping("/api/products/new")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> createProduct(@RequestBody ProductDto productDto) {
@@ -231,7 +230,7 @@ public class ProductController {
 	}
 
 
-	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 
 	@DeleteMapping("/api/products/{id}")
 	@ResponseBody
@@ -248,7 +247,7 @@ public class ProductController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 
 	@PutMapping("/api/products/{id}")
 	@ResponseBody

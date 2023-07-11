@@ -21,27 +21,13 @@
 
 		<!-- START TOOLBAR -->
         <div class="tools-container">
-            <div>
-                <div style="display: inline-block;">
-                    <button type="button" class="btn-tools" id="btnCreate">
-                        <span><i class="fa-solid fa-plus"></i></span>
-                    </button>
-                </div>
-
-                <button type="button" class="btn-tools" id="btnClear">
-                    <i class="fa-solid fa-rotate"></i>
-                    <span>Tải lại</span>
-                </button>
-
-                <div id="action-tools" style="display: inline-block;">
-                    <span style="display: inline-block;">
-                        <div style="display: inline-block;">
-                            <button type="button" class="btn-tools" id="multi_delete">
-                                <i class="fa-solid fa-trash"></i>
-                                <span>Xóa</span>
-                            </button>
-                        </div>
-                    </span>
+            <div class="d-flex flex-row justify-content-between">
+                <div id="action-tools" style="display: inline-flex;">
+                    <div style="display: inline-block;">
+                        <button type="button" class="btn-tools" id="btnCreate">
+                            <span><i class="fa-solid fa-plus"></i></span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="filter">
@@ -81,6 +67,7 @@
         <div th:replace="~{customer/customer-form.html :: modal}"></div>
         
         <!-- FOOTER -->
+        <div th:replace="fragments/setting :: setting-modal"></div>
         <div th:replace="~{fragments/footer.html :: footer}"></div>
     </div>
 
@@ -92,6 +79,11 @@
      <!-- END PAGA BACKDROPS-->
     <!-- SCRIPT -->
     <script th:src="@{/js/customer.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+            const user = /*[[${user}]]*/ 'default';
+        /*]]>*/
+    </script>
 </body>
 
 </html>

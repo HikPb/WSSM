@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,8 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.project.wsms.exception.NotFoundException;
 import com.project.wsms.model.Category;
+import com.project.wsms.model.Product;
+import com.project.wsms.payload.request.CategoryRequest;
 import com.project.wsms.payload.response.ResponseObject;
+import com.project.wsms.repository.ProductRepository;
 import com.project.wsms.service.CategoryService;
 
 import jakarta.validation.Valid;
@@ -29,6 +34,10 @@ public class CategoryController {
 	@Autowired
 	private CategoryService categoryService;
 	
+	@Autowired
+	private ProductRepository productRepository;
+	
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/category/search")
     public String search(@RequestParam("key") String key, Model model) {
         List<Category> results = categoryService.getByKeyword(key);
@@ -36,6 +45,7 @@ public class CategoryController {
         return "products/product-form";
     }
 	
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/api/category")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllCategory(){
@@ -45,6 +55,7 @@ public class CategoryController {
 				HttpStatus.OK);
 	}
 	
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/api/category/search")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> searchCategory(@RequestParam("key") String key){
@@ -62,6 +73,7 @@ public class CategoryController {
 		}		
 	}
 	
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/api/category/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
@@ -76,12 +88,13 @@ public class CategoryController {
 				HttpStatus.NOT_FOUND);
 	}
 	
-	@PostMapping("/api/category/")
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
+	@PostMapping("/api/category")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> saveCategory(@Valid @RequestBody Category category) {
+	public ResponseEntity<ResponseObject> saveCategory(@Valid @RequestBody String category) {
 		try {
 			Category newCategory = new Category();
-			newCategory.setCateName(category.getCateName());
+			newCategory.setCateName(category);
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Save new category successfully", categoryService.save(newCategory)), 
 					HttpStatus.CREATED
@@ -94,28 +107,20 @@ public class CategoryController {
 		}
 	}
 	
-	@PutMapping("/api/category/{id}")
-	public ResponseEntity<ResponseObject> updateCategory(@PathVariable Integer id, 
-	                                        @RequestBody Category category) {
-		
-		Optional<Category> uCategory = categoryService.getById(id);
-		if(uCategory.isPresent()){
-					
-			uCategory.get().setCateName(category.getCateName());
-			return new ResponseEntity<>(
-					new ResponseObject("ok", "Update category successfully", categoryService.save(uCategory.get())),
-					HttpStatus.OK
-					);
-		
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
+	@PutMapping("/api/category")
+	public ResponseEntity<ResponseObject> updateCategory(@RequestBody CategoryRequest category) {
+		if(!categoryService.existsById(category.getId())){
+			throw new NotFoundException("Not found category with id = " + category.getId());
 		}
-		Category newCategory = new Category();
-		newCategory.setCateName(category.getCateName());
+		Category uCategory = categoryService.getById(category.getId()).get();
+		uCategory.setCateName(category.getCateName());
 		return new ResponseEntity<>(
-				new ResponseObject("ok", "Update category successfully", categoryService.save(newCategory)),
-				HttpStatus.OK
-				);
+				new ResponseObject("ok", "Update category successfully", categoryService.save(uCategory)),
+				HttpStatus.OK);
 	}
 	
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@DeleteMapping("/api/category/{id}")
 	public ResponseEntity<ResponseObject> deleteCategory(@PathVariable(value = "id") Integer id) {
 	    if(!categoryService.existsById(id)) {
@@ -124,6 +129,12 @@ public class CategoryController {
 					HttpStatus.NOT_FOUND);
 	    }
 
+		List<Product> listProducts = productRepository.findProductsByCategoriesId(id);
+		if(!listProducts.isEmpty()){
+			listProducts.forEach(p->{
+				p.removeCategory(id);
+			});
+		}
 	    categoryService.delete(id);
 	    return new ResponseEntity<>(
 				new ResponseObject("ok", "Delete category successfully", ""),

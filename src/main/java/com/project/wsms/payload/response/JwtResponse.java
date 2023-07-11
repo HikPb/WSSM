@@ -1,16 +1,17 @@
 package com.project.wsms.payload.response;
 
-import com.project.wsms.model.Role;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter @Setter
 @AllArgsConstructor @NoArgsConstructor 
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
     private String username;
-    private Role role;
+    private List<String> roles;
 }

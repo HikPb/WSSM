@@ -6,16 +6,20 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,13 +38,30 @@ public class Employee {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Enumerated(EnumType.STRING)
-	private Role role;
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+ 	@JoinTable(  name = "user_roles", 
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false), 
+        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false))
+  	private Set<Role> roles = new HashSet<>();
 	
+	@NotBlank
+  	@Size(max = 20)
 	private String username;
 	private String fullname;
 	private String phone;
+	@NotBlank
+  	@Size(max = 120)
 	private String password;
+
+	@JsonBackReference(value = "emp-mess-sender")
+	@JsonIgnore
+	@OneToMany(mappedBy="sender")
+	private Set<Message> sentMess  = new HashSet<>();
+
+	@JsonBackReference(value = "emp-mess-recipient")
+	@JsonIgnore
+	@OneToMany(mappedBy="recipient")
+	private Set<Message> receivedMess  = new HashSet<>();
 	
 	@JsonBackReference(value = "emp-order")
 	@JsonIgnore
@@ -62,6 +83,16 @@ public class Employee {
 	@OneToMany(mappedBy="employee")
 	private Set<CheckQty> checkqtys = new HashSet<>();
 	
+	public void addSentMess(Message mess) {
+		this.sentMess.add(mess);
+		mess.setSender(this);
+	}
+
+	public void addReceivedMess(Message mess) {
+		this.receivedMess.add(mess);
+		mess.setRecipient(this);
+	}
+
 	public void addOrder(Order order) {
 		this.orders.add(order);
 		order.setEmployee(this);

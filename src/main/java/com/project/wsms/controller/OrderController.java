@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,18 +17,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.project.wsms.dto.EmployeeDto;
 import com.project.wsms.dto.OrderDto;
 import com.project.wsms.dto.OrderItemDto;
 import com.project.wsms.model.Customer;
+import com.project.wsms.model.ERole;
 import com.project.wsms.model.Employee;
 import com.project.wsms.model.Item;
+import com.project.wsms.model.Message;
 import com.project.wsms.model.Order;
 import com.project.wsms.model.OrderItem;
 import com.project.wsms.model.Warehouse;
 import com.project.wsms.payload.response.ResponseObject;
+import com.project.wsms.repository.MessageRepository;
 import com.project.wsms.service.CustomerService;
 import com.project.wsms.service.EmployeeService;
 import com.project.wsms.service.ItemService;
@@ -61,8 +66,11 @@ public class OrderController {
 
 	@Autowired
 	private CustomerService customerService;
+
+	@Autowired
+	private MessageRepository messageRepository;
 	
-	// VIEW NHAP KHO
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 	@GetMapping("/order")
 	public String getAllOrderProduct(Model model, HttpServletRequest request) {
 		Principal user = request.getUserPrincipal();
@@ -76,6 +84,7 @@ public class OrderController {
 		return "orders/order";
 	}
 
+	@PreAuthorize("hasRole('SALES_EMPLOYEE')")
 	@GetMapping("/order/new")
 	public String createOrder(Model model, HttpServletRequest request) {
 		Principal user = request.getUserPrincipal();
@@ -90,6 +99,7 @@ public class OrderController {
 		return "orders/new-order";
 	}
 	
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('DELIVERY_MAN') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/api/order")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllOrder(){
@@ -104,7 +114,24 @@ public class OrderController {
 					HttpStatus.BAD_REQUEST);
 		}	
 	}
+
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('DELIVERY_MAN') or hasRole('SALES_EMPLOYEE') ")
+	@GetMapping("/api/order/status")
+	@ResponseBody
+	public ResponseEntity<ResponseObject> getOrderByStatus(@RequestParam(name="status-list") List<Integer> statusList ){
+		try{
+			List<Order> lists= orderService.getByStatusIn(statusList);
+			return new ResponseEntity<>(
+				new ResponseObject("ok", "Query successfully", lists), 
+				HttpStatus.OK);
+		} catch(Exception e){
+			return new ResponseEntity<>(
+					new ResponseObject("failed", "Error when query import form data", ""),
+					HttpStatus.BAD_REQUEST);
+		}	
+	}
 	
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('DELIVERY_MAN') or hasRole('SALES_EMPLOYEE')")
 	@GetMapping("/api/order/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOneOrder(@PathVariable Integer id) {
@@ -119,7 +146,7 @@ public class OrderController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE')")
 	@ResponseBody
 	@GetMapping("/api/order/customer/{id}")
 	public ResponseEntity<ResponseObject> getOrderByCustomer(@PathVariable("id") Integer id) {
@@ -135,9 +162,10 @@ public class OrderController {
 		}		
 	}
 
+	@PreAuthorize("hasRole('SALES_ADMIN')")
 	@PostMapping("/api/order/{id}/status/{st}")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> changeOrderStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
+	public ResponseEntity<ResponseObject> changeOrderStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st, HttpServletRequest request) {
 		try {
 			if(orderService.existsById(id)){
 				Order object = orderService.getById(id).get();
@@ -145,6 +173,11 @@ public class OrderController {
 					switch(st){
 						case 0:		//Moi->Huy don
 							object.setStatus(st);
+							Customer customer = object.getCustomer();
+							customer.setTmoney(customer.getTmoney() - object.getReceivedMoney()); //hoan tien cho khach
+							customer.setTowe(customer.getTowe() - object.getOwe());
+							customer.setNpCus(customer.getNpCus() - 1);
+							customerService.save(customer);
 							break;
 						case 2:		//Moi->Chuan bi hang
 							object.setStatus(st);
@@ -154,12 +187,26 @@ public class OrderController {
 								itemService.save(item);
 							});
 							break;
-						case 3: 	//Moi->Da gui hang
+						case 3: 	//Moi->Gui hang di
 							object.setStatus(st);
 							object.getOrderItems().forEach(it->{
 								Item item = it.getItem();
 								item.setQty(item.getQty()-it.getQty());
 								itemService.save(item);
+							});
+							Employee sender = employeeService.getByUsername(request.getUserPrincipal().getName())
+								.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username"));
+							List<Employee> listRecipient = employeeService.getByRole(ERole.ROLE_DELIVERY_MAN);
+							listRecipient.stream().forEach(recip ->{
+								Message message = new Message();
+								message.setRead(false);
+								message.setUrl("/export");
+								message.setMessage("Đơn hàng cần gửi đi!");
+								sender.addSentMess(message);
+								recip.addReceivedMess(message);
+								messageRepository.save(message);
+								employeeService.save(recip);
+								employeeService.save(sender);
 							});
 							break;
 						default:
@@ -176,6 +223,11 @@ public class OrderController {
 								item.setQty(item.getQty()+it.getQty());
 								itemService.save(item);
 							});
+							Customer customer = object.getCustomer();
+							customer.setTmoney(customer.getTmoney() - object.getReceivedMoney()); //hoan tien cho khach
+							customer.setTowe(customer.getTowe() - object.getOwe());
+							customer.setNpCus(customer.getNpCus() - 1);
+							customerService.save(customer);
 							break;
 						case 1:   //chuan bi hang -> moi
 							object.setStatus(st);
@@ -185,21 +237,35 @@ public class OrderController {
 								itemService.save(item);
 							});
 							break;
-						case 3:
+						case 3: //chuan bi hang -> dang gui hang
 							object.setStatus(st);
+							Employee sender = employeeService.getByUsername(request.getUserPrincipal().getName())
+								.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username"));
+							List<Employee> listRecipient = employeeService.getByRole(ERole.ROLE_DELIVERY_MAN);
+							listRecipient.stream().forEach(recip ->{
+								Message message = new Message();
+								message.setRead(false);
+								message.setUrl("/delivery");
+								message.setMessage("Đơn hàng cần gửi đi!");
+								sender.addSentMess(message);
+								recip.addReceivedMess(message);
+								messageRepository.save(message);
+								employeeService.save(recip);
+								employeeService.save(sender);
+							});
 							break;
 						default:
 							break;
 					}
 				}
-				if(object.getStatus()==3 && st==0){
-					object.setStatus(st);
-					object.getOrderItems().forEach(it->{
-						Item item = it.getItem();
-						item.setQty(item.getQty()+it.getQty());
-						itemService.save(item);
-					});
-				}
+				// if(object.getStatus()==3 && st==0){
+				// 	object.setStatus(st);
+				// 	object.getOrderItems().forEach(it->{
+				// 		Item item = it.getItem();
+				// 		item.setQty(item.getQty()+it.getQty());
+				// 		itemService.save(item);
+				// 	});
+				// }
 				orderService.save(object);
 				return new ResponseEntity<>(
 					new ResponseObject("ok", "Change status successfully", object),
@@ -216,9 +282,10 @@ public class OrderController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('SALES_EMPLOYEE')")
 	@PostMapping("/api/order")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> createOrderForm(@RequestBody OrderDto objectDto) {
+	public ResponseEntity<ResponseObject> createOrderForm(@RequestBody OrderDto objectDto, HttpServletRequest request) {
 		try {
 			Order newObject = objectDto.convertToEntity();
 			
@@ -230,7 +297,9 @@ public class OrderController {
 
 			Customer cus = customerService.getById(objectDto.getCusId()).get();			
 			cus.addOrder(newObject);
-			
+			cus.setNpCus(cus.getNpCus() + 1);
+			cus.setTmoney(cus.getTmoney()+newObject.getReceivedMoney());
+			cus.setTowe(cus.getTowe()+ newObject.getOwe());
 
 			// newObject.setEmployee(employee);
 			// newObject.setWarehouse(wh);
@@ -252,19 +321,36 @@ public class OrderController {
 			employeeService.save(employee);
 			warehouseService.save(wh);
 			customerService.save(cus);
+
+			Employee sender = employeeService.getByUsername(request.getUserPrincipal().getName())
+				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username"));
+			List<Employee> listRecipient = employeeService.getByRole(ERole.ROLE_SALES_ADMIN);
+			listRecipient.stream().forEach(recip ->{
+				Message message = new Message();
+				message.setRead(false);
+				message.setUrl("/order");
+				message.setMessage("Đơn hàng mới đã được tạo!");
+				sender.addSentMess(message);
+				recip.addReceivedMess(message);
+				messageRepository.save(message);
+				employeeService.save(recip);
+				employeeService.save(sender);
+			});
+	
 			return new ResponseEntity<>(
-					new ResponseObject("ok", "Create new import form successfully", newObject), 
+					new ResponseObject("ok", "Create new order successfully", newObject), 
 					HttpStatus.OK
 					);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(
-					new ResponseObject("failed", "Exception when saving new import form", ""), 
+					new ResponseObject("failed", "Exception when saving new order", ""), 
 					HttpStatus.BAD_REQUEST
 					);
 		}
 	}
 
+	@PreAuthorize("hasRole('SALES_EMPLOYEE')")
 	@PutMapping("/api/order/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> editOrderForm(@PathVariable("id") Integer id, @RequestBody OrderDto objectDto) {
@@ -277,6 +363,7 @@ public class OrderController {
 				uObject.setAddress(objectDto.getAddress());
 				uObject.setReceiverName(objectDto.getReceiverName());
 				uObject.setReceiverPhone(objectDto.getReceiverPhone());
+				uObject.setDiscount(objectDto.getDiscount());
 				uObject.setTotalWeight(objectDto.getTotalWeight());
 				uObject.setShippingFee(objectDto.getShippingFee());
 				uObject.setTotalDiscount(objectDto.getTotalDiscount());
@@ -285,7 +372,31 @@ public class OrderController {
 				uObject.setTotal(objectDto.getTotal());
 				uObject.setRevenue(objectDto.getRevenue());
 				uObject.setSales(objectDto.getSales());
+				uObject.setProfit(objectDto.getProfit());
 
+
+				if(uObject.getWarehouse().getId() != objectDto.getWareId()){ //Thay doi warehouse
+					Warehouse oldwh = uObject.getWarehouse();
+					oldwh.removeOrder(id);
+					Warehouse wh = warehouseService.getById(objectDto.getWareId()).get();			
+					wh.addOrder(uObject);
+					warehouseService.save(oldwh);
+					warehouseService.save(wh);
+				}
+
+				if(uObject.getCustomer().getId() != objectDto.getCusId()){ //Thay doi customer
+					Customer oldcus = uObject.getCustomer();
+					oldcus.removeOrder(id);
+					oldcus.setNpCus(oldcus.getNpCus() - 1);
+					oldcus.setTmoney(oldcus.getTmoney() - uObject.getReceivedMoney());
+					oldcus.setTowe(oldcus.getTowe() - uObject.getOwe());
+
+					Customer cus = customerService.getById(objectDto.getCusId()).get();			
+					cus.addOrder(uObject);
+					customerService.save(oldcus);
+					customerService.save(cus);
+				}
+				
 				List<Integer> list = objectDto.getItems().stream().map(OrderItemDto::getId).collect(Collectors.toList());
 				List<Integer> outList = uObject.getOrderItems().stream().filter(i -> !list.contains(i.getId())).map(OrderItem::getId).collect(Collectors.toList());
 				if(!outList.isEmpty()){
@@ -298,13 +409,9 @@ public class OrderController {
 					objectDto.getItems().forEach(it ->{
 						if(it.getId() == null){
 							OrderItem newItem = it.convertToEntity();
-	
 							Item item = itemService.getById(it.getItemId()).get();
 							item.addOrderItem(newItem);
-		
-							newItem.setItem(item);
-							newItem.setOrder(uObject);
-							
+							uObject.addOrderItem(newItem);
 							orderItemService.save(newItem);
 							itemService.save(item);
 						}else{
@@ -313,6 +420,7 @@ public class OrderController {
 							orderItem.setPrice(it.getSprice());
 							orderItem.setDiscount(it.getDiscount());
 							orderItem.setQty(it.getQty());
+							orderItemService.save(orderItem);
 						}
 						
 					});

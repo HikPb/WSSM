@@ -1,179 +1,246 @@
 "use strict";
 var startDate = moment().subtract(6, 'days').format('MM/DD/YYYY'),
     endDate = moment().format('MM/DD/YYYY');
-var sbd = getAjaxResponse("/api/sbd?start="+startDate+"&end="+endDate), 
-    sbw = getAjaxResponse("/api/sbw?start="+startDate+"&end="+endDate), 
-    sbp = getAjaxResponse("/api/sbp?start="+startDate+"&end="+endDate), 
-    sbe = getAjaxResponse("/api/sbe?start="+startDate+"&end="+endDate);
 
-const barchart = document.getElementById("bar_chart").getContext("2d");
-const ctx4 = document.getElementById("doughnut_chart").getContext("2d");
-const wtable = $("#w-table").DataTable({
-    data: sbw,
-    columns: [
-        { data: 'name' },
-        { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'torder' },
-        { data: 'tproduct' },
-    ],
-    dom: 't',
-    order: [[ 4, 'desc' ]]
-});
-const ptable = $("#p-table").DataTable({
-    data: sbp,
-    columns: [
-        { data: 'productName' },
-        { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'tproduct' },
-        { data: 'torder' },
-    ],
-    scrollY: 200,
-    scrollCollapse: true,
-    dom: 't',
-    order: [[ 3, 'desc' ]]
-});
-const etable = $("#e-table").DataTable({
-    data: sbe,
-    columns: [
-        { data: 'username' },
-        { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'torder' },
-    ],
-    scrollY: 200,
-    scrollCollapse: true,
-    dom: 't',
-    order: [[ 4, 'desc' ]]
-});
+var barchart, dnchart;
 
-renderChart();
+const barchartElem = document.getElementById("bar_chart").getContext("2d");
+const dnchartElem = document.getElementById("doughnut_chart").getContext("2d");
 
-function renderChart(){
+renderChart(startDate,endDate);
+loadEtable(startDate, endDate);
+loadPtable(startDate, endDate);
+loadWtable(startDate, endDate);
+
+function loadWtable(startDate, endDate){
+    $("#w-table").DataTable({
+        processing : true,
+        serverSide : true,
+        responsive : true,
+        ajax: {
+            url: "/api/sbw?start="+startDate+"&end="+endDate,
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            dataSrc: 'data'
+        },
+        columns: [
+            { data: 'name' },
+            { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'torder' },
+            { data: 'tproduct' },
+        ],
+        dom: 't',
+        order: [[ 4, 'desc' ]],
+        drawCallback: function(settings){
+            var wareData = [],
+                orderDataset = [],
+                salesDataset = [];
+
+            for(var count = 0; count < settings.aoData.length; count++){
+                wareData.push(settings.aoData[count]._aData['name']);
+                orderDataset.push(parseInt(settings.aoData[count]._aData['torder']));
+                salesDataset.push(parseInt(settings.aoData[count]._aData['tsales']));
+            }
+
+            var doughnutData = {
+                labels: wareData,
+                datasets: [{
+                    label: "Doanh số",
+                    data: salesDataset,
+                    backgroundColor: ["#d42a6e", "#053e69", "#1f626b", "#076909", "#660d78", "#e336cc"]
+                },{
+                    label: "SL đơn",
+                    data: orderDataset,
+                    backgroundColor: ["#8d26d1", "#32bf49", "#32bfbf", "#e8e225", "#e86625", "#96053f"]
+                }]
+            };
+        
+        
+            var doughnutOptions = {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'left',
+                  },
+                  title: {
+                    display: false,
+                    text: 'Chart.js Doughnut Chart'
+                  }
+                }
+            };
+        
+            if(dnchart){
+                dnchart.destroy();
+            }
+            dnchart = new Chart(dnchartElem, { type: 'doughnut', data: doughnutData, options: doughnutOptions });   
+        }
+    });
+}
+
+function loadPtable(startDate, endDate){
+    $("#p-table").DataTable({
+        processing : true,
+        serverSide : true,
+        responsive : true,
+        ajax: {
+            url: "/api/sbp?start="+startDate+"&end="+endDate,
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            dataSrc: 'data'
+        },
+        columns: [
+            { data: 'productName' },
+            { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tproduct' },
+            { data: 'torder' },
+        ],
+        scrollY: 200,
+        scrollCollapse: true,
+        dom: 't',
+        order: [[ 3, 'desc' ]]
+    });
+}
+
+function loadEtable(startDate, endDate){
+    $("#e-table").DataTable({
+        processing : true,
+        serverSide : true,
+        responsive : true,
+        ajax: {
+            url: "/api/sbe?start="+startDate+"&end="+endDate,
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            dataSrc: 'data'
+        },
+        columns: [
+            { data: 'username' },
+            { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'torder' },
+        ],
+        scrollY: 200,
+        scrollCollapse: true,
+        dom: 't',
+        order: [[ 4, 'desc' ]]
+    });
+}
+
+async function renderChart(startDate, endDate){
     var profit = [], 
         revenue = [],
         sales = [], 
         order = [], 
         product = [],
         day = [];
-    sbd.map(it =>{
-        day.push(moment(it.day).format("DD/MM"));
-        profit.push(it.tprofit);
-        revenue.push(it.trevenue);
-        sales.push(it.tsales);
-        order.push(it.torder);
-        product.push(it.tproduct);
+    
+    var tprofit=0, tsales=0, torder=0, tproduct=0, trevenue=0;
+    
+    await fetch("/api/sbd?start="+startDate+"&end="+endDate,{
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    }).then(response =>{
+        if (!response.ok) throw Error(response.statusText);
+        return response.json();
     })
+    .then(data => {
+        data.data.map(it =>{
+            day.push(moment(it.day).format("DD/MM"));
+            profit.push(it.tprofit);
+            revenue.push(it.trevenue);
+            sales.push(it.tsales);
+            order.push(it.torder);
+            product.push(it.tproduct);
+            tprofit+=it.tprofit;
+            tsales+=it.tsales;
+            torder+=it.torder;
+            tproduct+=it.tproduct;
+            trevenue+=it.trevenue;
+        });
+        
+        $("#orderEl").html(torder);
+        $("#salesEl").html(numberWithCommas(tsales));
+        $("#profitEl").html(numberWithCommas(tprofit));
+        $("#productEl").html(tproduct);
+        $("#revenueEl").html(numberWithCommas(trevenue));
 
-    var a = {
-        labels: day,
-        datasets: [{
-            label: "Doanh số",
-            borderColor: "#15aebf",
-            backgroundColor:"#000fff",
-            fill: false,
-            tension: 0.4,
-            data: sales
-        }, {
-            label: "Doanh thu",
-            borderColor: "#1246c9",
-            backgroundColor:"#03133b",
-            fill: false,
-            tension: 0.4,
-            data: revenue
-        }, {
-            label: "Lợi nhuận",
-            borderColor: "rbg(13,13,13)",
-            backgroundColor:"#03133b",
-            fill: false,
-            tension: 0.4,
-            data: profit
-        }, {
-            label: "SL đơn",
-            borderColor: "#1246c9",
-            backgroundColor:"#03133b",
-            fill: false,
-            tension: 0.4,
-            data: order
-        },{
-            label: "SL sản phẩm",
-            borderColor: "#1246c9",
-            backgroundColor:"#03133b",
-            fill: false,
-            tension: 0.4,
-            data: product
-        }]
-    };
+        var chart_data = {
+            labels: day,
+            datasets: [{
+                label: "Doanh số",
+                borderColor:"#1196cf",
+                backgroundColor:"#1196cf",
+                fill: false,
+                tension: 0.4,
+                data: sales
+            }, {
+                label: "Doanh thu",
+                borderColor:"#11cf33",
+                backgroundColor:"#11cf33",
+                fill: false,
+                tension: 0.4,
+                data: revenue
+            }, {
+                label: "Lợi nhuận",
+                borderColor:"#bccf11",
+                backgroundColor:"#bccf11",
+                fill: false,
+                tension: 0.4,
+                data: profit
+            }, {
+                label: "SL đơn",
+                borderColor:"#8f11cf",
+                backgroundColor:"#8f11cf",
+                fill: false,
+                tension: 0.4,
+                data: order
+            },{
+                label: "SL sản phẩm",
+                borderColor:"#250966",
+                backgroundColor:"#250966",
+                fill: false,
+                tension: 0.4,
+                data: product
+            }]
+        };
+    
+        if(barchart){
+            barchart.destroy();
+        }
 
-    new Chart(barchart, {
-        type: "line",
-        data: a,
-        options: {
-            responsive: true,
-            maintainAspectRatio: !1,
-            plugins: {
-                subtitle: {
-                    display: false,
-                    text: 'Custom Chart Subtitle'
-                },
-                title: {
-                    display: false,
-                    text: 'Custom Chart Title'
+        barchart = new Chart(barchartElem, {
+            type: "line",
+            data: chart_data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: !1,
+                plugins: {
+                    subtitle: {
+                        display: false,
+                        text: 'Custom Chart Subtitle'
+                    },
+                    title: {
+                        display: false,
+                        text: 'Custom Chart Title'
+                    }
                 }
             }
-        }
-    });
-
-
-    var doughnutData = {
-        labels: ["Desktop", "Tablet", "Mobile"],
-        datasets: [{
-            data: [47, 30, 23],
-            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"]
-        }]
-    };
-
-
-    var doughnutOptions = {
-        responsive: true,
-        legend: {
-            display: false
-        },
-    };
-
-    new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
-
+        }); 
+    })
+    .catch(error => console.log(error));
 }
 
-async function loadData(url){
-    try{
-        const response = await fetch(url);
-        const data = await response.json();
-        return data.data;
-    }catch (error){
-        console.error(error);
-    }
-}
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-function getAjaxResponse( url ){
-    let result= jQuery.ajax({
-        url: url,
-        type: 'get',
-        async:false,
-        contentType: "application/json",
-        dataType: 'json',
-        success:function(response){
-            return response.data;
-        } 
-    }).responseJSON;
-    return result.data;
 }
 
 $(document).ready(function () {
@@ -226,22 +293,19 @@ $(document).ready(function () {
             ],
             firstDay: 1
         }
-    }, async function(start, end, label) {
+    }, function(start, end, label) {
         let startDate = moment(start).format("MM/DD/YYYY");
         let endDate = moment(end).format("MM/DD/YYYY");
-        sbd = await loadData("/api/sbd?start="+startDate+"&end="+endDate);
-        sbw = await loadData("/api/sbw?start="+startDate+"&end="+endDate);
-        sbp = await loadData("/api/sbp?start="+startDate+"&end="+endDate);
-        sbe = await loadData("/api/sbe?start="+startDate+"&end="+endDate);
-
-        wtable.clear().rows.add(sbw).draw();
-        ptable.clear().rows.add(sbp).draw();
-        etable.clear().rows.add(sbe).draw();
-
-        barchart.reset();
-        ctx4.reset();
-
-        renderChart()
+        
+        //wtable.clear().rows.add(sbw).draw();
+        $("#w-table").DataTable().clear().destroy();
+        $("#p-table").DataTable().clear().destroy();
+        $("#e-table").DataTable().clear().destroy();
+    
+        renderChart(startDate,endDate);
+        loadEtable(startDate, endDate);
+        loadPtable(startDate, endDate);
+        loadWtable(startDate, endDate);
     });
 });
 

@@ -49,7 +49,17 @@ $(document).ready(function () {
             	}
             },
             {
-                defaultContent: '<button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>'
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row){
+                    if(user.roles.includes("ROLE_WAREHOUSE_ADMIN")){
+                        return `<div>
+                                    <button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                </div>`
+                    }
+                    return "";
+                }
             },
         ],
         columnDefs: [
@@ -63,7 +73,34 @@ $(document).ready(function () {
         initComplete: function(settings, json) {
             table.row().invalidate().draw();
             console.log(table.row().count())
-          },
+        },
+        buttons: [
+            {
+                text: '<i class="fa-solid fa-rotate"></i><span> Tải lại</span>',
+                className: 'btn-tools',
+                action: function ( e, dt, node, config ) {
+                    dt.ajax.reload(null, false);
+                }
+            },
+            {
+                extend:    'print',
+                text:      '<i class="fa fa-print"></i> In',
+                titleAttr: 'Print',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: [2,3,4,5,6,7]
+                }
+            },  
+            {
+                extend:    'excel',
+                text:      '<i class="fa-solid fa-file-export"></i><span> Xuất excel</span>',
+                titleAttr: 'Excel',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+        ],
         paging: true, 
         pagingType: 'numbers',
         lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
@@ -77,7 +114,7 @@ $(document).ready(function () {
             "infoEmpty": "Không có kết quả",
             "infoFiltered": "(Lọc từ _MAX_ kết quả)"
         },
-        dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
+        dom: 'B<"tabletop"if>tr<"pagetable"lp><"clear">',
         search: {
             "addClass": 'form-control input-lg col-xs-12'
         },
@@ -88,31 +125,9 @@ $(document).ready(function () {
         order: [[ 1, 'desc' ]]
     });
 
-    new $.fn.dataTable.Buttons( table, {
-        buttons: [             
-            {
-            extend:    'print',
-            text:      '<i class="fa fa-print"></i> In',
-            titleAttr: 'Print',
-            className: 'btn-tools',
-            exportOptions: {
-                columns: [2,3,4,5,6,7]
-            }
-            },  
-            {
-                extend:    'excel',
-                text:      '<i class="fa-solid fa-file-export"></i><span>Xuất excel</span>',
-                titleAttr: 'Excel',
-                className: 'btn-tools',
-                exportOptions: {
-                    columns: ':visible'
-                }
-                },
-        ]
-    } );
     table.buttons().container().appendTo('#action-tools');
 
-   table.on("click", "th.select-checkbox", function() {
+    table.on("click", "th.select-checkbox", function() {
         if ($("th.select-checkbox").hasClass("selected")) {
             table.rows().deselect()
             $("th.select-checkbox").removeClass("selected");
@@ -234,11 +249,6 @@ $(document).ready(function () {
         
       });
 
-    $("#btnClear").on("click", function (e) {
-      e.preventDefault();
-      table.ajax.reload(null, false)
-      window.location="/supplier"
-    });
 
     $("#multi_delete").on("click", function (e) {
         e.preventDefault();

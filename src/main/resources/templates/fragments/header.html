@@ -1,89 +1,85 @@
 <header th:fragment="header" class="header">
-  <div class="page-brand">
-      <a class="link" th:href="@{/}">
-          <span class="brand">WS
-              <span class="brand-tip">MS</span>
-          </span>
-          <span class="brand-mini">WS</span>
-      </a>
-  </div>
-  <div class="flexbox flex-1">
-      <!-- START TOP-LEFT TOOLBAR-->
-      <ul class="nav navbar-toolbar">
-          <li>
-              <a class="nav-link sidebar-toggler js-sidebar-toggler"><i class="fa-solid fa-bars"></i></a>
-          </li>
-          <li>
-              <span style="font-size: large; font-weight: 600;">[[${pageTitle}]]</span>
-          </li>
-      </ul>
-      <!-- END TOP-LEFT TOOLBAR-->
-      <!-- START TOP-RIGHT TOOLBAR-->
-      <ul class="nav navbar-toolbar">
-          <li class="dropdown dropdown-inbox">
-              <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-envelope-o"></i>
-                  <span class="badge badge-primary envelope-badge">9</span>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-right dropdown-menu-media">
-                  <li class="dropdown-menu-header">
-                      <div>
-                          <span><strong>9 New</strong> Messages</span>
-                          <a class="pull-right" href="mailbox.html">view all</a>
-                      </div>
-                  </li>
-                  <li class="list-group list-group-divider scroller" data-height="240px" data-color="#71808f">
-                      <div>
-                          <a class="list-group-item">
-                              <div class="media">
-                                  <div class="media-img">
-                                      <img src="/img/admin-avatar.png" />
-                                  </div>
-                                  <div class="media-body">
-                                      <div class="font-strong"> </div>Jeanne Gonzalez<small class="text-muted float-right">Just now</small>
-                                      <div class="font-13">Your proposal interested me.</div>
-                                  </div>
-                              </div>
-                          </a>
-                      </div>
-                  </li>
-              </ul>
-          </li>
-          <li class="dropdown dropdown-notification">
-              <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-bell-o rel"><span class="notify-signal"></span></i></a>
-              <ul class="dropdown-menu dropdown-menu-right dropdown-menu-media">
-                  <li class="dropdown-menu-header">
-                      <div>
-                          <span><strong>5 news</strong> Notifications</span>
-                          <a class="pull-right" href="javascript:;">view all</a>
-                      </div>
-                  </li>
-                  <li class="list-group list-group-divider scroller" data-height="240px" data-color="#71808f">
-                      <div>
-                          <a class="list-group-item">
-                              <div class="media">
-                                  <div class="media-img">
-                                      <span class="badge badge-success badge-big"><i class="fa fa-check"></i></span>
-                                  </div>
-                                  <div class="media-body">
-                                      <div class="font-13">4 task compiled</div><small class="text-muted">22 mins</small></div>
-                              </div>
-                          </a>
-                      </div>
-                  </li>
-              </ul>
-          </li>
-          <li class="dropdown dropdown-user">
-            <a class="nav-link dropdown-toggle link" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="/img/user-avatar.png" />
-                <span th:text="${user.username}"></span><i class="fa fa-angle-down m-l-5"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" th:href="@{/profile}"><i class="fa fa-user"></i>Hồ sơ</a>
-                <li class="dropdown-divider"></li>
-                <a class="dropdown-item" th:href="@{/logout}"><i class="fa fa-power-off"></i>Đăng xuất</a>
-            </ul>
-          </li>
-      </ul>
-      <!-- END TOP-RIGHT TOOLBAR-->
-  </div>
+    <div class="page-brand">
+        <a class="link" th:href="@{/}">
+            <span class="brand">WS
+                <span class="brand-tip">MS</span>
+            </span>
+            <span class="brand-mini">WS</span>
+        </a>
+    </div>
+    <div class="flexbox flex-1">
+        <!-- START TOP-LEFT TOOLBAR-->
+        <ul class="nav navbar-toolbar">
+            <li>
+                <a class="nav-link sidebar-toggler js-sidebar-toggler"><i class="fa-solid fa-bars"></i></a>
+            </li>
+            <li>
+                <span style="font-size: large; font-weight: 600;">[[${pageTitle}]]</span>
+            </li>
+        </ul>
+        <!-- END TOP-LEFT TOOLBAR-->
+        <!-- START TOP-RIGHT TOOLBAR-->
+        <ul class="nav navbar-toolbar">
+            <li class="dropdown dropdown-inbox">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-bell"></i>
+                    <span class="badge badge-danger envelope-badge" id="num-noti"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right dropdown-menu-media">
+                    <li class="dropdown-menu-header">
+                        <div>
+                            <span><strong>Thông báo</strong></span>
+                        </div>
+                    </li>
+                    <li class="list-group list-group-divider scroller" id="noti-list" data-height="240px" data-color="#71808f">
+                        <!-- <div>
+                            <a>
+                                <div class="noti-item">
+                                    <div class="mx-3" style="display: inline-block;">
+                                        <img src="/img/admin-avatar.png" />
+                                    </div>
+                                    <div class="" style="display: inline-block;">
+                                        <div class="font-strong">Jeanne Gonzalez</div>
+                                        <small class="text-muted float-right">Just now</small>
+                                        <div class="font-13">Your proposal interested me.</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div> -->
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown dropdown-notification">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fa-solid fa-users"></i>
+                    <span class="badge badge-danger envelope-badge" id="num-online"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right dropdown-online-users">
+                    <li class="dropdown-ou-header">
+                        <div>
+                            <span><strong>Danh sách trực tuyến</strong></span>
+                        </div>
+                    </li>
+                    <li class="list-group list-group-divider scroller" id="ou-list" data-color="#71808f">
+                        <!-- <div class="online-user">
+                            <span class="mx-2 p-2" style="width: 50px; height: 50px;"><img src="/img/user-avatar.png" /></span>
+                            <span class="online-notify"></span>
+                            <span>User1</span>
+                        </div> -->
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown dropdown-user">
+                <a class="nav-link dropdown-toggle link" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/img/user-avatar.png" />
+                    <span th:text="${user.username}"></span><i class="fa fa-angle-down m-l-5"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" th:href="@{/profile}"><i class="fa fa-user"></i>Hồ sơ</a>
+                    <li class="dropdown-divider"></li>
+                    <a class="dropdown-item" th:href="@{/logout}"><i class="fa fa-power-off"></i>Đăng xuất</a>
+                </ul>
+            </li>
+        </ul>
+        <!-- END TOP-RIGHT TOOLBAR-->
+    </div>
 </header>

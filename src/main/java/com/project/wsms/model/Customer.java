@@ -19,7 +19,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.val;
 
 @Entity
 @Setter
@@ -43,8 +42,12 @@ public class Customer {
 	private Integer npCus = 0; //number of purchases
 	@Column(name = "nsocus", nullable = true)
 	private Integer nsoCus = 0; //number of successful orders
+	@Column(name = "nrocus", nullable = true)
+	private Integer nroCus = 0; //number of refuned orders
 	@Column(name = "total_money", nullable = true)
 	private Integer tmoney = 0;
+	@Column(name = "total_owe", nullable = true)
+	private Integer towe = 0;
 	
 	@JsonBackReference(value = "customer-order")
 	@JsonIgnore

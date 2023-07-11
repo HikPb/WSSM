@@ -29,23 +29,11 @@ public class ProductServiceImpl implements ProductService {
 		productRepository.save(product);
 	}
 
-//	@Override
-//	public List<Product> getProductByName(String productName) {
-//		// TODO Auto-generated method stub
-//		return productRepository.findProductByName(productName);
-//	}
-
 	@Override
 	public void delete(Integer id) {
 		productRepository.deleteById(id);
 		
 	}
-
-//	@Override
-//	public List<Product> getProductByBarcode(String barcode) {
-//		// TODO Auto-generated method stub
-//		return productRepository.findProductByBarcode(barcode);
-//	}
 
 	@Override
 	public List<Product> getAll() {

@@ -23,36 +23,20 @@
 
 		<!-- START TOOLBAR -->
         <div class="tools-container">
-            <div>
-                <div id="action-tools" style="display: inline-block;">
-
-                    <div th:if="${#strings.equals(user.role, 'ROLE_USER')}" style="display: inline-block;">
+            <div class="d-flex flex-row justify-content-between">
+                <div id="action-tools" style="display: inline-flex;">
+                    <div th:unless="${#lists.contains(user.roles, 'ROLE_SALES_ADMIN')}" style="display: inline-block;">
                         <button type="button" class="btn-tools" id="btnCreate" disabled>
                             <span><i class="fa-solid fa-plus"></i></span>
                         </button>
                     </div>
-                    <div th:unless="${#strings.equals(user.role, 'ROLE_USER')}" style="display: inline-block;">
+                    <div th:if="${#lists.contains(user.roles, 'ROLE_SALES_ADMIN')}" style="display: inline-block;">
                         <button type="button" class="btn-tools" id="btnCreate">
                             <span><i class="fa-solid fa-plus"></i></span>
                         </button>
                     </div>
-                    
-    
-                    <button type="button" class="btn-tools" id="btnClear">
-                        <i class="fa-solid fa-rotate"></i>
-                        <span>Tải lại</span>
-                    </button>
-
-                    <span id="import_excel" style="display: inline-block;">
-                        <div style="display: inline-block;">
-                            <button type="button" class="btn-tools">
-                                <i class="fa-solid fa-file-import"></i>
-                                <span>Nhập excel</span>
-                            </button>
-                        </div>
-                    </span>
-
-                    <span id="product_category">
+                    <div id="dt-buttons"></div>
+                    <span th:if="${#lists.contains(user.roles, 'ROLE_SALES_ADMIN')}" id="categoryBtn">
                         <div style="display: inline-block;">
                             <button type="button" class="btn-tools">
                                 <i class="fa-solid fa-tags"></i>
@@ -106,9 +90,10 @@
             </div>
         </div>
 
-        <th:block th:include="~{fragments/modal :: toast-modal}"></th:block>
+        <th:block th:insert="~{fragments/modal :: toast-modal}"></th:block>
         <div th:replace="~{products/product-form.html :: modal}"></div>
         <!-- FOOTER -->
+        <div th:replace="fragments/setting :: setting-modal"></div>
         <div th:replace="~{fragments/footer.html :: footer}"></div>
     </div>
 
@@ -120,6 +105,12 @@
      <!-- END PAGA BACKDROPS-->
     <!-- SCRIPT -->
     <script th:src="@{/js/product.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+            const user = /*[[${user}]]*/ 'default';
+            var cateData = /*[[${categories}]]*/ 'default';
+        /*]]>*/
+    </script>
 </body>
 
 </html>

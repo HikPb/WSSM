@@ -9,7 +9,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -48,7 +47,7 @@ public class Import extends AuditModel{
     @OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonManagedReference(value = "warehouse-import")
 	@JsonIgnoreProperties(value = {
-		"createdAt", "updatedAt", "phone", "address", "hibernateLazyInitializer"}) 
+		"createdAt", "updatedAt", "hibernateLazyInitializer"}) 
 	private Warehouse warehouse;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -64,7 +63,7 @@ public class Import extends AuditModel{
     @OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonManagedReference(value = "emp-import")
 	@JsonIgnoreProperties(value = {
-		"role", "fullname", "password", "phone", "hibernateLazyInitializer"})
+		"roles", "fullname", "password", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 
 	@OneToMany(mappedBy = "importProduct")

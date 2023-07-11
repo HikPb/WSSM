@@ -1,7 +1,9 @@
 package com.project.wsms.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.project.wsms.model.Employee;
-import com.project.wsms.model.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,14 +17,13 @@ public class EmployeeDto {
     private String username;
     private String fullname;
     private String phone;
-    private Role role;
+    private List<String> roles;
 
     public Employee convertToEntity(){
         Employee newItem = new Employee();
         newItem.setUsername(this.username);
         newItem.setFullname(this.fullname);
         newItem.setPhone(this.phone);
-        newItem.setRole(this.role);
         return newItem;
     }
 
@@ -31,6 +32,6 @@ public class EmployeeDto {
         this.phone = item.getPhone();
         this.fullname = item.getFullname();
         this.username = item.getUsername();
-        this.role = item.getRole();
+        this.roles = item.getRoles().stream().map(role -> role.getName().toString()).collect(Collectors.toList());
     }
 }

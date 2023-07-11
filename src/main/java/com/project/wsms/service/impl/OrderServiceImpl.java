@@ -46,4 +46,9 @@ public class OrderServiceImpl implements OrderService {
 		return orderRepository.findByCustomer_id(id);
 	}
 
+	@Override
+	public List<Order> getByStatusIn(List<Integer> listStatus) {
+		return orderRepository.findByStatusIn(listStatus);
+	}
+
 }

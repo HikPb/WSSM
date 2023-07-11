@@ -212,8 +212,11 @@ const table = $("#cqTable").DataTable( {
                                         </div>
                                     </div>
                                     <div class="row pb-4">
-                                        <span class="fw-bold">Địa chỉ: ${obj.warehouse.address}
-                                        </span>
+                                        <div class="col">
+                                            <span class="fw-bold">Địa chỉ: 
+                                            </span>
+                                            <span>${obj.warehouse.address}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -520,6 +523,7 @@ function changeItemQaa(elm, id) {
 }
 
 function numberWithCommas(x) {
+    if(x==null) {return '0'}
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
@@ -689,7 +693,6 @@ $(document).ready(function () {
             $("th.select-checkbox").addClass("selected");
         }
     }).on("select deselect", function() {
-        ("Some selection or deselection going on")
         if (table.rows({
                 selected: true
             }).count() !== table.rows().count()) {
@@ -796,6 +799,7 @@ $(document).ready(function () {
                 $("#cq-create-modal").find('form').trigger('reset');
                 $("#toast-content").html("Tạo mới thành công: # "+response.data['id']);
                 toast.show();
+                sendMessage();
                 //window.location.href = "/products"
             },  
             error: function (err) {  

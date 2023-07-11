@@ -2,30 +2,56 @@ package com.project.wsms.security;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.wsms.model.Employee;
-import com.project.wsms.model.Role;
 
 public class CustomUserDetails implements UserDetails {
 
-
+    private Integer id;
     private String username;
+    @JsonIgnore
     private String password;
-    private Role role;
+    private String fullname;
+    private String phone;
+    private Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(Employee employee) {
-        username = employee.getUsername();
-        password = employee.getPassword();
-        role = employee.getRole();
+    public CustomUserDetails(Integer id, String username, String password, String fullname, String phone,
+        Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.fullname = fullname;
+        this.phone = phone;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
+    public static CustomUserDetails build(Employee user) {
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+            .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+            .collect(Collectors.toList());
+
+        return new CustomUserDetails(
+            user.getId(), 
+            user.getUsername(), 
+            user.getPassword(), 
+            user.getFullname(),
+            user.getPhone(),
+            authorities);
+    }
+    
+    public Integer getId() {
+        return id;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return authorities;
     }
 
     @Override
@@ -38,8 +64,12 @@ public class CustomUserDetails implements UserDetails {
         return username;
     }
 
-    public Role getRole() {
-        return role;
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getFullname() {
+        return fullname;
     }
 
     @Override

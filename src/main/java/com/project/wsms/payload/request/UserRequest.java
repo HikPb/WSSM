@@ -1,19 +1,16 @@
 package com.project.wsms.payload.request;
 
-import com.project.wsms.model.Role;
+import java.util.Set;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data @Builder
+@Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class UserRequest {
     private String username;
     private String password;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private Set<String> roles;
 }

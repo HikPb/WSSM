@@ -24,19 +24,21 @@
         <div class="content-wrapper">
             <!-- START TOOLBAR -->
             <div class="tools-container">
-                <div id="action-tools" style="display: inline-block;">  
-                    <button type="button" class="btn-tools" id="btnCreate">
-                        <span><i class="fa-solid fa-plus"></i></span>
-                    </button>
-                </div>
-
-                <div class="filter">
-                    <div>
-                        <button id="cq-btn-filter" tabindex="0" type="button" class="btn-tools">
-                            <i class="fa-solid fa-filter"></i>
-                            <span>Thêm lọc</span>
-                            </span>
+                <div class="d-flex flex-row justify-content-between">
+                    <div id="action-tools" style="display: inline-flex;">  
+                        <button type="button" class="btn-tools" id="btnCreate">
+                            <span><i class="fa-solid fa-plus"></i></span>
                         </button>
+                    </div>
+    
+                    <div class="filter">
+                        <div>
+                            <button id="cq-btn-filter" tabindex="0" type="button" class="btn-tools">
+                                <i class="fa-solid fa-filter"></i>
+                                <span>Thêm lọc</span>
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -78,6 +80,7 @@
         <!-- MODAL -->
         <div th:replace="warehouse/check-quantity-form :: cq-modal"></div>
         <!-- FOOTER -->
+        <div th:replace="fragments/setting :: setting-modal"></div>
         <div th:replace="fragments/footer :: footer"></div>
     </div>
 

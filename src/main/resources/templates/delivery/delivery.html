@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>[[${pageTitle}]]</title>
+    <!-- GLOBAL MAINLY STYLES-->
+    <link th:href="@{/img/favicon.ico}" rel="icon">
+    <th:block th:include="~{fragments/assets :: assets}"></th:block>
+</head>
+
+
+
+<body class="fixed-navbar">
+    <div class="page-wrapper">
+        <!-- HEADER AND SIDEBAR -->
+        <div th:replace="fragments/header :: header"></div>
+        <div th:replace="fragments/sidebar :: sidebar"></div>
+
+        <!-- PAGE CONTENT -->
+        <div class="content-wrapper">
+            <!-- START TOOLBAR -->
+            <div class="tools-container">
+                <div class="d-flex flex-row justify-content-between">
+                    <div id="action-tools" style="display: inline-flex;">
+                       <div id="dt-buttons"></div>
+                    </div>
+
+                    <div class="filter">
+                        <div>
+                            <button id="btn-filter" tabindex="0" type="button" class="btn-tools">
+                                <i class="fa-solid fa-filter"></i>
+                                <span>Thêm lọc</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END TOOLBAR -->
+
+            <div class="table-container">
+                <div class="col">
+                    <div class="ibox">
+                        <div class="ibox-head">
+                            <ul class="nav nav-tabs tabs-line">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link active" id="tab-1"   aria-expanded="true">
+                                        Tất cả</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="tab-2" aria-expanded="false">
+                                        Đang gửi hàng</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="tab-3" aria-expanded="false">
+                                        Delay</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="tab-4" aria-expanded="false">
+                                        Giao thành công</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="tab-5" aria-expanded="false">
+                                        Đang hoàn</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="tab-6" aria-expanded="false">
+                                        Đã hoàn</a>
+                                </li>
+                            </ul>
+                            <div class="ibox-tools">
+                                <a class="fullscreen-link">
+                                    <i class="fa fa-expand"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-body">
+                            <div class="tab-content">
+                                <div class="tab-pane fade active show" aria-expanded="true">
+                                    <table class="table table-hover table-responsive-xl" id="orderTable">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th class="select-checkbox"></th>
+                                                <th>ID</th>
+                                                <th>ĐVVC</th>
+                                                <th>Khách hàng</th>
+                                                <th>SĐT</th>
+                                                <th>Ghi chú</th>
+                                                <th>Địa chỉ</th>
+                                                <th>Sản phẩm</th>
+                                                <th>Ngày tạo</th>
+                                                <th>Tổng tiền</th>
+                                                <th>Trạng thái</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div id="order-info"></div>
+        <th:block th:include="fragments/modal :: toast-modal"></th:block>
+        <!-- FOOTER -->
+        <div th:replace="fragments/setting :: setting-modal"></div>
+        <div th:replace="fragments/footer :: footer"></div>
+    </div>
+
+     <!-- BEGIN PAGA BACKDROPS-->
+     <div class="sidenav-backdrop backdrop"></div>
+     <div class="preloader-backdrop">
+         <div class="page-preloader">Loading</div>
+     </div>
+     <!-- END PAGA BACKDROPS-->
+    <!-- SCRIPT -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+            const user = /*[[${user}]]*/ 'default';
+        /*]]>*/
+    </script>
+    <script th:src="@{/js/delivery.js}"></script>
+</body>
+
+</html>

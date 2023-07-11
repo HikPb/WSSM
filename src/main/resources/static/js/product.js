@@ -2,7 +2,7 @@ const toast = new bootstrap.Toast($("#toast"));
 
 $(document).ready(function () {
     const wareData = getAjaxResponse("/api/warehouse")
-    const cateData = getAjaxResponse("/api/category")
+    //const cateData = getAjaxResponse("/api/category")
     const supData = getAjaxResponse("/api/supplier")
     const table = $("#productTable").DataTable( {
         processing: true,
@@ -65,9 +65,44 @@ $(document).ready(function () {
             	}
             },
             {
-                defaultContent: `<div>
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row){
+                    if(user.roles.includes("ROLE_SALES_ADMIN")){
+                        return `<div>
                                     <button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>
                                 </div>`
+                    }
+                    return "";
+                }
+            },
+        ],
+        buttons: [
+            {
+                text: '<i class="fa-solid fa-rotate"></i><span> Tải lại</span>',
+                className: 'btn-tools',
+                action: function ( e, dt, node, config ) {
+                    dt.ajax.reload(null, false);
+                }
+            },
+            {
+                extend:    'print',
+                text:      '<i class="fa fa-print"></i> In',
+                titleAttr: 'Print',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: [2,3,4,5,6,7]
+                }
+            },  
+            {
+                extend:    'excel',
+                text:      '<i class="fa-solid fa-file-export"></i><span> Xuất excel</span>',
+                titleAttr: 'Excel',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: ':visible'
+                }
             },
         ],
         paging: true, 
@@ -82,7 +117,7 @@ $(document).ready(function () {
             "infoEmpty": "Không có sản phẩm",
             "infoFiltered": "(lọc từ _MAX_ kết quả)"
         },
-        dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
+        dom: 'B<"tabletop"if>tr<"pagetable"lp><"clear">',
         search: {
             "addClass": 'form-control input-lg col-xs-12'
         },
@@ -93,29 +128,7 @@ $(document).ready(function () {
         order: [[ 1, 'desc' ]]
     });
 
-    new $.fn.dataTable.Buttons( table, {
-        buttons: [             
-            {
-            extend:    'print',
-            text:      '<i class="fa fa-print"></i> In',
-            titleAttr: 'Print',
-            className: 'btn-tools',
-            exportOptions: {
-                columns: [2,3,4,5,6,7]
-            }
-            },  
-            {
-                extend:    'excel',
-                text:      '<i class="fa-solid fa-file-export"></i><span>Xuất excel</span>',
-                titleAttr: 'Excel',
-                className: 'btn-tools',
-                exportOptions: {
-                    columns: ':visible'
-                }
-                },
-        ]
-    } );
-    table.buttons().container().appendTo('#action-tools');
+    table.buttons().container().appendTo('#dt-buttons');
 
     table.on("click", "th.select-checkbox", function() {
         if ($("th.select-checkbox").hasClass("selected")) {
@@ -307,10 +320,9 @@ $(document).ready(function () {
     });
       
     $("#c-warehouse").on("select2:unselect", function(e){
-        //let dt = $("#wh").select2("data")
-        //let dt= $(this).val()
-        id="r"+e.params.data.id
-        deleteRow(id)
+        id="r"+e.params.data.id;
+        $("#"+id).remove()
+        //$("#c-tb").deleteRow(id);
     });
 	
     $("#e-categories").select2({
@@ -396,13 +408,57 @@ $(document).ready(function () {
 
     $("#e-warehouse").on("select2:unselect", function(e){
         id="er"+e.params.data.id
-        deleteRow(id)
+        $("#"+id).remove()
     });
 
     $("#btnCreate").on("click", function(e){
         e.preventDefault();
         $("#product-modal").modal("show");
     });
+
+    $("#categoryBtn").on("click", function(e){
+        e.preventDefault();
+        $("#categoryModal").modal("show");
+    });
+
+    $("#newCateBtn").on("click", function(e){
+        e.preventDefault();
+        $("#newCateBtn").prop("disabled", true);
+        $("#newCateDiv").css("display", "block");
+        $(".cate-item-icon").css("display", "none");
+    });
+
+    $("#cancelCateBtn").on("click", function(e){
+        e.preventDefault();
+        $("#newCateDiv").css("display", "none");
+        $(".cate-item-icon").css("display", "block");
+        $("#newCateIp").val('');
+        $("#newCateBtn").prop("disabled", false);
+    });
+
+    $("form[name='newCateForm']").on("submit", function(e){
+        e.preventDefault();
+        fetch("/api/category",{
+            method: "POST",
+            credentials: "same-origin",
+            headers:{
+                "Content-Type": "application/json",
+            },
+            referrerPolicy: "no-referrer",
+            body: $("#newCateIp").val(),
+        }).then(response =>{
+            if(!response.ok) throw Error(response.statusText);
+            return response.json();
+        }).then(data =>{
+            $("#newCateDiv").css("display", "none");
+            $(".cate-item-icon").css("display", "block");
+            $("#newCateIp").val('');
+            loadListCategory();
+            $("#newCateBtn").prop("disabled", false);
+            $("#toast-content").html("Tạo mới thành công danh mục.")
+            toast.show()
+        }).catch(error => {console.error(error)});
+    })
 
     $("#c-pform").on("submit", function (e) {
         e.preventDefault();
@@ -474,6 +530,7 @@ $(document).ready(function () {
         $("#confirmText").html("Bạn muốn xoá sản phẩm này: \<strong\>" + data["productName"] + "\<\/strong\>?");
         $("#confirmModal").modal("show");
     });
+
     $("#yesBtn").on("click", function (e) {
         e.preventDefault();
         pname = $(this).attr("p-name");
@@ -492,20 +549,170 @@ $(document).ready(function () {
             } 
         });   
       });
-
-
-    $("#btnClear").on("click", function (e) {
-        e.preventDefault();
-        table.ajax.reload(null, false)
-        //window.location="/products"
-    });
-    
 });
 
-function deleteRow(rid){   
-    var row = document.getElementById(rid);
-    row.parentNode.removeChild(row);
+function setItemStatus(d){
+    url = "/api/item/"+d+"/status";
+    $.ajax({
+        url: url,
+        method: "POST",
+        success: function (response) {  
+            $("#toast-content").html("Cập nhật trạng thái: #"+response.data['id']+' - '+ response.data.product['productName'])
+            toast.show()
+        },  
+        error: function (err) {  
+            alert(err);  
+        } 
+    });
 }
+
+function editInline(event, cateId){
+    //var parent = event.target.parentElement.parentElement.parentElement;
+    $("#newCateBtn").prop("disabled", true);
+    $(".cate-item-icon").css("display", "none");
+    var cate = cateData.find(c => c.id === cateId);
+    var parent = event.target.closest(".cate-item");
+    parent.innerHTML = `<form id="editCateForm" style="width: 100%;" cid="${cateId}">
+                            <div class="col d-flex">
+                                    <div class="mr-2" style="width: 100%;">
+                                        <input class="form-control" type="text" id="editCateIp" placeholder="Danh mục" value="${cate.cateName}" required>
+                                    </div>
+                                    <div class="mx-2">
+                                        <button class="btn btn-danger" type="button" onclick="cancelEditInline(event, ${cateId})">Hủy</button>
+                                    </div>
+                                    <div class="ml-2">
+                                        <button class="btn btn-primary" form="editCateForm" type="submit"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    </div>
+                            </div>
+                        </form>`
+    
+    $("#editCateForm").on("submit", function(e){
+        e.preventDefault();
+        var data = {
+            id : parseInt($(this).attr('cid')),
+            cateName: $("#editCateIp").val()
+        }
+        fetch("/api/category",{
+            method: "PUT",
+            credentials: "same-origin",
+            headers:{
+                "Content-Type": "application/json",
+            },
+            referrerPolicy: "no-referrer",
+            body: JSON.stringify(data),
+        }).then(response =>{
+            if(!response.ok) throw Error(response.statusText);
+            return response.json();
+        }).then(data =>{
+            loadListCategory();
+            $("#newCateBtn").prop("disabled", false);
+            $("#toast-content").html("Chỉnh sửa thành công danh mục.")
+            toast.show()
+        }).catch(error => {console.error(error)});
+    });
+}
+
+function cancelEditInline(event, cateId){
+    $("#newCateBtn").prop("disabled", false);
+    $(".cate-item-icon").css("display", "block");
+    var cate = cateData.find(c => c.id === cateId);
+    var parent = event.target.closest(".cate-item");
+    parent.innerHTML = `<div class="d-flex flex-row">
+                            <div class="cate-item-icon mx-2">
+                                <span><i class="fa-solid fa-chevron-right"></i> </span>
+                            </div>
+                            <span>${cate.cateName}</span>
+                        </div>
+                        <div class="cate-item-icon">
+                            <span class="mx-2" onclick="editInline(event, ${cateId})"><i class="fa-solid fa-pen-to-square"></i></i></span>
+                            <span onclick="deleteCategory(event, ${cateId})"><i class="fa-solid fa-trash"></i></span>
+                        </div>`
+}
+
+function deleteCategory(event, cateId){
+    $("#newCateBtn").prop("disabled", true);
+    $(".cate-item-icon").css("display", "none");
+    var parent = event.target.closest(".cate-item");
+    var div = event.target.closest(".cate-item-icon");
+    div.remove();
+    parent.innerHTML += `<div class="d-flex align-items-center confirm-delete">
+                            <div class="mr-2" style="width: 100%;">
+                                <span>Xác nhận xóa danh mục này?</span>
+                            </div>
+                            <div class="mx-2">
+                                <button class="btn btn-outline-default" type="button" onclick="cancelDeleteCategory(event, ${cateId})">Hủy</button>
+                            </div>
+                            <div class="ml-2">
+                                <button class="btn btn-danger" type="button" onclick="confirmDeleteCategory(${cateId})">Xóa</i></button>
+                            </div>
+                        </div>`
+}
+
+function cancelDeleteCategory(event, cateId){
+    $("#newCateBtn").prop("disabled", false);
+    $(".cate-item-icon").css("display", "block");
+    var parent = event.target.closest(".cate-item");
+    var div = event.target.closest(".confirm-delete");
+    div.remove();
+    parent.innerHTML += `<div class="cate-item-icon">
+                            <span class="mx-2" onclick="editInline(event, ${cateId})"><i class="fa-solid fa-pen-to-square"></i></i></span>
+                            <span onclick="deleteCategory(event, ${cateId})"><i class="fa-solid fa-trash"></i></span>
+                        </div>`
+}
+
+
+function confirmDeleteCategory(cateId){
+    fetch("/api/category/"+cateId,{
+        method: "DELETE",
+    }).then(response =>{
+        if(!response.ok) throw Error(response.statusText);
+        return response.json();
+    }).then(data =>{
+        loadListCategory();
+        $("#newCateBtn").prop("disabled", false);
+        $("#toast-content").html("Đã xóa")
+        toast.show()
+    }).catch(error => {console.error(error)});
+}
+
+function loadListCategory(){
+    var li_items="";
+    cateData = getAjaxResponse("/api/category");
+    $("#cateNum").text(cateData.length);
+    $("#ul-list").empty();
+    cateData.forEach(cate =>{
+        li_items += 
+        `<li class="list-group-item cate-item" catename="${cate.cateName}">
+            <div class="d-flex flex-row">
+                <div class="cate-item-icon mx-2">
+                    <span><i class="fa-solid fa-chevron-right"></i> </span>
+                </div>
+                <span>${cate.cateName}</span>
+            </div>
+            <div class="cate-item-icon">
+                <span class="mx-2" onclick="editInline(event, ${cate.id})"><i class="fa-solid fa-pen-to-square"></i></i></span>
+                <span onclick="deleteCategory(event, ${cate.id})"><i class="fa-solid fa-trash"></i></span>
+            </div>
+        </li>`
+    });
+    $("#ul-list").append(li_items);
+}
+
+function searchCategory() {
+    var filter, ul, li, i, txtValue;
+    filter = document.getElementById("cate-search").value.toUpperCase();
+    ul = document.getElementById("ul-list");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+        txtValue = li[i].getAttribute("catename");
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+
 function getAjaxResponse( url ){
     let result= jQuery.ajax({
         url: url,
@@ -524,19 +731,4 @@ function getAjaxResponse( url ){
         } 
     }).responseJSON;
     return result.data;
-}
-
-function setItemStatus(d){
-    url = "/api/item/"+d+"/status";
-    $.ajax({
-        url: url,
-        method: "POST",
-        success: function (response) {  
-            $("#toast-content").html("Cập nhật trạng thái: #"+response.data['id']+' - '+ response.data.product['productName'])
-            toast.show()
-        },  
-        error: function (err) {  
-            alert(err);  
-        } 
-    });
 }

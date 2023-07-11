@@ -160,6 +160,7 @@ const table = $("#ipTable").DataTable( {
             className: 'btn-tools',
             action: function ( e, dt, node, config ) {
                 var data = table.rows( { selected: true } ).data();
+                console.log(data)
                 var printElem = "";
                 if(data.length>0){
                     data.each(obj =>{
@@ -219,8 +220,11 @@ const table = $("#ipTable").DataTable( {
                                         </div>
                                     </div>
                                     <div class="row pb-4">
-                                        <span class="fw-bold">Địa chỉ: ${obj.warehouse.address}
-                                        </span>
+                                        <div class="col">
+                                            <span class="fw-bold">Địa chỉ: 
+                                            </span>
+                                            <span>${obj.warehouse.address}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -941,7 +945,8 @@ $(document).ready(function () {
                 $("#ip-create-modal").modal("hide");
                 $("#ip-create-modal").find('form').trigger('reset');
                 $("#toast-content").html("Tạo mới thành công: # "+response.data['id'])
-                toast.show()
+                toast.show();
+                sendMessage();
                 //window.location.href = "/products"
             },  
             error: function (err) {  

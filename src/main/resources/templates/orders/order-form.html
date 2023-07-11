@@ -215,7 +215,7 @@
                                                                     <div class="processor-seller">
                                                                         <div class="div-user" style="max-width: 345px;">
                                                                             <div class="user-name">
-                                                                                <span th:text="${user.username}"></span>
+                                                                                <span id="staff"></span>
                                                                             </div>
                     
                                                                         </div>
@@ -311,10 +311,10 @@
                                                             <div>Vận chuyển</div>
                                                         </div>
                                                         <div class="ant-select-selector">
-                                                            <select class="form-control deli-select">
-                                                                <option></option>
-                                                                <option value="CA">ViettelPost</option>
-                                                                <option value="NV">GHTK</option>
+                                                            <select class="form-control deli-select" disabled>
+                                                                <!-- <option></option> -->
+                                                                <option value="CA">WS Post</option>
+                                                                <!-- <option value="NV">GHTK</option> -->
                                                             </select>
                                                         </div>
                                                     </div>
@@ -322,7 +322,7 @@
                                                     <div class="col-sm-12 mt-2">
                                                         <div class="row p-3">
                                                             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-group">
-                                                                <input class="form-control" type="text" placeholder="Mã vận chuyển">
+                                                                <input class="form-control" type="text" placeholder="Mã vận chuyển" disabled>
                                                             </div>
                                                             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-group">
                                                                 <div class="input-group-icon">
@@ -330,7 +330,7 @@
                                                                         <span>Phí VC</span>
                                                                     </div>
                                                                     <div class="box-input-group">
-                                                                        <input class="form-control" role="spinbutton" max="9007199254740991" min="0" step="1000" value="0" type="number" style="text-align: right;">
+                                                                        <input class="form-control" role="spinbutton" max="9007199254740991" min="0" step="1000" value="0" type="number" style="text-align: right;" disabled>
                                                                         <span class="input-group-addon">₫</span>
                                                                     </div>
                                                                 </div>

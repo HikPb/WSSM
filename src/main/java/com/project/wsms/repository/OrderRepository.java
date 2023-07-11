@@ -14,6 +14,7 @@ import com.project.wsms.payload.response.SbpResponse;
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     
     List<Order> findByCustomer_id(Integer id);
+    List<Order> findByStatusIn(List<Integer> listStatus);
 
     @Query(value = "SELECT DATE_TRUNC('day', created_at) AS day,"
     + "SUM(profit) AS tprofit ,"

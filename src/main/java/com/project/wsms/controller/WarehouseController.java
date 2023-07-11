@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,15 +30,18 @@ import com.project.wsms.dto.ImportDto;
 import com.project.wsms.dto.ImportItemDto;
 import com.project.wsms.model.CheckQty;
 import com.project.wsms.model.CqItem;
+import com.project.wsms.model.ERole;
 import com.project.wsms.model.Employee;
 import com.project.wsms.model.Export;
 import com.project.wsms.model.ExportItem;
 import com.project.wsms.model.Import;
 import com.project.wsms.model.ImportItem;
 import com.project.wsms.model.Item;
+import com.project.wsms.model.Message;
 import com.project.wsms.model.Supplier;
 import com.project.wsms.model.Warehouse;
 import com.project.wsms.payload.response.ResponseObject;
+import com.project.wsms.repository.MessageRepository;
 import com.project.wsms.service.CheckQtyService;
 import com.project.wsms.service.CqItemService;
 import com.project.wsms.service.EmployeeService;
@@ -51,6 +55,7 @@ import com.project.wsms.service.SupplierService;
 import com.project.wsms.service.WarehouseService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 
 @Controller
 public class WarehouseController {
@@ -87,19 +92,23 @@ public class WarehouseController {
 	
 	@Autowired
 	private CqItemService cqItemService;
-	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 
+	@Autowired
+	private MessageRepository messageRepository;
+	
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/warehouse")
     public String view(Model model, HttpServletRequest request){
 		Principal user = request.getUserPrincipal();
-		Employee employee = employeeService.getByUsername(user.getName()).get();
+		Employee emp = employeeService.getByUsername(user.getName()).get();
+		EmployeeDto employee = new EmployeeDto();
+		employee.convertToDto(emp);
 		model.addAttribute("user", employee);
         model.addAttribute("pageTitle", "QUẢN LÝ KHO HÀNG");
 		return "warehouse/warehouse";
     }
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/warehouse")
 	@ResponseBody
@@ -116,7 +125,7 @@ public class WarehouseController {
 		}		
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/warehouse/search")
 	@ResponseBody
@@ -135,7 +144,7 @@ public class WarehouseController {
 		}		
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/warehouse/{id}")
 	@ResponseBody
@@ -151,8 +160,7 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@PostMapping(value = "/api/warehouse", consumes = {"application/xml","application/json"})
 	@ResponseBody
 	public ResponseEntity<ResponseObject> saveWarehouse(@RequestBody Warehouse warehouse) {
@@ -173,7 +181,7 @@ public class WarehouseController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@PutMapping("/api/warehouse/{id}")
 	public ResponseEntity<ResponseObject> updateWarehouse(@PathVariable Integer id, 
@@ -201,8 +209,7 @@ public class WarehouseController {
 				);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@DeleteMapping("/api/warehouse/{id}")
 	public ResponseEntity<ResponseObject> deleteWarehouse(@PathVariable(value = "id") Integer id) {
 	    if(!warehouseService.existsById(id)) {
@@ -218,7 +225,7 @@ public class WarehouseController {
 	}
 
 	// VIEW KIỂM KHO
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/checkqty")
 	public String getAllCheckQuantity(Model model, HttpServletRequest request) {
@@ -233,8 +240,7 @@ public class WarehouseController {
 		return "warehouse/check-quantity";
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/api/checkqty")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> listAllCheckQtyForm(){
@@ -250,8 +256,7 @@ public class WarehouseController {
 		}	
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/api/checkqty/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOneCheckQty(@PathVariable Integer id) {
@@ -266,8 +271,7 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 	@PostMapping("/api/checkqty/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeCheckQtyStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
@@ -276,10 +280,10 @@ public class WarehouseController {
 				CheckQty object = checkqtyService.getById(id).get();
 				if(object.getStatus()==1){
 					switch(st){
-						case 0:		
+						case 0:		//Moi -> Huy
 							object.setStatus(st);
 							break;
-						case 2:
+						case 2:		//Moi -> Da kiem
 							object.setStatus(st);
 							object.getItems().forEach(it->{
 								Item item = it.getItem();
@@ -307,11 +311,11 @@ public class WarehouseController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 	@PostMapping("/api/checkqty")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> createCheckQtyForm(@RequestBody CheckQtyDto objectDto) {
+	@Transactional
+	public ResponseEntity<ResponseObject> createCheckQtyForm(@RequestBody CheckQtyDto objectDto, HttpServletRequest request) {
 		try {
 			CheckQty newObject = objectDto.convertToEntity();
 			
@@ -346,6 +350,22 @@ public class WarehouseController {
 			employeeService.save(employee);
 			warehouseService.save(wh);
 
+			Employee sender = employeeService.getByUsername(request.getUserPrincipal().getName())
+				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username"));
+			List<Employee> listRecipient = employeeService.getByRole(ERole.ROLE_WAREHOUSE_ADMIN);
+			listRecipient.stream().forEach(recip ->{
+				Message message = new Message();
+				message.setRead(false);
+				message.setUrl("/checkqty");
+				message.setMessage("Phiếu kiểm hàng được tạo mới!");
+				sender.addSentMess(message);
+				recip.addReceivedMess(message);
+				messageRepository.save(message);
+				employeeService.save(recip);
+				employeeService.save(sender);
+			});
+			
+
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Create new cq form successfully", newObject), 
 					HttpStatus.OK
@@ -359,8 +379,7 @@ public class WarehouseController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 	@PutMapping("/api/checkqty/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> editCheckQtyForm(@PathVariable("id") Integer id, @RequestBody CheckQtyDto objectDto) {
@@ -431,7 +450,7 @@ public class WarehouseController {
 	}
 
 	// VIEW NHAP KHO
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/import")
 	public String getAllImportProduct(Model model, HttpServletRequest request) {
@@ -449,7 +468,7 @@ public class WarehouseController {
 		return "warehouse/import";
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/api/import")
 	@ResponseBody
@@ -466,7 +485,7 @@ public class WarehouseController {
 		}	
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/api/import/{id}")
 	@ResponseBody
@@ -482,7 +501,7 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@PostMapping("/api/import/{id}/status/{st}")
 	@ResponseBody
@@ -532,11 +551,11 @@ public class WarehouseController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@PostMapping("/api/import")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> createImportForm(@RequestBody ImportDto objectDto) {
+	public ResponseEntity<ResponseObject> createImportForm(@RequestBody ImportDto objectDto, HttpServletRequest request) {
 		try {
 			Import newObject = objectDto.convertToEntity();
 			
@@ -578,6 +597,22 @@ public class WarehouseController {
 			}
 			employeeService.save(employee);
 			warehouseService.save(wh);
+
+			Employee sender = employeeService.getByUsername(request.getUserPrincipal().getName())
+				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username"));
+			List<Employee> listRecipient = employeeService.getByRole(ERole.ROLE_WAREHOUSE_ADMIN);
+			listRecipient.stream().forEach(recip ->{
+				Message message = new Message();
+				message.setRead(false);
+				message.setUrl("/import");
+				message.setMessage("Phiếu nhập kho mới đã được tạo!");
+				sender.addSentMess(message);
+				recip.addReceivedMess(message);
+				messageRepository.save(message);
+				employeeService.save(recip);
+				employeeService.save(sender);
+			});
+
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Create new import form successfully", newObject), 
 					HttpStatus.OK
@@ -591,7 +626,7 @@ public class WarehouseController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@PutMapping("/api/import/{id}")
 	@ResponseBody
@@ -668,7 +703,7 @@ public class WarehouseController {
 
 	// VIEW XUẤT KHO
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/export")
 	public String getAllExportProduct(Model model, HttpServletRequest request) {
@@ -684,7 +719,7 @@ public class WarehouseController {
 		return "warehouse/export";
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/api/export")
 	@ResponseBody
@@ -701,7 +736,7 @@ public class WarehouseController {
 		}	
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/api/export/{id}")
 	@ResponseBody
@@ -717,7 +752,7 @@ public class WarehouseController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@PostMapping("/api/export/{id}/status/{st}")
 	@ResponseBody
@@ -767,11 +802,11 @@ public class WarehouseController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@PostMapping("/api/export")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> createExportForm(@RequestBody ExportDto objectDto) {
+	public ResponseEntity<ResponseObject> createExportForm(@RequestBody ExportDto objectDto, HttpServletRequest request) {
 		try {
 			Export newObject = objectDto.convertToEntity();
 			
@@ -806,6 +841,21 @@ public class WarehouseController {
 			employeeService.save(employee);
 			warehouseService.save(wh);
 
+			Employee sender = employeeService.getByUsername(request.getUserPrincipal().getName())
+				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username"));
+			List<Employee> listRecipient = employeeService.getByRole(ERole.ROLE_WAREHOUSE_ADMIN);
+			listRecipient.stream().forEach(recip ->{
+				Message message = new Message();
+				message.setRead(false);
+				message.setUrl("/export");
+				message.setMessage("Phiếu xuất kho mới đã được tạo!");
+				sender.addSentMess(message);
+				recip.addReceivedMess(message);
+				messageRepository.save(message);
+				employeeService.save(recip);
+				employeeService.save(sender);
+			});
+
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Create new export form successfully", newObject), 
 					HttpStatus.OK
@@ -819,7 +869,7 @@ public class WarehouseController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@PutMapping("/api/export/{id}")
 	@ResponseBody

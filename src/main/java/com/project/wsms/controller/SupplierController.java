@@ -39,7 +39,7 @@ public class SupplierController {
 	private EmployeeService employeeService;
 	
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/supplier")
     public String view(Model model, HttpServletRequest request){
@@ -52,7 +52,7 @@ public class SupplierController {
 		return "supplier/supplier";
     }
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/supplier")
 	@ResponseBody
@@ -69,7 +69,7 @@ public class SupplierController {
 		}	
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/supplier/search")
 	@ResponseBody
@@ -88,7 +88,7 @@ public class SupplierController {
 		}		
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/supplier/{id}")
 	@ResponseBody
@@ -104,7 +104,7 @@ public class SupplierController {
 				HttpStatus.NOT_FOUND);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 
 	@PostMapping("/api/supplier")
 	@ResponseBody
@@ -126,8 +126,7 @@ public class SupplierController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@PutMapping("/api/supplier/{id}")
 	public ResponseEntity<ResponseObject> updateSupplier(@PathVariable Integer id, 
 	                                        @RequestBody Supplier supplier) {
@@ -153,8 +152,7 @@ public class SupplierController {
 				);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@DeleteMapping("/api/supplier/{id}")
 	public ResponseEntity<ResponseObject> deleteSupplier(@PathVariable(value = "id") Integer id) {
 	    if(!supplierService.existsById(id)) {

@@ -8,12 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.project.wsms.model.ERole;
 import com.project.wsms.model.Employee;
 import com.project.wsms.payload.response.SbeResponse;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Optional<Employee> findByUsername(String username);
-
+    List<Employee> findEmployeesByRolesName(ERole roleName);
     Boolean existsByUsername(String username);
 
     @Query(value = "SELECT e.id , e.username ,"

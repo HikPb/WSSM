@@ -24,10 +24,11 @@ public class Category {
 	private Integer id;
 	@Column(name = "cate_name", nullable = false, length = 30)
 	private String cateName;
+	
 	@ManyToMany(fetch = FetchType.LAZY,
 			cascade = {
 					CascadeType.PERSIST,
-					CascadeType.MERGE
+					CascadeType.MERGE,
 			},
 			mappedBy = "categories")
 	@JsonIgnore

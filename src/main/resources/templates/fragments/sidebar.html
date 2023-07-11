@@ -7,13 +7,13 @@
                 </a>
             </li>
             <li class="heading">CHỨC NĂNG</li>
-            <li>
+            <li th:if="${#lists.contains(user.roles, 'ROLE_SALES_EMPLOYEE')}">
                 <a th:href="@{/order/new}">
                     <i class="sidebar-item-icon fa-solid fa-shop"></i>
                     <span class="nav-label">Bán hàng</span>
                 </a>
             </li>
-            <li>
+            <li th:if="${#lists.contains(user.roles, 'ROLE_SALES_EMPLOYEE') || #lists.contains(user.roles, 'ROLE_WAREHOUSE_EMPLOYEE')}">
                 <a href="javascript:;" class="nav-link">
                     <i class="sidebar-item-icon fa-solid fa-file-lines"></i>
                     <span class="nav-label">Đơn hàng</span><i class="fa fa-angle-left arrow"></i></a>
@@ -21,13 +21,10 @@
                     <li>
                         <a th:href="@{/order}">Quản lý đơn hàng</a>
                     </li>
-                    <!-- <li>
-                        <a href="exchange.html">Trả hàng</a>
-                    </li> -->
                 </ul>
             </li>
 
-            <li>
+            <li th:if="${#lists.contains(user.roles, 'ROLE_SALES_EMPLOYEE') || #lists.contains(user.roles, 'ROLE_WAREHOUSE_EMPLOYEE')}">
                 <a href="javascript:;" class="nav-link">
                     <i class="sidebar-item-icon fa-solid fa-bookmark"></i>
                     <span class="nav-label">Sản phẩm</span><i class="fa fa-angle-left arrow"></i></a>
@@ -35,13 +32,13 @@
                     <li>
                         <a th:href="@{/products}">Quản lý sản phẩm</a>
                     </li>
-                    <li>
+                    <li th:if="${#lists.contains(user.roles, 'ROLE_WAREHOUSE_EMPLOYEE') || #lists.contains(user.roles, 'ROLE_WAREHOUSE_ADMIN')}">
                         <a th:href="@{/supplier}">Nhà cung cấp sản phẩm</a>
                     </li>
                 </ul>
             </li>
 
-            <li>
+            <li th:if="${#lists.contains(user.roles, 'ROLE_WAREHOUSE_EMPLOYEE')}">
                 <a href="javascript:;"><i class="sidebar-item-icon fa-solid fa-warehouse"></i>
                     <span class="nav-label">Kho hàng</span><i class="fa fa-angle-left arrow"></i></a>
                 <ul class="nav-2-level">
@@ -63,7 +60,7 @@
                 </ul>
             </li>
 
-            <li>
+            <li th:if="${#lists.contains(user.roles, 'ROLE_SALES_EMPLOYEE') || #lists.contains(user.roles, 'ROLE_WAREHOUSE_EMPLOYEE')}">
                 <a href="javascript:;"><i class="sidebar-item-icon fa-solid fa-chart-simple"></i>
                     <span class="nav-label">Thống kê</span><i class="fa fa-angle-left arrow"></i></a>
                 <ul class="nav-2-level">
@@ -79,15 +76,21 @@
                 </ul>
             </li>
 
-            <li>
+            <li th:if="${#lists.contains(user.roles, 'ROLE_SALES_EMPLOYEE') || #lists.contains(user.roles, 'ROLE_WAREHOUSE_EMPLOYEE')}">
                 <a th:href="@{/customer}"><i class="sidebar-item-icon fa-solid fa-users"></i>
                     <span class="nav-label">Khách hàng</span>
                 </a>
             </li>
 
-            <li th:if="${#strings.equals(user.role, 'ROLE_ADMIN')}">
+            <li th:if="${#lists.contains(user.roles, 'ROLE_ADMIN')}">
                 <a th:href="@{/users}"><i class="sidebar-item-icon fa-solid fa-people-roof"></i>
                     <span class="nav-label">Nhân viên</span>
+                </a>
+            </li>
+           
+            <li th:if="${#lists.contains(user.roles, 'ROLE_DELIVERY_MAN')}">
+                <a th:href="@{/delivery}"><i class="sidebar-item-icon fa-solid fa-truck"></i>
+                    <span class="nav-label">Giao hàng</span>
                 </a>
             </li>
 

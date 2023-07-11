@@ -38,7 +38,7 @@ public class CustomerController {
 	@Autowired
 	private EmployeeService employeeService;
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/customer")
     public String view(Model model, HttpServletRequest request){
@@ -51,7 +51,7 @@ public class CustomerController {
 		return "customer/customer";
     }
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/customer")
 	@ResponseBody
@@ -68,7 +68,7 @@ public class CustomerController {
 				HttpStatus.OK);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/customer/search")
 	@ResponseBody
@@ -87,7 +87,7 @@ public class CustomerController {
 		}		
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/customer/searchname")
 	@ResponseBody
@@ -106,7 +106,7 @@ public class CustomerController {
 		}		
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
 
 	@GetMapping("/api/customer/{id}")
 	@ResponseBody
@@ -122,7 +122,7 @@ public class CustomerController {
 				HttpStatus.NOT_FOUND);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE')")
 
 	@PostMapping("/api/customer")
 	@ResponseBody
@@ -145,7 +145,7 @@ public class CustomerController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE')")
 
 	@PutMapping("/api/customer/{id}")
 	public ResponseEntity<ResponseObject> updateCustomer(@PathVariable Integer id, 
@@ -174,7 +174,7 @@ public class CustomerController {
 				);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_ADMIN')")
 
 	@DeleteMapping("/api/customer/{id}")
 	public ResponseEntity<ResponseObject> deleteCustomer(@PathVariable(value = "id") Integer id) {

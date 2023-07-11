@@ -1,8 +1,10 @@
 package com.project.wsms.controller;
 
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +27,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.project.wsms.dto.EmployeeDto;
+import com.project.wsms.model.ERole;
 import com.project.wsms.model.Employee;
+import com.project.wsms.model.Role;
+import com.project.wsms.payload.request.AdChangePwRequest;
+import com.project.wsms.payload.request.AdChangeRoleRequest;
 import com.project.wsms.payload.request.ChangePwRequest;
 import com.project.wsms.payload.request.EmployeeRequest;
-import com.project.wsms.payload.request.PwRequest;
 import com.project.wsms.payload.request.UserRequest;
 import com.project.wsms.payload.response.ResponseObject;
+import com.project.wsms.repository.RoleRepository;
 import com.project.wsms.service.EmployeeService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,6 +50,9 @@ public class EmployeeController {
 
 	@Autowired
     private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private RoleRepository roleRepository;
 	
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -58,7 +67,7 @@ public class EmployeeController {
 		return "users/employee";
     }
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 
     @GetMapping("/profile")
 	public String overview(Model model, HttpServletRequest request) {
@@ -71,7 +80,7 @@ public class EmployeeController {
 		return "users/profile";
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 
     @GetMapping("/api/currentuser")
     @ResponseBody
@@ -82,7 +91,7 @@ public class EmployeeController {
             new ResponseObject("ok", "mess",""), HttpStatus.OK );
     }
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@RequestMapping(value = "/username", method = RequestMethod.GET)
     @ResponseBody
@@ -90,7 +99,7 @@ public class EmployeeController {
         return principal.toString();
     }
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/api/employee")
 	@ResponseBody
@@ -111,7 +120,7 @@ public class EmployeeController {
 					HttpStatus.BAD_REQUEST);
 		}	
 	}
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/api/employee/{id}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
@@ -130,19 +139,22 @@ public class EmployeeController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/api/employee")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> saveEmployee(@Valid @RequestBody UserRequest employee) {
+	public ResponseEntity<ResponseObject> createNewEmployee(@Valid @RequestBody UserRequest employee) {
 		try {
-			Optional<Employee> emp = employeeService.getByUsername(employee.getUsername());
-			if(emp.isPresent()){
+			if(employeeService.existsByUsername(employee.getUsername())){
 				return new ResponseEntity<>(
-					new ResponseObject("ok", "This username is already in use", ""), 
+					new ResponseObject("failed", "This username is already in use", ""), 
 					HttpStatus.OK
 					);
 			}
 			Employee newEmployee = new Employee();
 			newEmployee.setUsername(employee.getUsername());
-			newEmployee.setPassword(employee.getPassword());
-            newEmployee.setRole(employee.getRole());
+			newEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
+			Set<Role> roles = new HashSet<>();
+			Role userRole = roleRepository.findByName(ERole.ROLE_SALES_EMPLOYEE)
+				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+			roles.add(userRole);
+			newEmployee.setRoles(roles);
             employeeService.save(newEmployee);
 			return new ResponseEntity<>(
 					new ResponseObject("ok", "Save new employee successfully", ""), 
@@ -155,8 +167,8 @@ public class EmployeeController {
 					);
 		}
 	}
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
+	@ResponseBody
 	@PutMapping("/api/employee/{id}")
 	public ResponseEntity<ResponseObject> updateEmployee(@PathVariable Integer id, 
 	                                        @RequestBody EmployeeRequest employee) {
@@ -178,8 +190,8 @@ public class EmployeeController {
 				);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
+	@ResponseBody
 	@PutMapping("/api/employee/{id}/changepassword")
 	public ResponseEntity<ResponseObject> changePassword(@PathVariable(value = "id") Integer id, @RequestBody ChangePwRequest cqRequest, HttpServletRequest request) {
 	    Optional<Employee> uEmployee = employeeService.getById(id);
@@ -187,7 +199,7 @@ public class EmployeeController {
 			Principal principal = request.getUserPrincipal();
 			if(uEmployee.get().getUsername().compareTo(principal.getName())==0){
 				if(passwordEncoder.matches(cqRequest.getPassword(), uEmployee.get().getPassword())){
-					uEmployee.get().setPassword(cqRequest.getNewPassword());
+					uEmployee.get().setPassword(passwordEncoder.encode(cqRequest.getNewPassword()));
 					employeeService.save(uEmployee.get());
 					return new ResponseEntity<>(
 						new ResponseObject("ok", "Change password successfully", ""),
@@ -210,25 +222,92 @@ public class EmployeeController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
+	@ResponseBody
 	@PutMapping("/api/employee/admin-change")
-	public ResponseEntity<ResponseObject> changePasswordByAdmin(@RequestBody PwRequest request) {
-	    Optional<Employee> uEmployee = employeeService.getById(request.getId());
-		if(uEmployee.isPresent()){
-			if(request.getNewPassword()!= null && request.getNewPassword() != "") {
-				uEmployee.get().setPassword(request.getNewPassword());
-			}
-			uEmployee.get().setRole(request.getRole());
-			employeeService.save(uEmployee.get());
-			return new ResponseEntity<>(
+	public ResponseEntity<ResponseObject> changePasswordByAdmin(@RequestBody AdChangePwRequest request) {
+		Employee uEmployee = employeeService.getByUsername(request.getUsername())
+			.orElseThrow(() -> new RuntimeException("Error: User not found."));
+		uEmployee.setPassword(passwordEncoder.encode(request.getNewPassword()));
+		employeeService.save(uEmployee);
+	    return new ResponseEntity<>(
 				new ResponseObject("ok", "Update employee password successfully", ""),
 				HttpStatus.OK);
-		}
-	    return new ResponseEntity<>(
-				new ResponseObject("failed", "Employee not found", ""),
-				HttpStatus.BAD_REQUEST);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
+	@ResponseBody
+	@PutMapping("/api/employee/admin-change-role")
+	public ResponseEntity<ResponseObject> changeRoleByAdmin(@RequestBody AdChangeRoleRequest request) {
+		Employee uEmployee = employeeService.getByUsername(request.getUsername())
+			.orElseThrow(() -> new RuntimeException("Error: User not found."));
+		Set<String> strRoles = request.getRoles();
+		Set<Role> roles = new HashSet<>();
+
+		if (strRoles == null) {
+			Role userRole = roleRepository.findByName(ERole.ROLE_SALES_EMPLOYEE)
+				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+			roles.add(userRole);
+		} else {
+			strRoles.forEach(role -> {
+				switch (role) {
+					case "admin":
+						Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(adminRole);
+						break;
+
+					case "sales_admin":
+						Role saRole = roleRepository.findByName(ERole.ROLE_SALES_ADMIN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(saRole);
+						break;
+
+					case "sales_employee":
+						Role seRole = roleRepository.findByName(ERole.ROLE_SALES_EMPLOYEE)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(seRole);
+						break;
+
+					case "warehouse_admin":
+						Role waRole = roleRepository.findByName(ERole.ROLE_WAREHOUSE_ADMIN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(waRole);
+						break;
+
+					case "warehouse_employee":
+						Role weRole = roleRepository.findByName(ERole.ROLE_WAREHOUSE_EMPLOYEE)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(weRole);
+						break;
+					
+					case "delivery_admin":
+						Role daRole = roleRepository.findByName(ERole.ROLE_DELIVERY_ADMIN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(daRole);
+						break;
+
+					case "delivery_man":
+						Role dmRole = roleRepository.findByName(ERole.ROLE_DELIVERY_MAN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(dmRole);
+						break;
+
+					default:
+						Role r = roleRepository.findByName(ERole.ROLE_SALES_EMPLOYEE)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+						roles.add(r);
+				}
+			});
+		}
+		uEmployee.setRoles(roles);
+		employeeService.save(uEmployee);
+		return new ResponseEntity<>(
+			new ResponseObject("ok", "Update employee password successfully", ""),
+			HttpStatus.OK);
+}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@ResponseBody
 	@DeleteMapping("/api/employee/{id}")
 	public ResponseEntity<ResponseObject> deleteEmployee(@PathVariable(value = "id") Integer id) {
 	    if(!employeeService.existsById(id)) {

@@ -15,6 +15,8 @@ public interface OrderService{
 
 	public List<Order> getByCustomer(Integer id);
 
+	public List<Order> getByStatusIn(List<Integer> listStatus);
+
     public void delete(Integer orderId);	
 	
 	public Optional<Order> getById(Integer orderId);

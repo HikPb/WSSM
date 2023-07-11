@@ -29,7 +29,7 @@
             <!-- START PAGE CONTENT-->
             <div class="tools-container">
                 <div id="action-tools" style="display: inline-flex;">  
-                    <div class="d-flex flex-row align-items-center mx-2">
+                    <div class="mx-2">
                         <div class="input-group daterange-group">
                             <div class="input-group-addon"><i class="fa-regular fa-calendar"></i></div>
                             <input class="form-control" type="text" id="daterange">
@@ -60,7 +60,7 @@
                     </div>
                 </div>
             
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-lg-12">
                         <div class="ibox">
                             <div class="ibox-head" style="background-color: #dff8ec;">
@@ -129,6 +129,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.13.4/b-2.3.6/b-colvis-2.3.6/b-html5-2.3.6/b-print-2.3.6/fc-4.2.2/r-2.4.1/sc-2.1.1/sl-1.6.2/datatables.min.js"></script>
+    <script th:src="@{/webjars/stomp-websocket/2.3.4/lib/stomp.js}"></script>
+    <script th:src="@{/webjars/sockjs-client/1.6.1/dist/sockjs.js}"></script>
     <script th:src="@{/js/app.min.js}"></script>
     <script th:src="@{/js/revenue-statistic.js}"></script>
     

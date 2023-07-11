@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.project.wsms.model.Product;
+
 
 public interface ProductRepository extends JpaRepository<Product, Integer>{
 //	List<Product> findProductByName(String productName);
@@ -15,6 +17,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
     
 	@Query(value = "select * from products p where concat(p.id, p.product_name, p.barcode) like %?1%", nativeQuery = true)
 	List<Product> findByKeyword(String keyword);
-    
+
+	List<Product> findProductsByCategoriesId(Integer id);
+	
     Page<Product> findByProductNameStartingWith(String productName, Pageable pageable);
 }

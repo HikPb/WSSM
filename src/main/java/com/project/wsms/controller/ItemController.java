@@ -30,7 +30,7 @@ public class ItemController {
 	@Autowired
 	private ItemService itemService;
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/item")
 	public ResponseEntity<ResponseObject> listAllItem(){
@@ -46,7 +46,7 @@ public class ItemController {
 				HttpStatus.OK);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("item/search")
 	public ResponseEntity<ResponseObject> searchItem(@RequestParam("key") String key){
@@ -64,7 +64,7 @@ public class ItemController {
 		}		
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/item/{id}")
 	public ResponseEntity<ResponseObject> getOne(@PathVariable("id") Integer id) {
@@ -79,7 +79,7 @@ public class ItemController {
 				HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/item/warehouse/{id}")
 	public ResponseEntity<ResponseObject> getAllInWarehouse(@PathVariable("id") Integer id) {
@@ -95,7 +95,7 @@ public class ItemController {
 		}		
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 
 	@GetMapping("/item/product/{id}/warehouse/{wid}")
 	public ResponseEntity<ResponseObject> getByProductAndWarehouse(@PathVariable("id") Integer id, @PathVariable("wid") Integer wid) {
@@ -111,8 +111,8 @@ public class ItemController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/item/product/{id}")
 	public ResponseEntity<ResponseObject> getAllInProducts(@PathVariable("id") Integer id) {
 		try {
@@ -127,8 +127,7 @@ public class ItemController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 	@PostMapping("/item/{id}/status")
 	public ResponseEntity<ResponseObject> changeItemStatus(@PathVariable("id") Integer id) {
 		try {
@@ -151,8 +150,7 @@ public class ItemController {
 		}
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 	@PostMapping("/api/item")
 	public ResponseEntity<ResponseObject> saveItem(@Valid @RequestBody Item item) {
 		try {
@@ -173,8 +171,7 @@ public class ItemController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
 	@PutMapping("/api/item/{id}")
 	public ResponseEntity<ResponseObject> updateItem(@PathVariable Integer id, 
 	                                        @RequestBody Item item) {
@@ -200,8 +197,7 @@ public class ItemController {
 				);
 	}
 	
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@DeleteMapping("/api/item/{id}")
 	public ResponseEntity<ResponseObject> deleteItem(@PathVariable(value = "id") Integer id) {
 	    if(!itemService.existsById(id)) {

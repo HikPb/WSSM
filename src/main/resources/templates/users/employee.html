@@ -66,39 +66,113 @@
                             <div class="ibox-body">
                                 <div class="tab-content">
                                     <div class="" id="tab-1" aria-expanded="true">
-                                        <form id="e-form">
-                                            <div class="row">
-                                                <div class="col-sm-6 form-group">
-                                                    <label>Họ và tên:</label>
-                                                    <input class="form-control" id="e-fullname" type="text" placeholder="Họ và tên" disabled>
-                                                </div>
-                                                <div class="col-sm-6 form-group">
-                                                    <label>Số điện thoại:</label>
-                                                    <input class="form-control" id="e-phone" type="text" placeholder="Số điện thoại" disabled>
-                                                </div>
+                                        <div class="ibox" style="border: 1px solid #ededed;">
+                                            <div class="ibox-head" style="background-color: #efefef;">
+                                                <div class="ibox-title">THÔNG TIN CƠ BẢN</div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-sm-6 form-group">
-                                                    <label>Mật khẩu:</label>
-                                                    <input class="form-control" id="e-password" type="text" placeholder="Nhập mật khẩu mới">
-                                                </div>
-                                                <div class="col-sm-6 form-group">
-                                                    <label>Role:</label>
-                                                    <div id="div-role"> 
-                                                        <select class="form-control" id="e-role">
-                                                            <option>---</option>
-                                                            <option value="ROLE_ADMIN">ADMIN</option>
-                                                            <option value="ROLE_MODERATOR">MODERATOR</option>
-                                                            <option value="ROLE_USER">USER</option>
-                                                        </select>
+                                            <div class="ibox-body">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-sm-6 form-group">
+                                                            <label>Họ và tên:</label>
+                                                            <input class="form-control" id="e-fullname" type="text" placeholder="Họ và tên" disabled>
+                                                        </div>
+                                                        <div class="col-sm-6 form-group">
+                                                            <label>Số điện thoại:</label>
+                                                            <input class="form-control" id="e-phone" type="text" placeholder="Số điện thoại" disabled>
+                                                        </div>
                                                     </div>
-                                                    <!-- <input class="form-control" id="e-wphone" type="text" placeholder="Số điện thoại" required> -->
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="ibox" style="border: 1px solid #ededed;">
+                                            <div class="ibox-head" style="background-color: #efefef;">
+                                                <div class="ibox-title">THAY ĐỔI MẬT KHẨU</div>
+                                            </div>
+                                            <div class="ibox-body">
+                                                <div class="form-group">
+                                                    <form id="e-form">
+                                                        <div class="d-flex flex-row justify-content-between align-items-end">
+                                                            <div class="form-group col-sm-6">
+                                                                <label>Mật khẩu:</label>
+                                                                <input class="form-control" id="e-password" type="text" placeholder="Nhập mật khẩu mới">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <button class="btn btn-primary" type="submit">Lưu</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                                <button class="btn btn-primary" type="submit">Lưu</button>
+                                        </div>
+
+                                        <div class="ibox" style="border: 1px solid #ededed;">
+                                            <div class="ibox-head" style="background-color: #efefef;">
+                                                <div class="ibox-title">QUYỀN NHÂN VIÊN</div>
                                             </div>
-                                        </form>
+                                            <div class="ibox-body">
+                                                <div class="form-group">
+                                                    <form id="e2-form">
+                                                        <div class="d-flex flex-row">
+                                                            <div class="col-sm-11 form-group">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="sales_emp">
+                                                                    <label class="form-check-label" for="sales_emp">
+                                                                        <ul>
+                                                                            <li>Tạo mới, xem, chỉnh sửa đơn hàng.</li>
+                                                                            <li>Tạo mới, xem, chỉnh sửa thông tin khách hàng.</li>
+                                                                        </ul>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="sales_adm">
+                                                                    <label class="form-check-label" for="sales_adm">
+                                                                        <ul>
+                                                                            <li>Duyệt đơn hàng.</li>
+                                                                            <li>Xóa thông tin khách hàng.</li>
+                                                                        </ul>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="ware_emp">
+                                                                    <label class="form-check-label" for="ware_emp">
+                                                                        <ul>
+                                                                            <li>Tạo mới, xem, chỉnh sửa phiếu kiểm-xuất-nhập hàng </li>
+                                                                            <li>Xem, chỉnh sửa thông tin kho hàng</li>
+                                                                        </ul>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="ware_adm">
+                                                                    <label class="form-check-label" for="ware_adm">
+                                                                        <ul>
+                                                                            <li>Duyệt phiếu kiểm-xuất-nhập hàng.</li>
+                                                                            <li>Tạo, xóa, kho hàng</li>
+                                                                            <li>Tạo, chỉnh sửa, xóa sản phẩm</li>
+                                                                            <li>Tạo, chỉnh sửa, xóa NCC sản phẩm</li>
+                                                                        </ul>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="deli_man">
+                                                                    <label class="form-check-label" for="deli_man">
+                                                                        <ul>
+                                                                            <li>Nhân viên vận chuyển</li>
+                                                                        </ul>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex col-sm-1 justify-content-end">
+                                                                <div class="form-group">
+                                                                    <button class="btn btn-primary" type="submit" id="roleBtn">Lưu</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -111,6 +185,7 @@
 
             <div th:replace="~{users/employee-form.html :: modal}"></div>
             <!-- FOOTER -->
+            <div th:replace="fragments/setting :: setting-modal"></div>
             <div th:replace="~{fragments/footer.html :: footer}"></div>
         </div>
 

@@ -45,8 +45,17 @@ $(document).ready(function () {
                 className: 'td-data',
             },
             {
+                data: null,
                 orderable: false,
-                defaultContent: '<button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>'
+                searchable: false,
+                render: function(data, type, row){
+                    if(user.roles.includes("ROLE_SALES_ADMIN")){
+                        return `<div>
+                                    <button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                </div>`
+                    }
+                    return "";
+                }
             },
         ],
         columnDefs: [
@@ -61,8 +70,35 @@ $(document).ready(function () {
         ],
         initComplete: function(settings, json) {
             table.row().invalidate().draw();
-            console.log(table.row().count())
-          },
+            //console.log(table.row().count())
+        },
+        buttons: [
+            {
+                text: '<i class="fa-solid fa-rotate"></i><span> Tải lại</span>',
+                className: 'btn-tools',
+                action: function ( e, dt, node, config ) {
+                    dt.ajax.reload(null, false);
+                }
+            },
+            {
+                extend:    'print',
+                text:      '<i class="fa fa-print"></i> In',
+                titleAttr: 'Print',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: [2,3,4,5,6,7]
+                }
+            },  
+            {
+                extend:    'excel',
+                text:      '<i class="fa-solid fa-file-export"></i><span> Xuất excel</span>',
+                titleAttr: 'Excel',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+        ],
         paging: true, 
         pagingType: 'numbers',
         lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
@@ -76,7 +112,7 @@ $(document).ready(function () {
             "infoEmpty": "Không có kết quả",
             "infoFiltered": "(Lọc từ _MAX_ kết quả)"
         },
-        dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
+        dom: 'B<"tabletop"if>tr<"pagetable"lp><"clear">',
         search: {
             "addClass": 'form-control input-lg col-xs-12'
         },
@@ -87,31 +123,9 @@ $(document).ready(function () {
         order: [[ 1, 'desc' ]]
     });
 
-    new $.fn.dataTable.Buttons( table, {
-        buttons: [             
-            {
-            extend:    'print',
-            text:      '<i class="fa fa-print"></i> In',
-            titleAttr: 'Print',
-            className: 'btn-tools',
-            exportOptions: {
-                columns: [2,3,4,5,6,7]
-            }
-            },  
-            {
-                extend:    'excel',
-                text:      '<i class="fa-solid fa-file-export"></i><span>Xuất excel</span>',
-                titleAttr: 'Excel',
-                className: 'btn-tools',
-                exportOptions: {
-                    columns: ':visible'
-                }
-                },
-        ]
-    } );
     table.buttons().container().appendTo('#action-tools');
 
-   table.on("click", "th.select-checkbox", function() {
+    table.on("click", "th.select-checkbox", function() {
         if ($("th.select-checkbox").hasClass("selected")) {
             table.rows().deselect()
             $("th.select-checkbox").removeClass("selected");
@@ -135,25 +149,27 @@ $(document).ready(function () {
         data = table.row(this).data();
         href = "api/customer/"+data["id"];
         $.get(href, function(response, status){
+            let dt = response.data;
 			//$("#e-sform").attr("action", "/api/products/"+data.id);
-			$("#updated-val").html(moment(data.updatedAt).format('HH:mm DD-MM-YYYY'));
-            $("#e-name").val(data.name);
-            $("#e-phone").val(data.phone);
-            $("#e-dob").val(moment(data.dob).format('YYYY-MM-DD'));
-            $("#e-address").val(data.address);
-            $("#e-np").text(data.npCus);
-            $("#e-nso").text(data.nsoCus);
-            $("#e-oc").text(data.npCus-data.nsoCus);
-            $("#e-tm").text(data.tmoney);
+			$("#updated-val").html(moment(dt.updatedAt).format('HH:mm DD-MM-YYYY'));
+            $("#e-name").val(dt.name);
+            $("#e-phone").val(dt.phone);
+            $("#e-dob").val(moment(dt.dob).format('YYYY-MM-DD'));
+            $("#e-address").val(dt.address);
+            $("#e-np").text(dt.npCus);
+            $("#e-nso").text(dt.nsoCus);
+            $("#e-oc").text(dt.nroCus);
+            $("#e-tm").text(numberWithCommas(dt.tmoney));
+            $("#e-to").text(numberWithCommas(dt.towe));
         })
         $("#co-table").DataTable().clear().destroy();
-        $("#co-table").DataTable({
+        let tb = $("#co-table").DataTable({
             processing: true,
             responsive: true,
             paging: false,
             scrollCollapse: true,
-            //scrollX: true,
-            //scrollY: "200px",
+            scrollX: true,
+            scrollY: "200px",
             ajax: {
                 url: "/api/order/customer/"+data["id"],
                 dataSrc: '',
@@ -163,17 +179,87 @@ $(document).ready(function () {
                 dataSrc: 'data'
             },
             columns: [
-                {defaultContent: '',data: null,},
-                { data: "id"},
-                { data: "owe"},
-                { data: "revenue" },
-                { data: "createdAt", render: function(data, type, row){ return moment(data).format("DD/MM/YYYY");}},
-                { data: "status"}
+                {
+                    defaultContent: '',
+                    data: null,
+                    className: 'td-data',
+                },
+                { 
+                    data: "id",
+                    className: 'td-data',
+                },
+                { 
+                    data: 'orderItems',
+                    className: 'td-data',
+                    render: function(data, type, row){
+                        let list=""
+                        data.forEach(it => {
+                            list+= it.item.product.barcode + " x " + it.qty +"; ";
+                        });
+                        return list;
+                    }
+                },
+                { 
+                    data: "revenue", 
+                    className: 'td-data',
+                    render: function(data, type, row){ return numberWithCommas(data); } 
+                },
+                { 
+                    data: "createdAt",
+                    className: 'td-data',
+                    render: function(data, type, row){ return moment(data).format("DD/MM/YYYY");}
+                },
+                { 
+                    data: "status",
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row){
+                        if(data==0){
+                            return  `<div class="btn-group">
+                                        <button class="btn btn-danger" style="width: 150px;" type="button" disabled> Đã hủy </button>
+                                    </div>`
+                        }else if(data==1){
+                            return  `<div class="btn-group">
+                                        <button class="btn btn-primary" style="width: 150px;" type="button" disabled> Mới </button>
+                                    </div>`
+                        }else if(data==2){
+                            return  `<div class="btn-group">
+                                        <button class="btn btn-info" style="width: 150px;" type="button" disabled> Chờ chuyển hàng </button>
+                                    </div>`
+                        }else if(data==3){
+                            return  `<div class="btn-group">
+                                        <button class="btn btn-success" style="width: 150px;" type="button" disabled> Đang gửi hàng </button>
+                                    </div>`
+                        }else if(data==4){
+                            return  `<div class="btn-group">
+                                        <button class="btn btn-warning" style="width: 150px;" type="button" disabled> Đơn hàng delay </button>
+                                    </div>`
+                        }else if(data==5){
+                            return  `<div class="btn-group">
+                                        <button class="btn btn-success" style="width: 150px;" type="button" disabled> Đã gửi hàng </button>
+                                    </div>`
+                        }else if(data==6){
+                            return  `<div class="btn-group">
+                                        <button class="btn btn-danger" style="width: 150px;" type="button" disabled> Đang hoàn </button>
+                                    </div>`
+                        }else if(data==7){
+                            return  `<div class="btn-group">
+                                        <button class="btn btn-danger" style="width: 150px;" type="button" disabled> Đã hoàn </button>
+                                    </div>`
+                        }
+                    }
+            
+                }
             ],
             dom: "t",
-            //order: [[ 1, 'desc' ]],
-        })
+            order: [[ 1, 'desc' ]],
+        });
         $("#e-cus-modal").modal("show");
+    });
+
+    $('#e-cus-modal').on('shown.bs.modal', function(e){
+        $($.fn.dataTable.tables(true)).DataTable()
+           .columns.adjust();
     });
 
     $("#e-form").on("submit", function (e) {
@@ -237,10 +323,6 @@ $(document).ready(function () {
         });
         
       });
-	
-	
-	
-
       
     $("#customerTable tbody").on("click", ".btn-delete", function (e) {
         e.preventDefault();
@@ -273,11 +355,10 @@ $(document).ready(function () {
         });
         
       });
-
-    $("#btnClear").on("click", function (e) {
-      e.preventDefault();
-      table.ajax.reload(null, false)
-      window.location="/customer"
-    });
     
   });
+
+  function numberWithCommas(x) {
+    if(x==null || x=="") {return 0;}
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

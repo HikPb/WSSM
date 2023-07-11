@@ -1,0 +1,11 @@
+package com.project.wsms.model;
+
+public enum ERole {
+    ROLE_ADMIN,
+    ROLE_SALES_ADMIN,
+    ROLE_SALES_EMPLOYEE,
+    ROLE_WAREHOUSE_ADMIN,
+    ROLE_WAREHOUSE_EMPLOYEE,
+    ROLE_DELIVERY_ADMIN,
+    ROLE_DELIVERY_MAN
+}

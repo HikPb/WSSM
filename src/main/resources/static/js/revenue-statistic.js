@@ -3,176 +3,157 @@ const barchart = document.getElementById("bar_chart").getContext("2d");
 
 var startDate = moment().startOf('month').format('MM/DD/YYYY'),
     endDate = moment().endOf('month').format('MM/DD/YYYY');
-var sbd = getAjaxResponse("/api/sbd?start="+startDate+"&end="+endDate);
-const table = $("#table").DataTable({
-    data: sbd,
-    columns: [
-        { data: 'day', render: function(data, type, row){ return moment(data).format("DD/MM/YYYY")} },
-        { data: 'torder' },
-        { data: 'tproduct'},
-        { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'tshipfee', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'tprofit', render: function(data, type, row){ if(data==null){return "0"}else{return numberWithCommas(data)}} }
+var url = "/api/sbd?start="+startDate+"&end="+endDate;
+var chart; 
 
-    ],
-    responsive: true,
-    fixedColumns: true,
-    paging: false,
-    scrollCollapse: true,
-    scrollX: true,
-    scrollY: "400px",
-    dom: 'Bt',
-    order: [[ 0, 'desc' ]],
-    buttons: [
-        // {
-        //     text: '<i class="fa-solid fa-rotate"></i>',
-        //     className: 'btn-tools',
-        //     action: function ( e, dt, node, config ) {
-        //         table.ajax.reload(null, false);
-        //     }
-        // },
-        {
-            extend:    'excel',
-            text:      '<i class="fa-solid fa-file-excel"></i>',
-            titleAttr: 'Excel',
-            className: 'btn-tools',
-            exportOptions: {
-                columns: ':visible'
-            }
+loadRevenueByDay(url);
+
+function loadRevenueByDay(url){
+    var table = $("#table").DataTable({
+        ajax: {
+            url: url,
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            dataSrc: 'data'
         },
-        {
-            extend:    'pdf',
-            text:      '<i class="fa-solid fa-file-pdf"></i>',
-            titleAttr: 'PDF',
-            className: 'btn-tools',
-            exportOptions: {
-                columns: ':visible'
-            }
-        },
-        {
-            extend:    'print',
-            text:      '<i class="fa-solid fa-print"></i>',
-            titleAttr: 'Print',
-            className: 'btn-tools',
-            exportOptions: {
-                columns: ':visible'
-            }
-        },
-    ],
-    footerCallback: function(row, data, start, end, display) {
-        var api = this.api();
-        var colNumber = [1,2];
-        var colNumber2 = [3,4,5,6,7];
-        var intVal = function (i) {
-            if(i == null) return 0;
-            return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
-        };
-       
-        for (let i = 0; i < colNumber.length; i++) {
-            var colNo = colNumber[i];
-            var total = api
-                    .column(colNo,{ page: 'current'})
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-            $(api.column(colNo).footer()).html(total);
-        }
-
-        for (let i = 0; i < colNumber2.length; i++) {
-            var colNo = colNumber2[i];
-            var total = api
-                    .column(colNo,{ page: 'current'})
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-            $(api.column(colNo).footer()).html(numberWithCommas(total));
-        }
-    }
-});
-
-function renderChart(){
-    var profit = [], 
-        revenue = [],
-        sales = [], 
-        order = [], 
-        product = [],
-        day = [];
-    sbd.map(it =>{
-        day.push(moment(it.day).format("DD/MM"));
-        profit.push(it.tprofit);
-        revenue.push(it.trevenue);
-        sales.push(it.tsales);
-        order.push(it.torder);
-        product.push(it.tproduct);
-    })
-
-    var a = {
-        labels: day,
-        datasets: [{
-            label: "Doanh thu",
-            borderColor: "#00eec9",
-            backgroundColor:"#fea11b",
-            fill: false,
-            tension: 0.4,
-            data: revenue,
-        },]
-    };
-
-    new Chart(barchart, {
-        type: "line",
-        data: a,
-        options: {
-            responsive: true,
-            maintainAspectRatio: !1,
-            plugins: {
-                subtitle: {
-                    display: false,
-                    text: 'Custom Chart Subtitle'
-                },
-                title: {
-                    display: false,
-                    text: 'Custom Chart Title'
+        columns: [
+            { data: 'day', render: function(data, type, row){ return moment(data).format("DD/MM/YYYY")} },
+            { data: 'torder' },
+            { data: 'tproduct'},
+            { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tshipfee', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tprofit', render: function(data, type, row){ if(data==null){return "0"}else{return numberWithCommas(data)}} }
+    
+        ],
+        responsive: true,
+        fixedColumns: true,
+        paging: false,
+        // scrollCollapse: true,
+        // scrollX: true,
+        // scrollY: "400px",
+        dom: 'Bt',
+        order: [[ 0, 'desc' ]],
+        buttons: [
+            {
+                extend:    'excel',
+                text:      '<i class="fa-solid fa-file-excel"></i>',
+                titleAttr: 'Excel',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: ':visible'
                 }
+            },
+            {
+                extend:    'pdf',
+                text:      '<i class="fa-solid fa-file-pdf"></i>',
+                titleAttr: 'PDF',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend:    'print',
+                text:      '<i class="fa-solid fa-print"></i>',
+                titleAttr: 'Print',
+                className: 'btn-tools',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+        ],
+        footerCallback: function(row, data, start, end, display) {
+            var api = this.api();
+            var colNumber = [1,2];
+            var colNumber2 = [3,4,5,6,7];
+            var intVal = function (i) {
+                if(i == null) return 0;
+                return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+            };
+           
+            for (let i = 0; i < colNumber.length; i++) {
+                var colNo = colNumber[i];
+                var total = api
+                        .column(colNo,{ page: 'current'})
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                $(api.column(colNo).footer()).html(total);
             }
+    
+            for (let i = 0; i < colNumber2.length; i++) {
+                var colNo = colNumber2[i];
+                var total = api
+                        .column(colNo,{ page: 'current'})
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                $(api.column(colNo).footer()).html(numberWithCommas(total));
+            }
+        },
+        drawCallback: function(settings){
+            var revenue = [],
+                day = [];
+
+            for(var count=0; count < settings.aoData.length; count++){
+                day.push(moment(settings.aoData[count]._aData['day']).format("DD/MM"));
+                revenue.push(parseInt(settings.aoData[count]._aData['trevenue']));
+                // sales.push(parseInt(settings.aoData[count]._aData['tsales']));
+                // order.push(parseInt(settings.aoData[count]._aData['torder']));
+                // product.push(parseInt(settings.aoData[count]._aData['tproduct']));
+            }
+
+            var a = {
+                labels: day,
+                datasets: [{
+                    label: "Doanh thu",
+                    borderColor: "#00eec9",
+                    backgroundColor:"#fea11b",
+                    fill: false,
+                    tension: 0.4,
+                    data: revenue,
+                },]
+            };
+
+            if(chart){
+                chart.destroy();
+            }
+
+            chart = new Chart(barchart, {
+                type: "line",
+                data: a,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: !1,
+                    plugins: {
+                        subtitle: {
+                            display: false,
+                            text: 'Custom Chart Subtitle'
+                        },
+                        title: {
+                            display: false,
+                            text: 'Custom Chart Title'
+                        }
+                    }
+                }
+            });
         }
     });
+
+    table.buttons().container().appendTo('#action-tools');
 }
 
-async function loadData(url){
-    try{
-        const response = await fetch(url);
-        const data = await response.json();
-        return data.data;
-    }catch (error){
-        console.error(error);
-    }
-}
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function getAjaxResponse( url ){
-    let result= jQuery.ajax({
-        url: url,
-        type: 'get',
-        async:false,
-        contentType: "application/json",
-        dataType: 'json',
-        success:function(response){
-            return response.data;
-        } 
-    }).responseJSON;
-    return result.data;
-}
-
 $(document).ready(function () {
-    renderChart();
-    table.buttons().container().appendTo('#action-tools');
 
     $("#daterange").daterangepicker({
         // parentEl: ".daterange-group",
@@ -225,9 +206,9 @@ $(document).ready(function () {
     }, async function(start, end, label) {
         let startDate = moment(start).format("MM/DD/YYYY");
         let endDate = moment(end).format("MM/DD/YYYY");
-        sbd = await loadData("/api/sbd?start="+startDate+"&end="+endDate);
-
-        table.clear().rows.add(sbd).draw();
+        let url = "/api/sbd?start="+startDate+"&end="+endDate;
+        $("#table").DataTable().clear().destroy();
+        loadRevenueByDay(url);
     });
 });
 

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.project.wsms.model.ERole;
 import com.project.wsms.model.Employee;
 import com.project.wsms.repository.EmployeeRepository;
 import com.project.wsms.service.EmployeeService;
@@ -17,12 +18,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 	@Autowired
 	private EmployeeRepository emRepository;
 
-	@Autowired
-    private PasswordEncoder passwordEncoder;
-
 	@Override
 	public void save(Employee employee) {
-		employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+		//employee.setPassword(passwordEncoder.encode(employee.getPassword()));
 		emRepository.save(employee);
 	}
 
@@ -31,8 +29,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 		return emRepository.findAll();
 	}
 	
-	public boolean existsById(Integer id) {
-		return emRepository.existsById(id);
+	public boolean existsByUsername(String username) {
+		return emRepository.existsByUsername(username);
 	}
 
 	@Override
@@ -49,5 +47,15 @@ public class EmployeeServiceImpl implements EmployeeService{
 	@Override
 	public Optional<Employee> getByUsername(String username) {
 		return emRepository.findByUsername(username);
+	}
+
+	@Override
+	public boolean existsById(Integer id) {
+		return emRepository.existsById(id);
+	}
+
+	@Override
+	public List<Employee> getByRole(ERole roleName) {
+		return emRepository.findEmployeesByRolesName(roleName);
 	}
 }

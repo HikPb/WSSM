@@ -202,6 +202,80 @@
                 </form>
             </div>
         </div>
-
     </div>
+
+    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-title" id="categoryModalLabel"><i class="fa-solid fa-tags"></i> Danh mục SP</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="d-flex flex-row justify-content-center mx-4">
+                        <div class="form-group col-sm-12">
+                            <div class="input-group-icon">
+                                <div class="input-icon">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </div>
+                                <input class="form-control" type="text" placeholder="Tìm kiếm danh mục" onkeyup="searchCategory()" id="cate-search">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row justify-content-center mx-4">
+                        <div class="col d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-semibold">SL danh mục: </span>
+                                <span id="cateNum" th:text="${#lists.size(categories)}"></span>
+                            </div>
+                            <button class="btn btn-primary" id="newCateBtn"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <div style="display: none;" id="newCateDiv">
+                        <form name="newCateForm">
+                            <div class="d-flex flex-row mx-4">
+                                <div class="col d-flex my-2 p-2" style="border: 1px solid rgb(173, 198, 255); background-color: rgb(240, 245, 255);">
+                                    <div class="mr-2" style="width: 100%;">
+                                        <input class="form-control" type="text" id="newCateIp" placeholder="Danh mục" required>
+                                    </div>
+                                    <div class="mx-2">
+                                        <button class="btn btn-danger" type="button" id="cancelCateBtn">Hủy</button>
+                                    </div>
+                                    <div class="ml-2">
+                                        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    </div>
+                                </div>
+                            </div>         
+                        </form> 
+                    </div>
+                    
+
+                    <div class="d-flex flex-row mx-4 my-4">
+                        <div class="col">
+                            <ul class="list-group list-group-bordered cate-list" id="ul-list">
+                                <th:block th:each="cate : ${categories}">
+                                    <li class="list-group-item cate-item" th:catename="${cate.cateName}">
+                                        <div class="d-flex flex-row">
+                                            <div class="cate-item-icon mx-2">
+                                                <span><i class="fa-solid fa-chevron-right"></i> </span>
+                                            </div>
+                                            <span th:text="${cate.cateName}"></span>
+                                        </div>
+                                        <div class="cate-item-icon">
+                                            <span class="mx-2" th:onclick="editInline(event, [[${cate.id}]])"><i class="fa-solid fa-pen-to-square"></i></i></span>
+                                            <span th:onclick="deleteCategory(event, [[${cate.id}]])"><i class="fa-solid fa-trash"></i></span>
+                                        </div>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </div>
+                       
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

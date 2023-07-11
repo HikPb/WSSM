@@ -3,6 +3,7 @@ package com.project.wsms.controller;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.project.wsms.config.WebSocketEventListener;
 import com.project.wsms.dto.EmployeeDto;
 import com.project.wsms.model.Employee;
 import com.project.wsms.payload.request.LoginRequest;
@@ -71,7 +73,7 @@ public class MainController {
 	@Autowired
 	private EmployeeRepository employeeRepository;
 
-	// @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	// @PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_ADMIN') or hasRole('WAREHOUSE_ADMIN') or hasRole('ADMIN')")
 
 	@GetMapping("/")
 	public String index(HttpServletRequest request) {
@@ -103,9 +105,12 @@ public class MainController {
 			//String token = jwtUtils.generateToken(authentication);
 			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 			ResponseCookie jwtCookie = JwtUtils.generateJwtCookie(authentication);
+			List<String> roles = userDetails.getAuthorities().stream()
+				.map(item -> item.getAuthority())
+				.collect(Collectors.toList());
 			return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
 								.body(new ResponseObject("OK", "Login successfull",
-										new JwtResponse(jwtCookie.toString(), "Beare", userDetails.getUsername(), userDetails.getRole())));
+										new JwtResponse(jwtCookie.toString(), "Beare", userDetails.getUsername(), roles)));
 		} catch (UsernameNotFoundException e){
 			return ResponseEntity.ok().body(new ResponseObject("USERNAME_NOT_FOUND", e.getMessage(), ""));
 		} catch (BadCredentialsException e) {
@@ -116,10 +121,10 @@ public class MainController {
 	@GetMapping("/overview")
 	public String viewOverview(Model model, HttpServletRequest request) {
 		//Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
 		Principal user = request.getUserPrincipal();
 		Employee emp = employeeService.getByUsername(user.getName()).get();
 		EmployeeDto employee = new EmployeeDto();
+		
 		employee.convertToDto(emp);
 		model.addAttribute("user", employee);
 		model.addAttribute("pageTitle", "TỔNG QUAN");
@@ -164,15 +169,12 @@ public class MainController {
 		return "statistic/order";
 	}
 
-
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
 	@PostMapping("/logout")
 	public String viewLogout() {
 		return "index";
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_ADMIN') or hasRole('WAREHOUSE_ADMIN') or hasRole('ADMIN') or hasRole('DELIVERY_MAN')")
 	@GetMapping("/api/sbd")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getSbd(@RequestParam(value="start") Date startDate, @RequestParam(value="end") Date endDate){
@@ -189,7 +191,7 @@ public class MainController {
 		}	
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_ADMIN') or hasRole('WAREHOUSE_ADMIN') or hasRole('ADMIN') or hasRole('DELIVERY_MAN')")
 
 	@GetMapping("/api/sbw")
 	@ResponseBody
@@ -207,7 +209,7 @@ public class MainController {
 		}	
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_ADMIN') or hasRole('WAREHOUSE_ADMIN') or hasRole('ADMIN') or hasRole('DELIVERY_MAN')")
 
 	@GetMapping("/api/sbe")
 	@ResponseBody
@@ -225,8 +227,7 @@ public class MainController {
 		}	
 	}
 
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_ADMIN') or hasRole('WAREHOUSE_ADMIN') or hasRole('ADMIN') or hasRole('DELIVERY_MAN')")
 	@GetMapping("/api/sbp")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> getSbp(@RequestParam(value="start") Date startDate, @RequestParam(value="end") Date endDate){

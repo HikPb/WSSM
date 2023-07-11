@@ -30,6 +30,8 @@ var owe = 0;
 var discount = 0;
 var receivedMoney = 0;
 var revenue = 0;
+var sales = 0;
+var profit =0;
 
 
 const table = $("#orderTable").DataTable( {
@@ -132,22 +134,38 @@ const table = $("#orderTable").DataTable( {
                             </div>`
                 }else if(data==2){
                     return  `<div class="btn-group">
-                                <button class="btn btn-primary dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Chờ chuyển hàng <i class="fa fa-angle-down"></i></button>
+                                <button class="btn btn-info dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Chờ chuyển hàng <i class="fa fa-angle-down"></i></button>
                                 <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">
                                     <li>
                                         <div class="dropdown-item" onclick="changeStatus(${row.id},${1})">Mới</div>
                                     </li>
                                     <li>
-                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${3})">Đã gửi hàng</div>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${3})">Đang gửi hàng</div>
                                     </li>
                                     <li>
                                         <div class="dropdown-item" onclick="changeStatus(${row.id},${0})">Hủy</div>
                                     </li>
                                 </ul>
                             </div>`
-                }else{
+                }else if(data==3){
+                    return  `<div class="btn-group">
+                                <button class="btn btn-success" style="width: 150px;"> Đang gửi hàng </button>
+                            </div>`
+                }else if(data==4){
+                    return  `<div class="btn-group">
+                                <button class="btn btn-warning" style="width: 150px;"> Đơn hàng delay </button>
+                            </div>`
+                }else if(data==5){
                     return  `<div class="btn-group">
                                 <button class="btn btn-success" style="width: 150px;"> Đã gửi hàng </button>
+                            </div>`
+                }else if(data==6){
+                    return  `<div class="btn-group">
+                                <button class="btn btn-danger" style="width: 150px;"> Đang hoàn </button>
+                            </div>`
+                }else if(data==7){
+                    return  `<div class="btn-group">
+                                <button class="btn btn-danger" style="width: 150px;"> Đã hoàn </button>
                             </div>`
                 }
             }
@@ -156,6 +174,215 @@ const table = $("#orderTable").DataTable( {
     columnDefs: [
        { className: "dt-head-center", targets: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] },
        { className: "dt-body-center", targets: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] }
+    ],
+    buttons: [
+        {
+            text: '<i class="fa-solid fa-rotate"></i><span> Tải lại</span>',
+            className: 'btn-tools',
+            action: function ( e, dt, node, config ) {
+                dt.ajax.reload(null, false);
+            }
+        },
+        {
+            extend:    'excel',
+            text:      '<i class="fa-solid fa-file-export"></i><span> Xuất excel</span>',
+            titleAttr: 'Excel',
+            className: 'btn-tools',
+            exportOptions: {
+                columns: ':visible'
+            }
+        },
+        {
+            extend: "selected",
+            text: '<i class="fa fa-print"></i><span> In phiếu </span>',
+            className: 'btn-tools',
+            action: function ( e, dt, node, config ) {
+                var data = table.rows( { selected: true } ).data();
+                var printElem = "";
+                if(data.length>0){
+                    data.each(obj =>{
+                        var tbBody = "";
+                        if(obj.orderItems.length>0){
+                            var i = 1;
+                            obj.orderItems.forEach(it =>{
+                                let tbRow = 
+                                `
+                                <tr>
+                                    <td>${i}</td>
+                                    <td class="text-center">${it.item.product.productName}</td>
+                                    <td class="text-center">${it.item.product.barcode}</td>
+                                    <td class="text-center">${numberWithCommas(it.price)}</td>
+                                    <td class="text-center">${it.qty}</td>
+                                    <td class="text-center">${numberWithCommas(it.price*it.qty)}</td>
+                                </tr>
+                                `
+                                i++;
+                                tbBody += tbRow;
+                            })
+                        }
+                        var elem = 
+                        `<div class="page-break"></div>
+                        <div class="container px-1 py-5">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="text-center mb-5">
+                                        <span class="fw-bold fs-3">PHIẾU GIAO HÀNG</span>
+                                        <br>
+                                        <span class="fst-italic">Mã phiếu: #
+                                            <span>${obj.id}</span>
+                                        </span>
+                                    </div>
+                                    <div class="row gx-5 pb-1">
+                                        <div class="col">
+                                            <span class="fw-bold">Người tạo phiếu:
+                                            </span>
+                                            <span>${obj.employee.username}</span>
+                                        </div>
+                                        <div class="col">
+                                            <span class="fw-bold">Ngày tạo phiếu:
+                                            </span>
+                                            <span>${moment(obj.createdAt).format('DD/MM/YYYY')}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row gx-5 pb-1">
+                                        <div class="col">
+                                            <span class="fw-bold">Khách hàng:
+                                            </span>
+                                            <span>${obj.customer.name}</span>
+                                        </div>
+                                        <div class="col">
+                                            <span class="fw-bold">Sđt:
+                                            </span>
+                                            <span>${obj.customer.phone}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row gx-5 pb-1">
+                                        <div class="col">
+                                            <span class="fw-bold">Người nhận hàng:
+                                            </span>
+                                            <span>${obj.receiverName}</span>
+                                        </div>
+                                        <div class="col">
+                                            <span class="fw-bold">Sđt:
+                                            </span>
+                                            <span>${obj.receiverPhone}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row pb-4">
+                                        <div class="col">
+                                            <span class="fw-bold">Địa chỉ: 
+                                            </span>
+                                            <span>${obj.address}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered border-primary">
+                                            <thead class="table-active">
+                                                <tr>
+                                                    <td>
+                                                        <strong>#</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Tên sản phẩm</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Barcode</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Giá xuất</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Số lượng</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Thành tiền</strong>
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                `+ tbBody +
+                                                `
+                                            </tbody>
+                                            <tfooter>
+                                                <tr>
+                                                    <td colspan="5" class="text-start fw-bold">Phí vận chuyển</td>
+                                                    <td class="text-center">${numberWithCommas(obj.shippingFee)}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" class="text-start fw-bold">Chiết khấu</td>
+                                                    <td class="text-center">${numberWithCommas(obj.totalDiscount)}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" class="text-start fw-bold">Tổng cộng</td>
+                                                    <td class="text-center">${numberWithCommas(obj.totalMoney)}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" class="text-start fw-bold">Tiền đã gửi</td>
+                                                    <td class="text-center">${numberWithCommas(obj.receivedMoney)}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" class="text-start fw-bold">COD</td>
+                                                    <td class="text-center">${numberWithCommas(obj.owe)}</td>
+                                                </tr>
+                                            </tfooter>
+                                        </table>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <span>Ghi chú: </span>
+                                        <span><hr style="border: none; border-top: 1px dotted #000; color: #fff; background-color: #fff;height: 1px; width: 100%;"></span>
+                                        <span><hr style="border: none; border-top: 1px dotted #000; color: #fff; background-color: #fff;height: 1px; width: 100%;"></span>
+                                    </div>
+                                   
+                                    <div class="row">
+                                        <div class="col-sm-4 text-center">
+                                            <span></span><br>
+                                            <span class="fw-bold">Người nhận hàng</span>
+                                            <br>
+                                            <span class="fst-italic">(Ký họ tên)</span>
+                                        </div>
+
+                                        <div class="col-sm-4 text-center">
+                                            <span></span><br>
+                                            <span class="fw-bold">Người giao hàng</span>
+                                            <br>
+                                            <span class="fst-italic">(Ký họ tên)</span>
+                                        </div>
+
+                                        <div class="col-sm-4 text-center">
+                                            <span>${moment().locale('vi').format('LL')}</span>
+                                            <br>
+                                            <span class="fw-bold">Người lập phiếu</span>
+                                            <br>
+                                            <span class="fst-italic">(Ký họ tên)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `
+
+                        printElem += elem;
+                    })
+
+                    var openWindow = window.open("", "title", "attributes");
+                    openWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
+                    openWindow.document.write('<style>@media print{.page-break  { display:block; page-break-before:always; }}</style>');
+                    openWindow.document.write(printElem);
+                    openWindow.document.close();
+                    openWindow.focus();
+                    // openWindow.print();
+                    setTimeout(function () {
+                        openWindow.print();
+                        openWindow.close();
+                    }, 500);
+                }
+            }
+        },
     ],
     paging: true, 
     pagingType: 'numbers',
@@ -169,7 +396,7 @@ const table = $("#orderTable").DataTable( {
         "infoEmpty": "Không có sản phẩm",
         "infoFiltered": "(lọc từ _MAX_ kết quả)"
     },
-    dom: '<"tabletop"if>tr<"pagetable"lp><"clear">',
+    dom: 'B<"tabletop"if>tr<"pagetable"lp><"clear">',
     select: {
         style:    'multi',
         selector: 'td:first-child'
@@ -213,22 +440,28 @@ function renderSubtotal() {
     totalItems = 0;
     totalDiscount = 0;
     totalWeight = 0;
+    sales = 0;
     revenue = 0;
     owe = 0;
+    var totalCost = 0;
     if(discountEl.value!="") discount = parseInt(discountEl.value.replace(/\,/g, ''),10);
     if(shipFeeEl.value!="") shippingFee = parseInt(shipFeeEl.value.replace(/\,/g, ''),10);
     if(reMoneyEl.value!="") receivedMoney = parseInt(reMoneyEl.value.replace(/\,/g, ''),10);
 
     cart.forEach((item) => {
+        let itemDto = itemData.find( x => x.id === item.itemId);
         totalPrice += item.sprice * item.qty;
-        totalItems += item.qty;
+        totalItems += parseInt(item.qty,10);
         totalDiscount += parseInt(item.discount,10);
-        totalWeight += item.weight;
+        totalWeight += itemDto.product.weight * item.qty;
+        totalCost += itemDto.purcharsePrice * item.qty;
     });
 
     totalDiscount += discount;
     revenue = totalPrice + shippingFee - totalDiscount;
+    sales = totalPrice + shippingFee;
     owe = totalPrice + shippingFee - totalDiscount - receivedMoney;
+    profit = revenue - totalCost;
 
     totalTEl.textContent = `${numberWithCommas(totalPrice)}`;
     totalDisTEl.textContent = `${numberWithCommas(totalDiscount)}`;
@@ -348,6 +581,7 @@ function changeItemDiscount(elm, id) {
 }
 
 function numberWithCommas(x) {
+    if(x==null || x=="") {return 0;}
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
@@ -404,7 +638,12 @@ async function selectCustomer(id){
             <div>
                 <span>
                     Tổng: <span>${numberWithCommas(customer.tmoney)}</span> đ
-                    </soan>
+                </span>
+            </div>
+            <div>
+                <span>
+                    Nợ: <span style="color: red;">${numberWithCommas(customer.towe)}</span> đ
+                </span>
             </div>
             <div>
                 <span>
@@ -465,6 +704,7 @@ async function changeStatus(id, status){
         })
         .then(data => {
             loadItemData();
+            sendMessage();
             table.ajax.reload(null, false) 
             $("#toast-content").html("Cập nhật thành công: # "+data.data['id']);
             toast.show()
@@ -473,29 +713,8 @@ async function changeStatus(id, status){
 }
 
 $(document).ready(function () {
-    new $.fn.dataTable.Buttons( table, {
-        buttons: [             
-            {
-            extend:    'print',
-            text:      '<i class="fa fa-print"></i> In',
-            titleAttr: 'Print',
-            className: 'btn-tools',
-            exportOptions: {
-                columns: ':visible'
-            }
-            },  
-            {
-                extend:    'excel',
-                text:      '<i class="fa-solid fa-file-export"></i><span>Xuất excel</span>',
-                titleAttr: 'Excel',
-                className: 'btn-tools',
-                exportOptions: {
-                    columns: ':visible'
-                }
-                },
-        ]
-    } );
-    table.buttons().container().appendTo('#action-tools');
+    
+    table.buttons().container().appendTo('#dt-buttons');
 
     table.on("click", "th.select-checkbox", function() {
         if ($("th.select-checkbox").hasClass("selected")) {
@@ -537,6 +756,7 @@ $(document).ready(function () {
             if(data.status=="ok") {
                 let dob = "Chưa có";
                 let dt = data.data;
+                customer = dt.customer
                 if(dt.customer.dob!=null){ dob = moment(dt.customer.dob).format("DD-MM-YYYY")}
                 $("#e-form").attr("rid", dt.id);
                 $("#c-createdAt").html(moment(dt.createdAt).locale('vi').format('LLL'));
@@ -552,6 +772,7 @@ $(document).ready(function () {
                 $("#c-shippingFee").val(dt.shippingFee);
                 $("#c-discount").val(dt.totalDiscount);
                 $("#c-receivedMoney").val(dt.receivedMoney);
+                $("#staff").text(dt.employee.username);
 
                 let cusInfoElem = 
                 `
@@ -573,7 +794,12 @@ $(document).ready(function () {
                         <div>
                             <span>
                                 Tổng: <span>${numberWithCommas(dt.customer.tmoney)}</span> đ
-                                </soan>
+                            </span>
+                        </div>
+                        <div>
+                            <span>
+                                Nợ: <span style="color: red;">${numberWithCommas(dt.customer.towe)}</span> đ
+                            </span>
                         </div>
                         <div>
                             <span>
@@ -616,8 +842,122 @@ $(document).ready(function () {
         window.location.href="/order/new"
     });
 
-    $("#e-form").on("submit", function (e) {
+    $("#e-form").on("submit", async function (e) {
         e.preventDefault();
+        if(customer == null){
+            await fetch("/api/customer",{
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: $("#c-cusName").val(),
+                    phone: $("#c-cusPhone").val(),
+                    address: $("#c-receiverAddress").val(),
+                    dob: $("#c-cusDob").val()
+                }),
+            })
+            .then(response => {
+                if(!response.ok) throw Error(response.statusText);
+                return response.json();
+            })
+            .then(data =>{
+                if(data.status=="ok") {
+                    customer = data.data;
+                    // $("#toast-content").html("Chỉnh sửa thành công: # "+data.message);
+                    // toast.show();
+                }
+            })
+            .catch(error => console.error(error));
+        }
+        if(customer!=null){
+            if(customer.name.localeCompare($("#cusName").val()) != 0 ||
+            customer.phone.localeCompare($("#cusPhone").val()) != 0 ||
+            customer.dob.localeCompare($("#cusDob").val()) != 0){
+                await fetch("/api/customer/"+customer.id,{
+                    method: "PUT",
+                    credentials: "same-origin",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        name: $("#c-cusName").val(),
+                        phone: $("#c-cusPhone").val(),
+                        address: customer.address,
+                        dob: $("#c-cusDob").val()
+                    }),
+                })
+                .then(response => {
+                    if(!response.ok) throw Error(response.statusText);
+                    return response.json();
+                })
+                .then(data =>{
+                    if(data.status=="ok") {
+                        customer = data.data;
+                    }
+                })
+                .catch(error => console.error(error));
+            }
+            let orderItemDto = [];
+            if(cart.length!==0){
+                cart.map(it=>{
+                    let obj = {
+                        itemId: it.itemId,
+                        sprice: it.sprice,
+                        qty: it.qty,
+                        sku: it.sku,
+                        discount: it.discount
+                    }
+                    orderItemDto.push(obj);
+                })
+            }
+            
+
+            await fetch("/api/order/"+$(this).attr("rid"),{
+                method: "PUT",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    status: 1,
+                    internalNote: $("#c-internalNote").val(),
+                    printNote: $("#c-printNote").val(),
+                    deliveryUnitId: "WS Post",
+                    address: $("#c-receiverAddress").val(),
+                    receiverName: $("#c-receiverName").val(),
+                    receiverPhone: $("#c-receiverPhone").val(),
+                    discount: discount,
+                    totalWeight: totalWeight,
+                    shippingFee: shippingFee,
+                    totalDiscount: totalDiscount,
+                    receivedMoney: receivedMoney,
+                    owe: owe,
+                    total: totalItems,
+                    revenue: revenue,
+                    sales: sales,
+                    profit: profit,
+                    empId: user.id,
+                    cusId: customer.id,
+                    wareId: $("#c-warehouse").val(),
+                    items: orderItemDto,
+                }),
+            })
+            .then(response => {
+                if(!response.ok) throw Error(response.statusText);
+                return response.json();
+            })
+            .then(data =>{
+                if(data.status=="ok") {
+                    table.ajax.reload(null, false) 
+                    $("#edit-modal").modal("hide");
+                    $("#toast-content").html("Chỉnh sửa thành công: # "+data.message);
+                    toast.show();
+                }
+            })
+            .catch(error => console.error(error));
+        }
         
     });
 
@@ -632,11 +972,6 @@ $(document).ready(function () {
         width: '100%',
         minimumResultsForSearch: Infinity,
         dropdownParent: ".ware-c-group"
-    });
-
-    $("#btnClear").on("click", function (e) {
-      e.preventDefault();
-      table.ajax.reload(null, false)
     });
 
     $("#c-warehouse").on("change", debounce(searchItem,100));
@@ -657,12 +992,12 @@ $(document).ready(function () {
         }
     },300));
 
-    $(".deli-select").select2({
-        width: 'resolve',
-        minimumResultsForSearch: Infinity,
-        placeholder: "ĐVVC",
-        allowClear: true
-    });
+    // $(".deli-select").select2({
+    //     width: 'resolve',
+    //     minimumResultsForSearch: Infinity,
+    //     placeholder: "ĐVVC",
+    //     allowClear: true
+    // });
 });
 
 function debounce(func, wait, immediate) {

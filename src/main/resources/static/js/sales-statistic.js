@@ -25,9 +25,9 @@ const table = $("#table").DataTable({
     responsive: true,
     fixedColumns: true,
     paging: false,
-    scrollCollapse: true,
-    scrollX: true,
-    scrollY: "400px",
+    // scrollCollapse: true,
+    // scrollX: true,
+    // scrollY: "400px",
     dom: 'Bt',
     order: [[ 4, 'desc' ]],
     buttons: [

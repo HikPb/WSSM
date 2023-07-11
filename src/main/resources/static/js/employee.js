@@ -6,9 +6,8 @@ $(document).ready(function () {
     $("#e-form").on("submit", function (e) {
         e.preventDefault();
         let payload = JSON.stringify({
-            id: $(this).attr("wid"),
+            username: $(this).attr("uname"),
             newPassword: $("#e-password").val(),
-            role: $("#e-role").val(),
         });
         $.ajax({
             url: "/api/employee/admin-change",
@@ -18,6 +17,34 @@ $(document).ready(function () {
             success: function (response) {  
                 showListEmployee()
                 $("#toast-content").html("Chỉnh sửa thành công: #"+response.data['id']+' - '+ response.data['name'])
+                toast.show()
+            },  
+            error: function (err) {  
+                alert(err);  
+            } 
+        });    
+    });
+
+    $("#e2-form").on("submit", function (e) {
+        e.preventDefault();
+        let roles = [];
+        if($("#sales_emp").is(':checked')==true){ roles.push("sales_employee") }
+        if($("#sales_adm").is(':checked')==true){ roles.push("sales_admin") }
+        if($("#ware_emp").is(':checked')==true){ roles.push("warehouse_employee") }
+        if($("#ware_adm").is(':checked')==true){ roles.push("warehouse_admin") }
+        if($("#deli_man").is(':checked')==true){ roles.push("delivery_man") }
+        let payload = JSON.stringify({
+            username: $(this).attr("uname"),
+            roles: roles,
+        });
+        $.ajax({
+            url: "/api/employee/admin-change-role",
+            method: "put",
+            data: payload,
+            contentType: "application/json",
+            success: function (response) {  
+                showListEmployee()
+                $("#toast-content").html("Chỉnh sửa thành công: #");
                 toast.show()
             },  
             error: function (err) {  
@@ -74,7 +101,7 @@ $(document).ready(function () {
         href = "/api/employee/" + $(this).attr("w-id");
         $("#yesBtn").attr("href", href);
         $("#yesBtn").attr("w-id", $(this).attr("w-id"));
-        $("#confirmText").html("Bạn chắc chắn muốn xoá kho hàng: \<strong\>" + $(this).attr("wname") + "\<\/strong\> này?");
+        $("#confirmText").html("Bạn chắc chắn muốn xoá tài khoản: \<strong\>" + $(this).attr("wname") + "\<\/strong\> này?");
         $("#confirmModal").modal("show");
     });
 
@@ -103,31 +130,51 @@ $(document).ready(function () {
   function showData(id){
     let url = "/api/employee/"+ id;
     let empData = getAjaxResponse(url)
-    $("#e-form").attr("wid", id);
+    console.log(empData)
+    $("#e-form").attr("uname", empData.username);
+    $("#e2-form").attr("uname", empData.username);
     $("#e-fullname").val(empData.fullname);
-    $("#e-phone").val(empData.phone);    
+    $("#e-phone").val(empData.phone);
+    $("#sales_emp").prop('checked',false);
+    $("#sales_adm").prop('checked',false);
+    $("#ware_emp").prop('checked',false);
+    $("#ware_adm").prop('checked',false);
+    $("#deli_man").prop('checked',false);    
+    $("#sales_emp").prop('disabled',false);
+    $("#sales_adm").prop('disabled',false);
+    $("#ware_emp").prop('disabled',false);
+    $("#ware_adm").prop('disabled',false); 
+    $("#deli_man").prop('disabled',false);
+    $("#roleBtn").prop('disabled',false); 
     //$("#e-password").val(empData.username);
-    if(empData.role =="ROLE_ADMIN"){
-        let elm =  `<select class="form-control" id="e-role" disabled>
-                        <option>---</option>
-                        <option value="ROLE_ADMIN">ADMIN</option>
-                        <option value="ROLE_MODERATOR">MODERATOR</option>
-                        <option value="ROLE_USER">USER</option>
-                    </select>`;
-        $("#div-role").empty()
-        $("#div-role").append(elm);
-    } else{
-        let elm =  `<select class="form-control" id="e-role">
-                        <option>---</option>
-                        <option value="ROLE_ADMIN">ADMIN</option>
-                        <option value="ROLE_MODERATOR">MODERATOR</option>
-                        <option value="ROLE_USER">USER</option>
-                    </select>`;
-        $("#div-role").empty();
-        $("#div-role").append(elm);
+    if(empData.roles.includes("ROLE_ADMIN", 0)==true){
+        $("#sales_emp").prop('disabled',true);
+        $("#sales_adm").prop('disabled',true);
+        $("#ware_emp").prop('disabled',true);
+        $("#ware_adm").prop('disabled',true);
+        $("#deli_man").prop('disabled',true);
+        $("#roleBtn").prop('disabled',true); 
     }
+    empData.roles.forEach(role =>{
+        switch(role){
+            case "ROLE_SALES_EMPLOYEE":
+                $("#sales_emp").prop('checked',true);
+                break;
+            case "ROLE_SALES_ADMIN":
+                $("#sales_adm").prop('checked',true);
+                break;
+            case "ROLE_WAREHOUSE_EMPLOYEE":
+                $("#ware_emp").prop('checked',true);
+                break;
+            case "ROLE_WAREHOUSE_ADMIN":
+                $("#ware_adm").prop('checked',true);
+                break;
+            case "ROLE_DELIVERY_MAN":
+                $("#deli_man").prop('checked',true);
+                break;
+        }
+    })
     
-    $("#e-role").val(empData.role);    
   }
 
 function showListEmployee(){
@@ -140,7 +187,7 @@ function showListEmployee(){
                 username: dt['username'],
                 phone: dt['phone'],
                 fullname: dt['fullname'],
-                role: dt['role']
+                roles: dt['roles']
             }
         })
         if(lists.length>0){
@@ -149,10 +196,10 @@ function showListEmployee(){
             lists.forEach(w=>{
                 if(w.fullname == null) w.fullname ="-- Chưa nhập --"
                 if(w.phone == null) w.phone ="-- Chưa nhập --"
-                if(w.role == 'ROLE_ADMIN'){
+                if(w.roles.includes('ROLE_ADMIN',0)){
                     items +=    `<li class="media" style="cursor: pointer;" wid="${w.id}" wname="${w.username}">
                                 <div class="m-body">
-                                    <div class="media-heading">${w.username} <span style="color: red;">${w.role}</span> 
+                                    <div class="media-heading">${w.username}
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
@@ -169,7 +216,7 @@ function showListEmployee(){
                 }else{
                     items +=    `<li class="media" style="cursor: pointer;" wid="${w.id}" wname="${w.username}">
                                 <div class="m-body">
-                                    <div class="media-heading">${w.username} <span style="color: red;">${w.role}</span> 
+                                    <div class="media-heading">${w.username} 
                                         <button class="btn btn-xs btn-delete" style="position: absolute;right:30px;" w-id="${w.id}" wname="${w.username}" data-toggle="tooltip" data-original-title="Delete">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>

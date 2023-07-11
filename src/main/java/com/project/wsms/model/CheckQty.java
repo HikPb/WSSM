@@ -9,7 +9,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -49,7 +48,7 @@ public class CheckQty extends AuditModel{
     @OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonManagedReference(value = "warehouse-checkqty")
 	@JsonIgnoreProperties(value = {
-		"createdAt", "updatedAt", "phone", "address", "hibernateLazyInitializer"})
+		"createdAt", "updatedAt", "hibernateLazyInitializer"})
 	private Warehouse warehouse;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -57,7 +56,7 @@ public class CheckQty extends AuditModel{
     @OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonManagedReference(value = "emp-checkqty")
 	@JsonIgnoreProperties(value = {
-		"role", "fullname", "password", "phone", "hibernateLazyInitializer"})
+		"roles", "fullname", "password", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 	
 	@Column(name = "note", nullable = true, columnDefinition="TEXT")

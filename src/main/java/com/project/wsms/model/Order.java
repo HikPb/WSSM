@@ -52,7 +52,7 @@ public class Order extends AuditModel{
     @OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonManagedReference(value = "emp-order")
 	@JsonIgnoreProperties(value = {
-		"role", "fullname", "password", "phone", "hibernateLazyInitializer"})
+		"roles", "fullname", "password", "phone", "hibernateLazyInitializer"})
 	private Employee employee;
 	
 	private Integer status;

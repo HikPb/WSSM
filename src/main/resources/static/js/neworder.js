@@ -143,7 +143,7 @@ function renderCartItems() {
                             <span>
                                 Tổng: 
                                 <span style="color:#0af;">
-                                ${numberWithCommas(item.sprice * item.qty - item.discount)} đ
+                                    ${numberWithCommas(item.sprice * item.qty - item.discount)} đ
                                 </span>
                             </span>                    
                         </div>
@@ -213,6 +213,7 @@ function changeItemDiscount(elm, id) {
 }
 
 function numberWithCommas(x) {
+    if(x==null){return '0';}
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
@@ -269,7 +270,12 @@ async function selectCustomer(id){
             <div>
                 <span>
                     Tổng: <span>${numberWithCommas(customer.tmoney)}</span> đ
-                    </soan>
+                </span>
+            </div>
+            <div>
+                <span>
+                    Nợ: <span style="color: red;">${numberWithCommas(customer.towe)}</span> đ
+                </span>
             </div>
             <div>
                 <span>
@@ -379,7 +385,7 @@ function storeDraftData(event) {
             status: 1,
             internalNote: $("#c-internalNote").val(),
             printNote: $("#c-printNote").val(),
-            deliveryUnitId: "",
+            deliveryUnitId: "WS Post",
             address: $("#c-receiverAddress").val(),
             receiverName: $("#c-receiverName").val(),
             receiverPhone: $("#c-receiverPhone").val(),
@@ -453,12 +459,12 @@ $(document).ready(function () {
         }
     },300));
 
-    $(".deli-select").select2({
-        width: 'resolve',
-        minimumResultsForSearch: Infinity,
-        placeholder: "ĐVVC",
-        allowClear: true
-    });
+    // $(".deli-select").select2({
+    //     width: 'resolve',
+    //     minimumResultsForSearch: Infinity,
+    //     placeholder: "ĐVVC",
+    //     allowClear: true
+    // });
 
 
     $("#c-form").on("submit", async function(e){
@@ -542,7 +548,7 @@ $(document).ready(function () {
                     status: 1,
                     internalNote: $("#c-internalNote").val(),
                     printNote: $("#c-printNote").val(),
-                    deliveryUnitId: "",
+                    deliveryUnitId: "WS Post",
                     address: $("#c-receiverAddress").val(),
                     receiverName: $("#c-receiverName").val(),
                     receiverPhone: $("#c-receiverPhone").val(),
@@ -569,7 +575,8 @@ $(document).ready(function () {
             .then(data =>{
                 if(data.status=="ok") {
                     window.removeEventListener("pagehide", storeDraftData);
-                    localStorage.removeItem("order-draft-data"); 
+                    localStorage.removeItem("order-draft-data");
+                    sendMessage(); 
                     window.location.href="/order";
                     // $("#toast-content").html("Chỉnh sửa thành công: # "+data.message);
                     // toast.show();

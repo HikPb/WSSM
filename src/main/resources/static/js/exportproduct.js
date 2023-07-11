@@ -111,7 +111,7 @@ const table = $("#epTable").DataTable( {
                                 <button class="btn btn-primary dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Mới <i class="fa fa-angle-down"></i></button>
                                 <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">
                                     <li>
-                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${2})">Đã nhập hàng</div>
+                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${2})">Đã xuất hàng</div>
                                     </li>
                                     <li>
                                         <div class="dropdown-item" onclick="changeStatus(${row.id},${0})">Hủy</div>
@@ -120,7 +120,7 @@ const table = $("#epTable").DataTable( {
                             </div>`
                 }else{
                     return  `<div class="btn-group">
-                                <button class="btn btn-success" style="width: 150px;"> Đã nhập hàng </button>
+                                <button class="btn btn-success" style="width: 150px;"> Đã xuất hàng </button>
                             </div>`
                 }
             }
@@ -212,8 +212,11 @@ const table = $("#epTable").DataTable( {
                                         </div>
                                     </div>
                                     <div class="row pb-4">
-                                        <span class="fw-bold">Địa chỉ: ${obj.warehouse.address}
-                                        </span>
+                                        <div class="col">
+                                            <span class="fw-bold">Địa chỉ: 
+                                            </span>
+                                            <span>${obj.warehouse.address}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -881,7 +884,7 @@ $(document).ready(function () {
                 updateListItems2();
             }else{
                 $("#eep-submit").prop('disabled', true);
-                $("#e-statusBtn").text("Đã nhập hàng");
+                $("#e-statusBtn").text("Đã xuất hàng");
                 $("#e-statusBtn").removeClass();
                 $("#e-statusBtn").addClass('btn btn-success');
                 renderListItems3();
@@ -938,7 +941,8 @@ $(document).ready(function () {
                 $("#ep-create-modal").modal("hide");
                 $("#ep-create-modal").find('form').trigger('reset');
                 $("#toast-content").html("Tạo mới thành công: # "+response.data['id'])
-                toast.show()
+                toast.show();
+                sendMessage();
                 //window.location.href = "/products"
             },  
             error: function (err) {  
