@@ -1,27 +1,25 @@
 "use strict";
 
 const toast = new bootstrap.Toast($("#toast"));
+
 const searchbox = document.getElementById("c-searchbox");
-const searchbox2 = document.getElementById("e-searchbox");
-
-const listItemsEl = document.getElementById("ip-items");
-
 const warehouseEl = document.getElementById("c-warehouse");
 const supplierEl = document.getElementById("c-supplier");
-const supplier2El = document.getElementById("e-supplier");
 const createdDateEl = document.getElementById("date1");
 const ipDateEl = document.getElementById("date2");
-const noteEl = document.getElementById("c-note");
-const ipDate2El = document.getElementById("e-date2");
-const note2El = document.getElementById("e-note");
 const shipFeeEl = document.getElementById("c-shipfee");
-const shipFee2El = document.getElementById("e-shipfee");
-
-
+const noteEl = document.getElementById("c-note");
 const totalProductEl = document.getElementById("t-prod");
 const totalMoneyEl = document.getElementById("t-money");
 const totalQEl = document.getElementById("t-qty");
 
+const listItemsEl = document.getElementById("ip-items");
+
+const searchbox2 = document.getElementById("e-searchbox");
+const supplier2El = document.getElementById("e-supplier");
+const ipDate2El = document.getElementById("e-date2");
+const note2El = document.getElementById("e-note");
+const shipFee2El = document.getElementById("e-shipfee");
 const etotalProductEl = document.getElementById("et-prod");
 const etotalMoneyEl = document.getElementById("et-money");
 const etotalQEl = document.getElementById("et-qty");
@@ -356,7 +354,7 @@ var listItems2 = [];
 function addToListItems(id) {
     searchbox.value = "";
     if (listItems.some((item) => item.itemId === id)) {
-        changeNumberOfUnits("plus", id);
+        //changeNumberOfUnits("plus", id);
     } else {
         const item = itemData.find((product) => product.id === id);
         const customItem = {
@@ -390,7 +388,7 @@ function renderSubtotal() {
         totalQty += item.qty;
     });
 
-    totalMoneyEl.textContent = `${totalMoney}`;
+    totalMoneyEl.textContent = `${numberWithCommas(totalMoney)}`;
     totalProductEl.textContent = `${totalProduct}`;
     totalQEl.textContent = `${totalQty}`;
 }
@@ -449,6 +447,51 @@ function changeItemPrice(elm, id) {
     updateListItems();
 }
 
+function searchItem(){
+    let key = searchbox.value;
+    let wh = $("#c-warehouse").select2("data")[0].id;
+    let searchResult=[];
+    let li = "";
+    $("#c-searchbox").parent().find('.search-items').remove();
+    $("#c-searchbox").parent().append('<div class="search-items" id="listresult"></div>');
+    if(key.length>0){
+        searchResult = itemData.filter(function(s){
+            return s.active == true && 
+            (s.product.productName.includes(key) || s.product.barcode.includes(key)) &&
+            s.warehouse.id == wh;
+        })
+        if(searchResult.length>0){
+            $("#listresult").empty();
+            searchResult.forEach(rs=>{
+                $("#listresult").append($(`<div class="s-item media" onclick="addToListItems(${rs.id})">
+                            <div class="media-img">
+                                <img src="/img/product.jpg" width="50" height="50" >
+                            </div>
+                            <div class="media-body">
+                                <div class="media-heading" style="margin-bottom:0px;">
+                                    <span class="badge badge-info m-r-5 m-b-5">${rs.product.barcode}</span>
+                                    <span class="font-14">${rs.product.productName}</span>
+                                </div>
+                                <div>
+                                <span><i class="fa-solid fa-weight-scale"></i> <span style="color:#0af;">${rs.product.weight} g</span></span>
+                                <span style="color:#0af; right:15px; position:absolute;">${numberWithCommas(rs.retailPrice)}đ</span>
+                                </div>
+                                <div class="font-13">
+                                    <span class="m-r-20"><i class="fa-solid fa-warehouse m-r-5"></i><strong>Kho hàng: </strong>${rs.warehouse.name}</span>
+                                    <span class="m-r-20"><strong>Tồn kho: </strong>${rs.qty}</span>
+                                </div>
+                            </div>
+                        </div>`));
+            })
+        }else{
+            $("#listresult").empty();
+            $("#listresult").append($(`<div class="s-item media">
+                                        Không tìm thấy kết quả nào
+                                    </div>)`));
+        }
+    }
+}
+
 function addToListItems2(id) {
     searchbox2.value = "";
     if (listItems2.some((item) => item.itemId === id)) {
@@ -486,7 +529,7 @@ function renderSubtotal2() {
         totalQty += item.qty;
     });
 
-    etotalMoneyEl.textContent = `${totalMoney}`;
+    etotalMoneyEl.textContent = `${numberWithCommas(totalMoney)}`;
     etotalProductEl.textContent = `${totalProduct}`;
     etotalQEl.textContent = `${totalQty}`;
 }
@@ -564,6 +607,7 @@ function changeItemPrice2(elm, id) {
 }
 
 function numberWithCommas(x) {
+    if(x==null) { return '0'; }
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
@@ -671,51 +715,6 @@ function closeAllLists(elmnt) {
 document.addEventListener("click", function (e) {
     closeAllLists(e.target);
 });
-
-function searchItem(){
-    let key = searchbox.value;
-    let wh = $("#c-warehouse").select2("data")[0].id;
-    let searchResult=[];
-    let li = "";
-    $("#c-searchbox").parent().find('.search-items').remove();
-    $("#c-searchbox").parent().append('<div class="search-items" id="listresult"></div>');
-    if(key.length>0){
-        searchResult = itemData.filter(function(s){
-            return s.active == true && 
-            (s.product.productName.includes(key) || s.product.barcode.includes(key)) &&
-            s.warehouse.id == wh;
-        })
-        if(searchResult.length>0){
-            $("#listresult").empty();
-            searchResult.forEach(rs=>{
-                $("#listresult").append($(`<div class="s-item media" onclick="addToListItems(${rs.id})">
-                            <div class="media-img">
-                                <img src="/img/product.jpg" width="50" height="50" >
-                            </div>
-                            <div class="media-body">
-                                <div class="media-heading" style="margin-bottom:0px;">
-                                    <span class="badge badge-info m-r-5 m-b-5">${rs.product.barcode}</span>
-                                    <span class="font-14">${rs.product.productName}</span>
-                                </div>
-                                <div>
-                                <span><i class="fa-solid fa-weight-scale"></i> <span style="color:#0af;">${rs.product.weight} g</span></span>
-                                <span style="color:#0af; right:15px; position:absolute;">${numberWithCommas(rs.retailPrice)}đ</span>
-                                </div>
-                                <div class="font-13">
-                                    <span class="m-r-20"><i class="fa-solid fa-warehouse m-r-5"></i><strong>Kho hàng: </strong>${rs.warehouse.name}</span>
-                                    <span class="m-r-20"><strong>Tồn kho: </strong>${rs.qty}</span>
-                                </div>
-                            </div>
-                        </div>`));
-            })
-        }else{
-            $("#listresult").empty();
-            $("#listresult").append($(`<div class="s-item media">
-                                        Không tìm thấy kết quả nào
-                                    </div>)`));
-        }
-    }
-}
 
 function searchItem2(){
     let key = searchbox2.value;
@@ -843,16 +842,21 @@ $(document).ready(function () {
 
     $('#ipTable').on('click', 'tbody tr .td-data', function (e) {
         e.preventDefault();
-        // var data = table.row($(this).parents('tr')).data();
+        // $("#editModalDiv").empty();
+        // $("#editModalDiv").append(ipEditModalEl);
+
         let data = table.row(this).data();
         let href = "/api/import/"+data["id"];
         $.get(href, function(res){
             $("#e-form").attr("rid", data["id"]);
             $("#e-date1").val(moment(data.createdAt).format('YYYY-MM-DD'));
-            $("#e-date2").val(moment(data.expectedAt).format('YYYY-MM-DD'));
+            $("#e-date2").val(moment(data.expected_at).format('YYYY-MM-DD'));
             $("#e-warehouse").val(data.warehouse.id).trigger('change');
             $("#e-warehouse").prop("disabled", true);
-            $("#e-supplier").val(data.supplier.id).trigger('change');
+            $("#e-supplier").val('').trigger('change');
+            if(data.supplier!=null){
+                $("#e-supplier").val(data.supplier.id).trigger('change');
+            }
             $("#e-shipfee").val(data.shipFee);
             $("#e-note").val(res.data.note);
             
@@ -861,7 +865,7 @@ $(document).ready(function () {
                 let customItem = {
                     id: item.id,
                     itemId: item.item.id,
-                    pprice: item.item.purcharsePrice,
+                    pprice: item.purcharsePrice,
                     sku: item.sku,
                     barcode: item.item.product.barcode,
                     productName: item.item.product.productName,
@@ -871,7 +875,7 @@ $(document).ready(function () {
                 ...customItem,
                 });
             })
-            console.log(listItems2)
+            
             if(data.status==0){
                 $("#eip-submit").prop('disabled', true);
                 $("#e-statusBtn").text("Đã hủy");
@@ -896,64 +900,6 @@ $(document).ready(function () {
             
         })
         $("#ip-edit-modal").modal("show");
-    });
-
-    $("#btnCreate").on("click", function(e){
-        e.preventDefault();
-        $("#ip-create-modal").modal("show"); 
-    });
-
-    $("#c-form").on("submit", function (e) {
-        e.preventDefault();
-        
-        let items = [];
-        let totalQty = 0;
-        let totalMoney = 0;
-        listItems.map(function (elem) {
-            totalQty += elem.qty;
-            totalMoney += elem.qty * elem.pprice;
-
-            let obj = {
-                itemId : elem.itemId,
-                qty: elem.qty,
-                pprice : elem.pprice,
-                sku : elem.sku,
-            }
-            items.push(obj)
-        });
-        let payload = JSON.stringify({
-          note: noteEl.value,
-          status: 1,
-          empId: user.id,
-          wareId: warehouseEl.value,
-          supId: supplierEl.value,
-          expectedAt: ipDateEl.value,
-          totalQty: totalQty,
-          totalMoney: totalMoney,
-          shipFee: shipFeeEl.value,
-          items: items
-        });
-        $.ajax({
-            url: "/api/import",
-            method: "post",
-            data: payload,
-            contentType: "application/json",
-            success: function (response) { 
-                table.ajax.reload(null, false) 
-                $('#ip-create-modal form').trigger("reset")
-                listItems.splice(0,listItems.length);
-                $("#ip-create-modal").modal("hide");
-                $("#ip-create-modal").find('form').trigger('reset');
-                $("#toast-content").html("Tạo mới thành công: # "+response.data['id'])
-                toast.show();
-                sendMessage();
-                //window.location.href = "/products"
-            },  
-            error: function (err) {  
-                alert(err);  
-            } 
-        });
-        
     });
 
     $("#e-form").on("submit", function (e) {
@@ -1006,19 +952,6 @@ $(document).ready(function () {
         
     });
 
-    $("#c-warehouse").select2({
-        data: $.map(wareData, function(s) {
-            return {
-                text: s.name,
-                id: s.id
-            }
-        }),
-        placeholder: "Chọn kho hàng",
-        width: '100%',
-        minimumResultsForSearch: Infinity,
-        dropdownParent: ".ware-c-group"
-    });
-
     $("#e-warehouse").select2({
         data: $.map(wareData, function(s) {
             return {
@@ -1030,18 +963,6 @@ $(document).ready(function () {
         width: '100%',
         minimumResultsForSearch: Infinity,
         dropdownParent: ".ware-e-group"
-    });
-    $("#c-supplier").select2({
-        data: $.map(supData, function(s) {
-            return {
-                text: s.supName,
-                id: s.id
-            }
-        }),
-        placeholder: "Chọn nhà cung cấp",
-        width: '100%',
-        minimumResultsForSearch: Infinity,
-        dropdownParent: ".sup-c-group"
     });
 
     $("#e-supplier").select2({
@@ -1057,8 +978,318 @@ $(document).ready(function () {
         dropdownParent: ".sup-e-group"
     });
 
+    $("#e-searchbox").on("keyup", debounce(searchItem2, 500));
+
+    $("#btnCreate").on("click", function(e){
+        e.preventDefault();
+        // $("#createModalDiv").empty();
+        // $("#createModalDiv").append(ipCreateModalEl);
+
+        $("#ip-create-modal").modal("show"); 
+    });
+
+    $("#c-warehouse").select2({
+        data: $.map(wareData, function(s) {
+            return {
+                text: s.name,
+                id: s.id
+            }
+        }),
+        placeholder: "Chọn kho hàng",
+        width: '100%',
+        minimumResultsForSearch: Infinity,
+        dropdownParent: ".ware-c-group"
+    });
+
+    $("#c-supplier").select2({
+        data: $.map(supData, function(s) {
+            return {
+                text: s.supName,
+                id: s.id
+            }
+        }),
+        placeholder: "Chọn nhà cung cấp",
+        width: '100%',
+        minimumResultsForSearch: Infinity,
+        dropdownParent: ".sup-c-group"
+    });
+
     $("#date1").val(moment().format('YYYY-MM-DD'));
 
     $("#c-searchbox").on("keyup", debounce(searchItem, 500));
-    $("#e-searchbox").on("keyup", debounce(searchItem2, 500));
+
+    $("#c-form").on("submit", function (e) {
+        e.preventDefault();
+        
+        let items = [];
+        let totalQty = 0;
+        let totalMoney = 0;
+        listItems.map(function (elem) {
+            totalQty += elem.qty;
+            totalMoney += elem.qty * elem.pprice;
+
+            let obj = {
+                itemId : elem.itemId,
+                qty: elem.qty,
+                pprice : elem.pprice,
+                sku : elem.sku,
+            }
+            items.push(obj)
+        });
+        let payload = JSON.stringify({
+          note: noteEl.value,
+          status: 1,
+          empId: user.id,
+          wareId: warehouseEl.value,
+          supId: supplierEl.value,
+          expectedAt: ipDateEl.value,
+          totalQty: totalQty,
+          totalMoney: totalMoney,
+          shipFee: shipFeeEl.value,
+          items: items
+        });
+        $.ajax({
+            url: "/api/import",
+            method: "post",
+            data: payload,
+            contentType: "application/json",
+            success: function (response) { 
+                table.ajax.reload(null, false) 
+                //$("#c-table").find("tbody").empty();
+                $("#c-supplier").val('').trigger('change');
+                listItems.splice(0,listItems.length);
+                updateListItems();
+                $("#ip-create-modal").modal("hide");
+                $("#ip-create-modal").find('form').trigger('reset');
+                $("#toast-content").html("Tạo mới thành công: # "+response.data['id'])
+                toast.show();
+                sendMessage();
+                //window.location.href = "/products"
+            },  
+            error: function (err) {  
+                alert(err);  
+            } 
+        });
+        
+    });
+
 });
+
+const ipCreateModalEl = 
+`<div class="modal fade" role="dialog" id="ip-create-modal">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    Thông tin chi tiết phiếu nhập kho
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form action="#" enctype="multipart/form-data" method="post" id="c-form">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="m-box">
+                                <div class="form-group ware-c-group">
+                                    <span class="form-title">Kho hàng:<span
+                                            style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
+                                    <select class="form-control" id="c-warehouse"></select>
+                                </div>
+
+                                <div class="form-group sup-c-group">
+                                    <span class="form-title">Nhà cung cấp:</span>
+                                    <select class="form-control" id="c-supplier">
+                                        <option></option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <span class="form-title">Tiền vận chuyển:</span>
+                                    <div class="box-input-group">
+                                        <input class="form-control" role="spinbutton" id="c-shipfee" aria-valuenow="0" autocomplete="off" step="1000" value="0">
+                                        <span class="input-group-addon">₫</span>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="form-group">
+                                    <span class="form-title">Ngày tạo phiếu:</span>
+                                    <input type="date" class="form-control" id="date1">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <span class="form-title">Ngày dự kiến nhận:</span>
+                                    <input type="date" class="form-control" id="date2">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <span class="form-title">Ghi chú:</span>
+                                    <textarea rows="4" placeholder="Ghi chú" autosize="[object Object]"
+                                        class="form-control" id="c-note"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="m-box">
+                                <div class="input-group">
+                                    <input class="form-control" id="c-searchbox" type="text" autocomplete="off" placeholder="Nhập tên, mã sản phẩm">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-success" type="button">Tìm kiếm</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="m-box" style="margin-top: 1 rem;">
+                                <div class="table-container">
+                                    <div style="display: block; overflow: auto; height: 360px;">
+                                        <table class="table table-hover table-responsive-xl" id="c-table">
+                                            <thead class="thead-light" style="position: sticky; top: 0; z-index: 1; background-color: #eee;">
+                                                <tr>
+                                                    <th>STT</th>
+                                                    <th>Tên SP</th>
+                                                    <th>Hình ảnh</th>
+                                                    <th>Mã SP</th>
+                                                    <th>Giá nhập</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Tổng tiền</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody style="display: table-row-group;"></tbody>
+                                            <tfoot>
+                            
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span class="font-14 p-r-10 p-l-10">Tổng SP: <span id="t-prod">0</span> </span>
+                                        <span class="font-14 p-r-10 p-l-10" style="border-left: 1px solid #d9d9d9;border-right: 1px solid #d9d9d9;">Tổng SL: <span id="t-qty">0</span> </span>
+                                        <span class="font-14 p-r-10 p-l-10"></span>Tổng tiền: <span id="t-money">0</span> </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" style="margin-right: 10px; width: 120px;" data-toggle="popover" id="statusBtn">
+                        Mới
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btn-ip-submit">
+                        <span>Lưu</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>`;
+
+const ipEditModalEl =
+`<div class="modal fade" role="dialog" id="ip-edit-modal">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    Thông tin chi tiết phiếu nhập kho
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form action="#" enctype="multipart/form-data" method="post" id="e-form">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="m-box">
+                                <div class="form-group ware-e-group">
+                                    <span class="form-title">Kho hàng:<span
+                                            style="color: rgb(245, 34, 45); margin-right: 4px;">*</span></span>
+                                    <select class="form-control" id="e-warehouse"></select>
+                                </div>
+
+                                <div class="form-group sup-e-group">
+                                    <span class="form-title">Nhà cung cấp:</span>
+                                    <select class="form-control" id="e-supplier">
+                                        <option></option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <span class="form-title">Tiền vận chuyển:</span>
+                                    <div class="box-input-group">
+                                        <input class="form-control" id="e-shipfee" role="spinbutton" aria-valuenow="0" autocomplete="off" step="1000" value="0">
+                                        <span class="input-group-addon">₫</span>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="form-group">
+                                    <span class="form-title">Ngày tạo phiếu:</span>
+                                    <input type="date" class="form-control" id="e-date1">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <span class="form-title">Ngày dự kiến nhận:</span>
+                                    <input type="date" class="form-control" id="e-date2">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <span class="form-title">Ghi chú:</span>
+                                    <textarea rows="4" placeholder="Ghi chú" autosize="[object Object]" id="e-note" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="m-box">
+                                <div class="input-group">
+                                    <input class="form-control" id="e-searchbox" type="text" autocomplete="off" placeholder="Nhập tên, mã sản phẩm">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-success" type="button">Tìm kiếm</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="m-box" style="margin-top: 1 rem;">
+                                <div class="table-container">
+                                    <div style="display: block; overflow: auto; height: 360px;">
+                                        <table class="table table-hover table-responsive-xl" id="e-table">
+                                            <thead class="thead-light" style="position: sticky; top: 0; z-index: 1; background-color: #eee;">
+                                                <tr>
+                                                    <th>STT</th>
+                                                    <th>Tên SP</th>
+                                                    <th>Hình ảnh</th>
+                                                    <th>Mã SP</th>
+                                                    <th>Giá nhập</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Tổng tiền</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody style="display: table-row-group;"></tbody>
+                                            <tfoot>
+                            
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    
+                                    <div style="text-align: right;">
+                                        <span class="font-14 p-r-10 p-l-10">Tổng SP: <span id="et-prod">0</span> </span>
+                                        <span class="font-14 p-r-10 p-l-10" style="border-left: 1px solid #d9d9d9;border-right: 1px solid #d9d9d9;">Tổng SL: <span id="et-qty">0</span> </span>
+                                        <span class="font-14 p-r-10 p-l-10"></span>Tổng tiền: <span id="et-money">0</span> </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" style="margin-right: 10px; width: 120px;" id="e-statusBtn">
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="eip-submit">
+                        <span>Lưu</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>`;

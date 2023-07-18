@@ -83,4 +83,8 @@ public class Export extends AuditModel{
 			this.items.remove(item);
 		}
 	}
+
+	public boolean checklistItem(){
+		return this.items.stream().allMatch(it -> it.getQty()<= it.getItem().getQty());
+	}
 }

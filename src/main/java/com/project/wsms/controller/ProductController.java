@@ -74,49 +74,7 @@ public class ProductController {
 		return "products/products";
 	}
 
-//	@GetMapping("/products/{id}")
-//	 public String editProduct(@PathVariable("id") Integer id, Model model) {
-//		try {
-//			Optional<Product> product = productService.getByProductId(id);
-//		
-//			model.addAttribute("Product", product.get());
-//		
-//			return "product_form";
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				//return "redirect:/products";
-//		 }
-//		return "redirect:/products";
-//	 }
-
 	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
-
-	@GetMapping("/products/create")
-	public String addProduct(Model model) {
-		model.addAttribute("product", new Product());
-		return "products/product_form";
-	}
-
-	@ModelAttribute("product")
-	public Product newProduct() {
-		return new Product();
-	}
-
-	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
-
-	@PostMapping("products/create")
-	public String saveProduct(@ModelAttribute("product") Product product) {
-		try {
-			productService.save(product);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return "redirect:/products";
-	}
-
-	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
-
 	@GetMapping("/api/products")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> findProducts() {

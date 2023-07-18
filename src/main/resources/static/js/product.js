@@ -282,13 +282,19 @@ $(document).ready(function () {
                 data: product,
                 contentType: "application/json",
                 success: function (response) { 
+                    console.log(response)
                     table.ajax.reload(null, false) 
                     $("#product-modal-edit").modal("hide");
                     $("#toast-content").html("Chỉnh sửa thành công: # "+response.data['id']+' - '+ response.data['productName'])
                     toast.show()
                 },  
-                error: function (err) {  
-                    alert(err);  
+                error: function (err) {
+                    if(err.responseJSON.status == "INTERNAL_SERVER_ERROR"){
+                        alert("Bạn không có quyền chỉnh sửa mục này!");
+                    } else{
+                        alert(err.responseJSON.message);
+                    } 
+                    
                 } 
             });
             

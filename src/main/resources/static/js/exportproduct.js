@@ -94,6 +94,7 @@ const table = $("#epTable").DataTable( {
             className: 'td-data',
             searchable: false,
             render: function(data, type, row){
+                if(data == null) { return "Chưa có"}
                 return moment(data).format('HH:mm DD-MM-YYYY')
             }
         },
@@ -787,10 +788,14 @@ async function changeStatus(id, status){
             return response.json();
         })
         .then(data => {
-            if(status==2){loadItemData();}
-            table.ajax.reload(null, false) 
-            $("#toast-content").html("Cập nhật thành công: # "+data.data['id']);
-            toast.show()
+            if(data.status =="ok"){
+                if(status==2){loadItemData();}
+                table.ajax.reload(null, false) 
+                $("#toast-content").html("Cập nhật thành công: # "+data.data.id);
+            }if(data.status=="false"){
+                $("#toast-content").html(data.message);
+            }
+            toast.show();
         })
         .catch(error => console.log(error));
 }
@@ -847,7 +852,7 @@ $(document).ready(function () {
         $.get(href, function(res){
             $("#e-form").attr("rid", data["id"]);
             $("#e-date1").val(moment(data.createdAt).format('YYYY-MM-DD'));
-            $("#e-date2").val(moment(data.expectedAt).format('YYYY-MM-DD'));
+            $("#e-date2").val(moment(data.expected_at).format('YYYY-MM-DD'));
             $("#e-warehouse").val(data.warehouse.id).trigger('change');
             $("#e-warehouse").prop("disabled", true);
             //$("#e-supplier").val(data.supplier.id).trigger('change');
@@ -923,7 +928,6 @@ $(document).ready(function () {
           status: 1,
           empId: user.id,
           wareId: warehouseEl.value,
-          supId: supplierEl.value,
           expectedAt: epDateEl.value,
           totalQty: totalQty,
           totalMoney: totalMoney,
@@ -936,14 +940,13 @@ $(document).ready(function () {
             contentType: "application/json",
             success: function (response) { 
                 table.ajax.reload(null, false) 
-                $('#ep-create-modal form').trigger("reset")
                 listItems.splice(0,listItems.length);
+                updateListItems();
                 $("#ep-create-modal").modal("hide");
                 $("#ep-create-modal").find('form').trigger('reset');
                 $("#toast-content").html("Tạo mới thành công: # "+response.data['id'])
                 toast.show();
                 sendMessage();
-                //window.location.href = "/products"
             },  
             error: function (err) {  
                 alert(err);  
@@ -974,7 +977,6 @@ $(document).ready(function () {
 
         let payload = JSON.stringify({
             note: note2El.value,
-            supId: supplier2El.value,
             expectedAt: epDate2El.value,
             totalQty: totalQty,
             totalMoney: totalMoney,
@@ -1025,31 +1027,6 @@ $(document).ready(function () {
         width: '100%',
         minimumResultsForSearch: Infinity,
         dropdownParent: ".ware-e-group"
-    });
-    $("#c-supplier").select2({
-        data: $.map(supData, function(s) {
-            return {
-                text: s.supName,
-                id: s.id
-            }
-        }),
-        placeholder: "Chọn nhà cung cấp",
-        width: '100%',
-        minimumResultsForSearch: Infinity,
-        dropdownParent: ".sup-c-group"
-    });
-
-    $("#e-supplier").select2({
-        data: $.map(supData, function(s) {
-            return {
-                text: s.supName,
-                id: s.id
-            }
-        }),
-        placeholder: "Chọn nhà cung cấp",
-        width: '100%',
-        minimumResultsForSearch: Infinity,
-        dropdownParent: ".sup-e-group"
     });
 
     $("#date1").val(moment().format('YYYY-MM-DD'));

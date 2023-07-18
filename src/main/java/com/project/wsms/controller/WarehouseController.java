@@ -28,6 +28,7 @@ import com.project.wsms.dto.ExportDto;
 import com.project.wsms.dto.ExportItemDto;
 import com.project.wsms.dto.ImportDto;
 import com.project.wsms.dto.ImportItemDto;
+import com.project.wsms.exception.NotFoundException;
 import com.project.wsms.model.CheckQty;
 import com.project.wsms.model.CqItem;
 import com.project.wsms.model.ERole;
@@ -519,6 +520,7 @@ public class WarehouseController {
 							object.getItems().forEach(it->{
 								Item item = it.getItem();
 								item.setQty(item.getQty() + it.getQty());
+								item.setPurcharsePrice(it.getPurcharsePrice());
 								itemService.save(item);
 							});
 							break;
@@ -641,16 +643,20 @@ public class WarehouseController {
 				uObject.setTotalMoney(objectDto.getTotalMoney());
 				uObject.setShipFee(objectDto.getShipFee());
 
-				if(uObject.getSupplier()==null){
+				if(objectDto.getSupId()!=null){
+					if(uObject.getSupplier()==null){
 					Supplier newSup = supplierService.getById(objectDto.getSupId()).get();
 					newSup.addImportItem(uObject);
 					supplierService.save(newSup);
-				} else if(uObject.getSupplier().getId()!=objectDto.getSupId()){
-					uObject.getSupplier().removeItem(uObject.getId());
+					} else if(uObject.getSupplier().getId()!=objectDto.getSupId()){
+						Supplier oldSup = uObject.getSupplier();
+						oldSup.removeItem(uObject.getId());
 
-					Supplier newSup = supplierService.getById(objectDto.getSupId()).get();
-					newSup.addImportItem(uObject);
-					supplierService.save(newSup);
+						Supplier newSup = supplierService.getById(objectDto.getSupId()).get();
+						newSup.addImportItem(uObject);
+						supplierService.save(oldSup);
+						supplierService.save(newSup);
+					}
 				}
 
 				List<Integer> list = objectDto.getItems().stream().map(ImportItemDto::getId).collect(Collectors.toList());
@@ -757,49 +763,45 @@ public class WarehouseController {
 	@PostMapping("/api/export/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeExportStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st) {
-		try {
-			if(exportService.existsById(id)){
-				Export object = exportService.getById(id).get();
-				if(object.getStatus()==1){
-					switch(st){
-						case 0:		//1->0
-							object.setStatus(st);
-							break;
-						case 2:		//1->2
-							object.setStatus(st);
-							object.getItems().forEach(it->{
-								Item item = it.getItem();
-								item.setQty(item.getQty() - it.getQty());
-								itemService.save(item);
-							});
-							break;
-						default:
-							break;
-						}
-				}
-
-				if(object.getStatus()==2 && st==0){		//2->0
+		Export object = exportService.getById(id)
+			.orElseThrow(() -> new NotFoundException("Not found export object with id = " + id));
+		
+			if(object.getStatus()==1){
+			switch(st){
+				case 0:		//1->0
 					object.setStatus(st);
-					object.getItems().forEach(it->{
-						Item item = it.getItem();
-						item.setQty(item.getQty() + it.getQty());
-						itemService.save(item);
-					});
+					break;
+				case 2:		//1->2
+					if(object.checklistItem()){
+						object.setStatus(st);
+						object.getItems().forEach(it->{
+							Item item = it.getItem();
+							item.setQty(item.getQty() - it.getQty());
+							itemService.save(item);
+						});
+					}else{
+						return new ResponseEntity<>(
+							new ResponseObject("false", "Cannot be changed, the inventory is not enough.", ""),
+							HttpStatus.OK);
+					}
+					break;
+				default:
+					break;
 				}
-				exportService.save(object);
-				return new ResponseEntity<>(
-					new ResponseObject("ok", "Change status successfully", object),
-					HttpStatus.OK);
-			}else{
-				return new ResponseEntity<>(
-					new ResponseObject("ok", "Object does not exist", ""),
-					HttpStatus.OK);
-			}
-		} catch (Exception e) {
-			return new ResponseEntity<>(
-				new ResponseObject("false", "Problem when changing status", ""),
-				HttpStatus.BAD_REQUEST);
 		}
+
+		if(object.getStatus()==2 && st==0){		//2->0
+			object.setStatus(st);
+			object.getItems().forEach(it->{
+				Item item = it.getItem();
+				item.setQty(item.getQty() + it.getQty());
+				itemService.save(item);
+			});
+		}
+		exportService.save(object);
+		return new ResponseEntity<>(
+			new ResponseObject("ok", "Change status successfully", object),
+			HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE')")
@@ -888,7 +890,7 @@ public class WarehouseController {
 				if(!outList.isEmpty()){
 					outList.forEach(o->{
 						uObject.removeItem(o);
-						iItemService.delete(o);
+						eItemService.delete(o);
 					});
 				}
 				if(!objectDto.getItems().isEmpty()){

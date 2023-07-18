@@ -357,6 +357,12 @@ public class OrderController {
 		try {
 			if(orderService.existsById(id)){
 				Order uObject = orderService.getById(id).get();
+
+				Customer oldcus = uObject.getCustomer();
+				oldcus.setNpCus(oldcus.getNpCus() - 1);
+				oldcus.setTmoney(oldcus.getTmoney() - uObject.getReceivedMoney());
+				oldcus.setTowe(oldcus.getTowe() - uObject.getOwe());
+
 				uObject.setPrintedNote(objectDto.getPrintNote());
 				uObject.setInternalNote(objectDto.getInternalNote());
 				uObject.setDeliveryUnitId(objectDto.getDeliveryUnitId());
@@ -385,16 +391,19 @@ public class OrderController {
 				}
 
 				if(uObject.getCustomer().getId() != objectDto.getCusId()){ //Thay doi customer
-					Customer oldcus = uObject.getCustomer();
 					oldcus.removeOrder(id);
-					oldcus.setNpCus(oldcus.getNpCus() - 1);
-					oldcus.setTmoney(oldcus.getTmoney() - uObject.getReceivedMoney());
-					oldcus.setTowe(oldcus.getTowe() - uObject.getOwe());
-
 					Customer cus = customerService.getById(objectDto.getCusId()).get();			
 					cus.addOrder(uObject);
+					cus.setNpCus(cus.getNpCus() + 1);
+					cus.setTmoney(cus.getTmoney() + uObject.getReceivedMoney());
+					cus.setTowe(cus.getTowe() + uObject.getOwe());
 					customerService.save(oldcus);
 					customerService.save(cus);
+				}else{
+					oldcus.setNpCus(oldcus.getNpCus() + 1);
+					oldcus.setTmoney(oldcus.getTmoney() + uObject.getReceivedMoney());
+					oldcus.setTowe(oldcus.getTowe() + uObject.getOwe());
+					customerService.save(oldcus);
 				}
 				
 				List<Integer> list = objectDto.getItems().stream().map(OrderItemDto::getId).collect(Collectors.toList());

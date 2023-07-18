@@ -21,13 +21,13 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "products")
@@ -57,6 +57,7 @@ public class Product extends AuditModel {
 	@JsonIgnore
 	@JsonBackReference(value = "product-item")
 	@OneToMany(mappedBy="product")
+	@Builder.Default
 	private Set<Item> items = new HashSet<>();
 	
 	@ManyToMany(fetch = FetchType.LAZY,
@@ -64,6 +65,7 @@ public class Product extends AuditModel {
 	@JoinTable(name = "product_category", 
 		joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false), 
 		inverseJoinColumns = @JoinColumn(name = "cate_id", referencedColumnName = "id", nullable = false))
+	@Builder.Default
 	private Set<Category> categories = new HashSet<>();
 		
 	@ManyToMany(fetch = FetchType.LAZY,
@@ -73,6 +75,7 @@ public class Product extends AuditModel {
 		inverseJoinColumns = @JoinColumn(name = "sup_id", referencedColumnName = "id", nullable = false))
 	@JsonIgnoreProperties(value = {
 		"createdAt", "updatedAt", "hibernateLazyInitializer"}) 	
+	@Builder.Default
 	private Set<Supplier> suppliers = new HashSet<>();
 
 	@Column(name = "note", nullable = true, columnDefinition="TEXT")
