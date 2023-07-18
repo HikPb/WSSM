@@ -140,7 +140,7 @@ async function renderChart(startDate, endDate){
         product = [],
         day = [];
     
-    var tprofit=0, tsales=0, torder=0, tproduct=0, trevenue=0;
+    var tprofit=0, tsales=0, torder=0, tproduct=0, trevenue=0, torder1=0;
     
     await fetch("/api/sbd?start="+startDate+"&end="+endDate,{
         method: "GET",
@@ -162,6 +162,7 @@ async function renderChart(startDate, endDate){
             tprofit+=it.tprofit;
             tsales+=it.tsales;
             torder+=it.torder;
+            torder1+=it.torder1;
             tproduct+=it.tproduct;
             trevenue+=it.trevenue;
         });
@@ -169,7 +170,8 @@ async function renderChart(startDate, endDate){
         $("#orderEl").html(torder);
         $("#salesEl").html(numberWithCommas(tsales));
         $("#profitEl").html(numberWithCommas(tprofit));
-        $("#productEl").html(tproduct);
+        $("#torder1El").html(numberWithCommas(torder1));
+        $("#productEl").html(numberWithCommas(tproduct));
         $("#revenueEl").html(numberWithCommas(trevenue));
 
         var chart_data = {

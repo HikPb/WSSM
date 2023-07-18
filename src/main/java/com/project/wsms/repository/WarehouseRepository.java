@@ -22,7 +22,7 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Integer> {
     + "SUM(total_discount) AS tdiscount ,"
     + "SUM(shipping_fee) AS tshipfee "
     + "FROM warehouses w join orders o on w.id = o.ware_id "
-	+ "WHERE DATE(o.created_at) >= :startDate "
+	+ "WHERE o.status IN (1,2,3,4,5) AND DATE(o.created_at) >= :startDate "
     + "AND DATE(o.created_at) <= :endDate "
     + "GROUP BY w.id "
 	+ "ORDER BY torder DESC"

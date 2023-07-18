@@ -76,7 +76,7 @@
                 </ul>
             </li>
 
-            <li th:if="${#lists.contains(user.roles, 'ROLE_SALES_EMPLOYEE') || #lists.contains(user.roles, 'ROLE_WAREHOUSE_EMPLOYEE')}">
+            <li th:if="${#lists.contains(user.roles, 'ROLE_SALES_EMPLOYEE') || #lists.contains(user.roles, 'ROLE_SALES_ADMIN')}">
                 <a th:href="@{/customer}"><i class="sidebar-item-icon fa-solid fa-users"></i>
                     <span class="nav-label">Khách hàng</span>
                 </a>

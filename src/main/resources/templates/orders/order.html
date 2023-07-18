@@ -29,7 +29,7 @@
             <div class="tools-container">
                 <div class="d-flex flex-row justify-content-between">
                     <div id="action-tools" style="display: inline-flex;">
-                        <div style="display: inline-block;">
+                        <div th:if="${#lists.contains(user.roles, 'ROLE_SALES_EMPLOYEE') || #lists.contains(user.roles, 'ROLE_SALES_ADMIN')}" style="display: inline-block;">
                             <button type="button" class="btn-tools" id="btnCreate">
                                 <span><i class="fa-solid fa-plus"></i></span>
                             </button>

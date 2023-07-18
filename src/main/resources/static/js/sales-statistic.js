@@ -6,24 +6,24 @@ const table = $("#table").DataTable({
     data: sbe,
     columns: [
         { data: 'username' },
-        { data: 'torder' },
-        { data: 'tproduct'},
+        { data: 'torder', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'torder1', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tproduct', render: function(data, type, row){ return numberWithCommas(data)}},
         { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
         { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
         { data: 'tshipfee', render: function(data, type, row){ return numberWithCommas(data)} },
         { data: 'trevenue', render: function(data, type, row){ return numberWithCommas(data)} },
-        { data: 'torder' },
-        { data: 'torder' },
-        { data: 'torder' },
-        { data: 'torder' },
-        { data: 'torder' },
-        { data: 'torder' },
-        { data: 'torder' },
-        { data: 'torder' },
-        { data: 'torder' },
+        { data: 'torder2', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tproduct2', render: function(data, type, row){ return numberWithCommas(data)}},
+        { data: 'tsales2', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tdiscount2', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'tshipfee2', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'trevenue2', render: function(data, type, row){ return numberWithCommas(data)} },
+        { data: 'torder3', render: function(data, type, row){ return numberWithCommas(data)}},
+        { data: 'torder4', render: function(data, type, row){ return numberWithCommas(data)}},
     ],
     responsive: true,
-    fixedColumns: true,
+    //fixedColumns: true,
     paging: false,
     // scrollCollapse: true,
     // scrollX: true,
@@ -68,8 +68,8 @@ const table = $("#table").DataTable({
     ],
     footerCallback: function(row, data, start, end, display) {
         var api = this.api();
-        var colNumber = [1,2,7,8,9,10,11,12,13,14,15];
-        var colNumber2 = [3,4,5,6];
+        var colNumber = [1,2,3,8,9,14,15];
+        var colNumber2 = [4,5,6,7,10,11,12,13];
         var intVal = function (i) {
             return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
         };
@@ -109,6 +109,7 @@ async function loadData(url){
 }
 
 function numberWithCommas(x) {
+    if(x==null) return '0';
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 

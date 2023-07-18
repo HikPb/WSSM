@@ -121,7 +121,8 @@ const table = $("#orderTable").DataTable( {
                                 <button class="btn btn-danger" style="width: 150px;"> Đã hủy </button>
                             </div>`
                 }else if(data==1){
-                    return  `<div class="btn-group">
+                    if(user.roles.includes("ROLE_SALES_ADMIN")){
+                        return  `<div class="btn-group">
                                 <button class="btn btn-primary dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Mới <i class="fa fa-angle-down"></i></button>
                                 <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">
                                     <li>
@@ -132,20 +133,29 @@ const table = $("#orderTable").DataTable( {
                                     </li>
                                 </ul>
                             </div>`
-                }else if(data==2){
+                    }
                     return  `<div class="btn-group">
-                                <button class="btn btn-info dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Chờ chuyển hàng <i class="fa fa-angle-down"></i></button>
-                                <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">
-                                    <li>
-                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${1})">Mới</div>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${3})">Đang gửi hàng</div>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-item" onclick="changeStatus(${row.id},${0})">Hủy</div>
-                                    </li>
-                                </ul>
+                                <button class="btn btn-primary dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Mới </button>
+                            </div>`
+                }else if(data==2){
+                    if(user.roles.includes("ROLE_SALES_ADMIN")){
+                        return  `<div class="btn-group">
+                                    <button class="btn btn-info dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Chờ chuyển hàng <i class="fa fa-angle-down"></i></button>
+                                    <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">
+                                        <li>
+                                            <div class="dropdown-item" onclick="changeStatus(${row.id},${1})">Mới</div>
+                                        </li>
+                                        <li>
+                                            <div class="dropdown-item" onclick="changeStatus(${row.id},${3})">Đang gửi hàng</div>
+                                        </li>
+                                        <li>
+                                            <div class="dropdown-item" onclick="changeStatus(${row.id},${0})">Hủy</div>
+                                        </li>
+                                    </ul>
+                                </div>`
+                    }
+                    return  `<div class="btn-group">
+                                <button class="btn btn-info dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Chờ chuyển hàng </button>
                             </div>`
                 }else if(data==3){
                     return  `<div class="btn-group">

@@ -23,11 +23,20 @@
                             <div class="ibox-head">
 
                                 <div style="display: inline-block;">
-                                    <button type="button" class="btn btn-primary" id="btn-create">
-                                        <span>
-                                            <i class="fa-solid fa-plus"></i>
-                                        </span>
-                                    </button>
+                                    <!-- <div th:unless="${#lists.contains(user.roles, 'ROLE_WAREHOUSE_ADMIN')}" style="display: inline-block;">
+                                        <button type="button" class="btn btn-primary" disabled>
+                                            <span>
+                                                <i class="fa-solid fa-plus"></i>
+                                            </span>
+                                        </button>
+                                    </div> -->
+                                    <div th:if="${#lists.contains(user.roles, 'ROLE_WAREHOUSE_ADMIN')}" style="display: inline-block;">
+                                        <button type="button" class="btn btn-primary" id="btn-create">
+                                            <span>
+                                                <i class="fa-solid fa-plus"></i>
+                                            </span>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="has-search">
                                     <span class="fa fa-search form-control-feedback"></span>
@@ -102,7 +111,9 @@
                                                 <input class="form-control" id="e-waddress" type="text" placeholder="Nhập địa chỉ kho hàng" required>
                                             </div>
                                             <div class="form-group">
-                                                <button class="btn btn-primary" type="submit">Lưu</button>
+                                                <div th:if="${#lists.contains(user.roles, 'ROLE_WAREHOUSE_ADMIN')}">
+                                                    <button class="btn btn-primary" type="submit">Lưu</button>
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
@@ -129,6 +140,11 @@
         <!-- END PAGA BACKDROPS-->
         <!-- SCRIPT -->
         <script th:src="@{/js/warehouse.js}"></script>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+                const user = /*[[${user}]]*/ 'default';
+            /*]]>*/
+        </script>
     </body>
 
 </html>

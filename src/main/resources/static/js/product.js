@@ -69,7 +69,7 @@ $(document).ready(function () {
                 orderable: false,
                 searchable: false,
                 render: function(data, type, row){
-                    if(user.roles.includes("ROLE_SALES_ADMIN")){
+                    if(user.roles.includes("ROLE_WAREHOUSE_ADMIN")){
                         return `<div>
                                     <button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>
                                 </div>`

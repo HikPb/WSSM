@@ -197,7 +197,9 @@ $(document).ready(function () {
 function showListWarehouse(){
     var warehouses = [];
     $.get("/api/warehouse", function(response){
-        let items =""
+        let items ="";
+        var deleteEl="";
+        
         warehouses = $.map(response.data, dt=>{
             return{
                 id: dt['id'],
@@ -209,10 +211,14 @@ function showListWarehouse(){
         if(warehouses.length>0){
             $(".media-list").empty();
             warehouses.forEach(w=>{
+                deleteEl="";
+                if(user.roles.includes("ROLE_WAREHOUSE_ADMIN")){
+                    deleteEl=`<button class="btn btn-xs btn-delete" style="position: absolute;right:30px;" w-id="${w.id}" wname="${w.name}" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>`
+                }
                 items +=    '<li class="media" style="cursor: pointer;" wid="'+w.id+'" wname="'+w.name+'">' +
                                 '<div class="media-body">' +
                                     '<h6 class="media-heading">'+w.name+'</h6>' +
-                                    '<button class="btn btn-xs btn-delete" style="position: absolute;right:30px;" w-id="'+w.id+'" wname="'+w.name+'" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>' +
+                                    deleteEl +
                                     '<div class="warehouse-phone">' +
                                         '<i class="fa-solid fa-phone"></i>' +
                                         '<span class="span-info">'+w.phone+'</span>' +

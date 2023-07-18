@@ -19,8 +19,9 @@ function loadRevenueByDay(url){
         },
         columns: [
             { data: 'day', render: function(data, type, row){ return moment(data).format("DD/MM/YYYY")} },
-            { data: 'torder' },
-            { data: 'tproduct'},
+            { data: 'torder', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'torder1', render: function(data, type, row){ return numberWithCommas(data)} },
+            { data: 'tproduct', render: function(data, type, row){ return numberWithCommas(data)}},
             { data: 'tsales', render: function(data, type, row){ return numberWithCommas(data)} },
             { data: 'tdiscount', render: function(data, type, row){ return numberWithCommas(data)} },
             { data: 'tshipfee', render: function(data, type, row){ return numberWithCommas(data)} },
@@ -68,7 +69,7 @@ function loadRevenueByDay(url){
         footerCallback: function(row, data, start, end, display) {
             var api = this.api();
             var colNumber = [1,2];
-            var colNumber2 = [3,4,5,6,7];
+            var colNumber2 = [3,4,5,6,7,8];
             var intVal = function (i) {
                 if(i == null) return 0;
                 return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
@@ -150,6 +151,7 @@ function loadRevenueByDay(url){
 
 
 function numberWithCommas(x) {
+    if(x==null) return '0';
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
