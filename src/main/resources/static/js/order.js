@@ -138,7 +138,7 @@ const table = $("#orderTable").DataTable( {
                                 <button class="btn btn-primary dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Mới </button>
                             </div>`
                 }else if(data==2){
-                    if(user.roles.includes("ROLE_SALES_ADMIN")){
+                    if(user.roles.includes("ROLE_WAREHOUSE_EMPLOYEE")){
                         return  `<div class="btn-group">
                                     <button class="btn btn-info dropdown-toggle" style="width: 150px;" data-bs-toggle="dropdown" aria-expanded="false"> Chờ chuyển hàng <i class="fa fa-angle-down"></i></button>
                                     <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate(-40px, 36px); top: 0px; left: 0px; will-change: transform;">

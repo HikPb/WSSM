@@ -162,7 +162,7 @@ public class OrderController {
 		}		
 	}
 
-	@PreAuthorize("hasRole('SALES_ADMIN')")
+	@PreAuthorize("hasRole('SALES_ADMIN') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@PostMapping("/api/order/{id}/status/{st}")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> changeOrderStatus(@PathVariable("id") Integer id, @PathVariable("st") Integer st, HttpServletRequest request) {
@@ -436,7 +436,7 @@ public class OrderController {
 				}
 				orderService.save(uObject);
 				return new ResponseEntity<>(
-					new ResponseObject("ok", "Edit import form successfully", uObject), 
+					new ResponseObject("ok", "Edit order successfully", uObject), 
 					HttpStatus.OK
 					);
 			}else{
@@ -448,7 +448,7 @@ public class OrderController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(
-					new ResponseObject("failed", "Exception when save edited import form", ""), 
+					new ResponseObject("failed", "Exception when save edited order form", ""), 
 					HttpStatus.BAD_REQUEST
 					);
 		}

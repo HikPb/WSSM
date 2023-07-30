@@ -20,10 +20,10 @@
 <body class="fixed-navbar">
     <div class="page-wrapper">
         <!-- HEADER-->
-        <div th:replace="fragments/header :: header"></div>
+        <div th:replace="~{fragments/header :: header}"></div>
 
         <!-- START SIDEBAR-->
-        <div th:replace="fragments/sidebar :: sidebar"></div>
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
         <!-- END SIDEBAR-->
         <div class="content-wrapper">
             <!-- START PAGE CONTENT-->
@@ -105,8 +105,8 @@
                 </div>
             </div>
             <!-- END PAGE CONTENT-->
-            <div th:replace="fragments/setting :: setting-modal"></div>
-            <div th:replace="fragments/footer :: footer"></div>
+            <div th:replace="~{fragments/setting :: setting-modal}"></div>
+            <div th:replace="~{fragments/footer :: footer}"></div>
         </div>
     </div>
     

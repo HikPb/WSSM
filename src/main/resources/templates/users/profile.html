@@ -7,7 +7,7 @@
         <title>[[${pageTitle}]]</title>
         <!-- GLOBAL MAINLY STYLES-->
         <link th:href="@{/img/favicon.ico}" rel="icon">
-        <th:block th:include="~{fragments/assets :: assets}"></th:block>
+        <th:block th:insert="~{fragments/assets :: assets}"></th:block>
 </head>
 
 <body class="fixed-navbar sidebar-mini">
@@ -139,9 +139,9 @@
                 </style>
             </div>
             <!-- END PAGE CONTENT-->
-            <th:block th:include="~{fragments/modal :: toast-modal}"></th:block>
+            <th:block th:insert="~{fragments/modal :: toast-modal}"></th:block>
             <!-- FOOTER -->
-            <div th:replace="fragments/setting :: setting-modal"></div>
+            <div th:replace="~{fragments/setting :: setting-modal}"></div>
             <div th:replace="~{fragments/footer.html :: footer}"></div>
         </div>
     </div>

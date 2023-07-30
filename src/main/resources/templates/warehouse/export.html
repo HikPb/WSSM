@@ -9,7 +9,7 @@
     <!-- GLOBAL MAINLY STYLES-->
     <link th:href="@{/img/favicon.ico}" rel="icon">
     <link th:rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" />
-    <th:block th:include="fragments/assets :: assets"></th:block>
+    <th:block th:insert="~{fragments/assets :: assets}"></th:block>
 </head>
 
 
@@ -17,8 +17,8 @@
 <body class="fixed-navbar">
     <div class="page-wrapper">
         <!-- HEADER AND SIDEBAR -->
-        <div th:replace="fragments/header :: header"></div>
-        <div th:replace="fragments/sidebar :: sidebar"></div>
+        <div th:replace="~{fragments/header :: header}"></div>
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
         <!-- PAGE CONTENT -->
         <div class="content-wrapper">
@@ -65,11 +65,11 @@
             </div>
         </div>
 
-        <th:block th:include="fragments/modal :: toast-modal"></th:block>
-        <div th:replace="warehouse/export-form :: ep-modal"></div>
+        <th:block th:insert="~{fragments/modal :: toast-modal}"></th:block>
+        <div th:replace="~{warehouse/export-form :: ep-modal}"></div>
         <!-- FOOTER -->
-        <div th:replace="fragments/setting :: setting-modal"></div>
-        <div th:replace="fragments/footer :: footer"></div>
+        <div th:replace="~{fragments/setting :: setting-modal}"></div>
+        <div th:replace="~{fragments/footer :: footer}"></div>
     </div>
 
      <!-- BEGIN PAGA BACKDROPS-->
