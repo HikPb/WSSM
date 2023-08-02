@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.project.wsms.dto.EmployeeDto;
+import com.project.wsms.dto.DatatableResponse;
 import com.project.wsms.dto.ProductDto;
 import com.project.wsms.model.Category;
 import com.project.wsms.model.Employee;
@@ -291,4 +295,37 @@ public class ProductController {
 			);
 	}
 
+	// @PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
+	// @GetMapping("/api/products2")
+	// @ResponseBody
+	// public ResponseEntity<ResponseObject> searchProducts(HttpServletRequest request) {
+	// 	String[] columns = "id,name,email,dept".split(",");
+
+    //     int start = Integer.parseInt(request.getParameter("start"));
+    //     int length = Integer.parseInt(request.getParameter("length"));
+    //     int draw = Integer.parseInt(request.getParameter("draw"));
+    //     String search = request.getParameter("search[value]");
+
+    //     Sort.Direction direction = request.getParameter("order[0][dir]").equals("asc")? Sort.Direction.ASC : Sort.Direction.DESC ;
+    //     int collIndex = Integer.parseInt(request.getParameter("order[0][column]"));
+
+    //     Page<Product> productList;
+    //     Pageable pageable = PageRequest.of(start/length, length, Sort.by(direction,columns[collIndex]));
+
+    //     if(search.equals("")){
+
+    //         productList = (Page<Product>)  productService.getAll(pageable);
+    //     } else { 
+    //         productList = productService.searchProducts(search, pageable);
+    //     }
+    //     DatatableResponse<Product> dataTableResponse = new DatatableResponse<>();
+    //     dataTableResponse.setDraw(draw);
+    //     dataTableResponse.setData(productList.getContent());
+    //     dataTableResponse.setRecordsTotal(productList.getTotalElements());
+    //     dataTableResponse.setRecordsFiltered(productList.getTotalElements());
+
+	// 	return new ResponseEntity<>(
+	// 			new ResponseObject("ok", "Query successfully", dataTableResponse), 
+	// 			HttpStatus.OK);
+	// }
 }

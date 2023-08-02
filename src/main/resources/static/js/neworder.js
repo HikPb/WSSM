@@ -574,9 +574,11 @@ $(document).ready(function () {
             })
             .then(data =>{
                 if(data.status=="ok") {
+                    sendMessage(); 
+                    sendMessage2(window.location.origin+"/order");
                     window.removeEventListener("pagehide", storeDraftData);
                     localStorage.removeItem("order-draft-data");
-                    sendMessage(); 
+                    
                     window.location.href="/order";
                     // $("#toast-content").html("Chỉnh sửa thành công: # "+data.message);
                     // toast.show();

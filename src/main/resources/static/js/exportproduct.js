@@ -789,8 +789,9 @@ async function changeStatus(id, status){
         })
         .then(data => {
             if(data.status =="ok"){
-                if(status==2){loadItemData();}
-                table.ajax.reload(null, false) 
+                if(status==2){loadItemData();sendMessage3(window.location.href);}
+                //table.ajax.reload(null, false);
+                sendMessage2(window.location.href); 
                 $("#toast-content").html("Cập nhật thành công: # "+data.data.id);
             }if(data.status=="false"){
                 $("#toast-content").html(data.message);
@@ -939,7 +940,7 @@ $(document).ready(function () {
             data: payload,
             contentType: "application/json",
             success: function (response) { 
-                table.ajax.reload(null, false) 
+                //table.ajax.reload(null, false) 
                 listItems.splice(0,listItems.length);
                 updateListItems();
                 $("#ep-create-modal").modal("hide");
@@ -947,6 +948,7 @@ $(document).ready(function () {
                 $("#toast-content").html("Tạo mới thành công: # "+response.data['id'])
                 toast.show();
                 sendMessage();
+                sendMessage2(window.location.href); 
             },  
             error: function (err) {  
                 alert(err);  
@@ -988,11 +990,12 @@ $(document).ready(function () {
             data: payload,
             contentType: "application/json",
             success: function (response) { 
-                table.ajax.reload(null, false) 
+                //table.ajax.reload(null, false) 
                 $('#ep-edit-modal form').trigger("reset")
                 listItems2.splice(0,listItems2.length);
                 $("#ep-edit-modal").modal("hide");
                 $("#ep-edit-modal").find('form').trigger('reset');
+                sendMessage2(window.location.href); 
                 $("#toast-content").html("Chỉnh sửa thành công: # "+response.data['id']);
                 toast.show()
             },  

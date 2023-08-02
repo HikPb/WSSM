@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </div>
-            <div th:insert="orders/new-order-form :: neworder"></div>
+            <div th:insert="~{orders/new-order-form :: neworder}"></div>
             
         </div>
         <th:block th:insert="~{fragments/modal :: toast-modal}"></th:block>

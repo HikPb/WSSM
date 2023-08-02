@@ -81,4 +81,9 @@ public class ProductServiceImpl implements ProductService {
 	public boolean existsById(Integer productId) {
 		return productRepository.existsById(productId);
 	}
+
+	// @Override
+	// public Page<Product> searchProducts(String key, Pageable paging) {
+	// 	return productRepository.searchBy(key, paging);
+	// }
 }

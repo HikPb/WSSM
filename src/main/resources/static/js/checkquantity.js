@@ -674,8 +674,9 @@ async function changeStatus(id, status){
             return response.json();
         })
         .then(data => {
-            if(status==2){loadItemData();}
-            table.ajax.reload(null, false) 
+            if(status==2){loadItemData();sendMessage3(window.location.href);}
+            //table.ajax.reload(null, false)
+            sendMessage2(window.location.href);  
             $("#toast-content").html("Cập nhật thành công: # "+data.data['id']);
             toast.show()
         })
@@ -792,7 +793,7 @@ $(document).ready(function () {
             data: payload,
             contentType: "application/json",
             success: function (response) { 
-                table.ajax.reload(null, false) 
+                //table.ajax.reload(null, false) 
                 $('#cq-create-modal form').trigger("reset")
                 listItems.splice(0,listItems.length);
                 $("#cq-create-modal").modal("hide");
@@ -800,6 +801,7 @@ $(document).ready(function () {
                 $("#toast-content").html("Tạo mới thành công: # "+response.data['id']);
                 toast.show();
                 sendMessage();
+                sendMessage2(window.location.href); 
                 //window.location.href = "/products"
             },  
             error: function (err) {  
@@ -833,11 +835,12 @@ $(document).ready(function () {
             data: payload,
             contentType: "application/json",
             success: function (response) { 
-                table.ajax.reload(null, false) 
+                //table.ajax.reload(null, false) 
                 $('#cq-edit-modal form').trigger("reset")
                 listItems2.splice(0,listItems2.length);
                 $("#cq-edit-modal").modal("hide");
                 $("#cq-edit-modal").find('form').trigger('reset');
+                sendMessage2(window.location.href); 
                 $("#toast-content").html("Chỉnh sửa thành công: # "+response.data['id']);
                 toast.show()
                 //window.location.href = "/products"

@@ -1,133 +1,132 @@
 const toast = new bootstrap.Toast($("#toast"));
+var table = $("#productTable").DataTable( {
+    processing: true,
+    responsive: true,
+    //serverSide: true,
+    ajax: {
+        url: "/api/products",
+        dataSrc: '',
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        dataSrc: 'data'
+        },
+    columns: [
+        {
+            defaultContent: '',
+            data: null,
+            orderable: false,
+            className: 'select-checkbox',
+        },
+        { 
+            data: 'id',
+            className: 'td-data'
+        },
+        { 
+            data: 'productName',
+            className: 'td-data'
+        },
+        { 
+            data: 'barcode', 
+            className: 'td-data'
+        },
+        { 
+            data: 'categories', 
+            className: 'td-data',
+            render: function(data, type, row){
+                buttons='';
+                if(data){
+                    data.forEach(c => {buttons += '<span class="badge badge-primary badge-pill m-r-5 m-b-5">' + c.cateName +' </span>'});
+                }
+                return buttons;
+            }
+        },
+        { 
+            data: 'weight', 
+            className: 'td-data'
+        },
+        { 
+            data: 'createdAt',
+            className: 'td-data',
+            render: function(data, type, row){
+                return moment(data).format('HH:mm DD-MM-YYYY')
+            }
+        },
+        { 
+            data: 'updatedAt',
+            className: 'td-data',
+            render: function(data, type, row){
+                return moment(data).format('HH:mm DD-MM-YYYY')
+            }
+        },
+        {
+            data: null,
+            orderable: false,
+            searchable: false,
+            render: function(data, type, row){
+                if(user.roles.includes("ROLE_WAREHOUSE_ADMIN")){
+                    return `<div>
+                                <button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>
+                            </div>`
+                }
+                return "";
+            }
+        },
+    ],
+    buttons: [
+        {
+            text: '<i class="fa-solid fa-rotate"></i><span> Tải lại</span>',
+            className: 'btn-tools',
+            action: function ( e, dt, node, config ) {
+                dt.ajax.reload(null, false);
+            }
+        },
+        {
+            extend:    'print',
+            text:      '<i class="fa fa-print"></i> In',
+            titleAttr: 'Print',
+            className: 'btn-tools',
+            exportOptions: {
+                columns: [2,3,4,5,6,7]
+            }
+        },  
+        {
+            extend:    'excel',
+            text:      '<i class="fa-solid fa-file-export"></i><span> Xuất excel</span>',
+            titleAttr: 'Excel',
+            className: 'btn-tools',
+            exportOptions: {
+                columns: ':visible'
+            }
+        },
+    ],
+    paging: true, 
+    pagingType: 'numbers',
+    lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
+    language: {
+        "search": "_INPUT_",            
+        "searchPlaceholder": "Tìm kiếm",
+        "lengthMenu": "_MENU_/trang",
+        "zeroRecords": "Không có sản phẩm nào!",
+        "info": "Trang _PAGE_/_PAGES_",
+        "infoEmpty": "Không có sản phẩm",
+        "infoFiltered": "(lọc từ _MAX_ kết quả)"
+    },
+    dom: 'B<"tabletop"if>tr<"pagetable"lp><"clear">',
+    search: {
+        "addClass": 'form-control input-lg col-xs-12'
+    },
+    select: {
+        style:    'multi',
+        selector: 'td:first-child'
+    },
+    order: [[ 1, 'desc' ]]
+});
 
 $(document).ready(function () {
     const wareData = getAjaxResponse("/api/warehouse")
     //const cateData = getAjaxResponse("/api/category")
     const supData = getAjaxResponse("/api/supplier")
-    const table = $("#productTable").DataTable( {
-        processing: true,
-        responsive: true,
-        //serverSide: true,
-        ajax: {
-            url: "/api/products",
-            dataSrc: '',
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json",
-            dataSrc: 'data'
-            },
-        columns: [
-            {
-                defaultContent: '',
-                data: null,
-                orderable: false,
-                className: 'select-checkbox',
-            },
-            { 
-                data: 'id',
-                className: 'td-data'
-            },
-            { 
-                data: 'productName',
-                className: 'td-data'
-            },
-            { 
-                data: 'barcode', 
-                className: 'td-data'
-            },
-            { 
-                data: 'categories', 
-                className: 'td-data',
-                render: function(data, type, row){
-					buttons='';
-                    if(data){
-                        data.forEach(c => {buttons += '<span class="badge badge-primary badge-pill m-r-5 m-b-5">' + c.cateName +' </span>'});
-                    }
-					return buttons;
-				}
-            },
-            { 
-                data: 'weight', 
-                className: 'td-data'
-            },
-            { 
-                data: 'createdAt',
-                className: 'td-data',
-                render: function(data, type, row){
-                	return moment(data).format('HH:mm DD-MM-YYYY')
-            	}
-            },
-            { 
-                data: 'updatedAt',
-                className: 'td-data',
-                render: function(data, type, row){
-                	return moment(data).format('HH:mm DD-MM-YYYY')
-            	}
-            },
-            {
-                data: null,
-                orderable: false,
-                searchable: false,
-                render: function(data, type, row){
-                    if(user.roles.includes("ROLE_WAREHOUSE_ADMIN")){
-                        return `<div>
-                                    <button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>
-                                </div>`
-                    }
-                    return "";
-                }
-            },
-        ],
-        buttons: [
-            {
-                text: '<i class="fa-solid fa-rotate"></i><span> Tải lại</span>',
-                className: 'btn-tools',
-                action: function ( e, dt, node, config ) {
-                    dt.ajax.reload(null, false);
-                }
-            },
-            {
-                extend:    'print',
-                text:      '<i class="fa fa-print"></i> In',
-                titleAttr: 'Print',
-                className: 'btn-tools',
-                exportOptions: {
-                    columns: [2,3,4,5,6,7]
-                }
-            },  
-            {
-                extend:    'excel',
-                text:      '<i class="fa-solid fa-file-export"></i><span> Xuất excel</span>',
-                titleAttr: 'Excel',
-                className: 'btn-tools',
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-        ],
-        paging: true, 
-        pagingType: 'numbers',
-        lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
-        language: {
-            "search": "_INPUT_",            
-            "searchPlaceholder": "Tìm kiếm",
-            "lengthMenu": "_MENU_/trang",
-            "zeroRecords": "Không có sản phẩm nào!",
-            "info": "Trang _PAGE_/_PAGES_",
-            "infoEmpty": "Không có sản phẩm",
-            "infoFiltered": "(lọc từ _MAX_ kết quả)"
-        },
-        dom: 'B<"tabletop"if>tr<"pagetable"lp><"clear">',
-        search: {
-            "addClass": 'form-control input-lg col-xs-12'
-        },
-        select: {
-            style:    'multi',
-            selector: 'td:first-child'
-        },
-        order: [[ 1, 'desc' ]]
-    });
-
     table.buttons().container().appendTo('#dt-buttons');
 
     table.on("click", "th.select-checkbox", function() {
@@ -282,8 +281,8 @@ $(document).ready(function () {
                 data: product,
                 contentType: "application/json",
                 success: function (response) { 
-                    console.log(response)
-                    table.ajax.reload(null, false) 
+                    sendMessage2(window.location.href); 
+                    //table.ajax.reload(null, false) 
                     $("#product-modal-edit").modal("hide");
                     $("#toast-content").html("Chỉnh sửa thành công: # "+response.data['id']+' - '+ response.data['productName'])
                     toast.show()
@@ -465,7 +464,8 @@ $(document).ready(function () {
                 data: product,
                 contentType: "application/json",
                 success: function (response) { 
-                    table.ajax.reload(null, false) 
+                    sendMessage2(window.location.href); 
+                    //table.ajax.reload(null, false) 
                     $('#product-modal form').trigger("reset")
                     // $("#c-categories").select2().val("");
                     // $("#c-supplier").select2().val([]).trigger("change");
@@ -548,7 +548,8 @@ $(document).ready(function () {
             url: "api/products/" + id,
             method: "delete",
             success: function (data) {  
-                table.ajax.reload(null, false) 
+                sendMessage2(window.location.href); 
+                //table.ajax.reload(null, false) 
                 $("#confirmModal").modal("hide");
                 $("#toast-content").html("Xóa thành công: #"+id+" - "+pname)
                 toast.show()

@@ -714,8 +714,9 @@ async function changeStatus(id, status){
         })
         .then(data => {
             loadItemData();
-            sendMessage();
-            table.ajax.reload(null, false) 
+            //sendMessage();
+            sendMessage2(window.location.href);
+            //table.ajax.reload(null, false) 
             $("#toast-content").html("Cập nhật thành công: # "+data.data['id']);
             toast.show()
         })
@@ -960,7 +961,8 @@ $(document).ready(function () {
             })
             .then(data =>{
                 if(data.status=="ok") {
-                    table.ajax.reload(null, false) 
+                    sendMessage2(window.location.href);
+                    //table.ajax.reload(null, false) 
                     $("#edit-modal").modal("hide");
                     $("#toast-content").html("Chỉnh sửa thành công: # "+data.message);
                     toast.show();
