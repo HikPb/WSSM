@@ -26,7 +26,9 @@ public interface ProductService {
 	
 	public Page<Product> getByProductNameStartingWith(String productName, Pageable paging);
 
-	// public Page<Product> searchProducts(String key, Pageable paging);
+	public Page<Product> searchProducts(String key, Pageable paging);
+
+	public List<Product> getByCategoryId(Integer id);
 	
 	public Optional<Product> getByProductId(Integer productId);
 	

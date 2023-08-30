@@ -103,9 +103,8 @@ public class SupplierController {
 				new ResponseObject("failed", "Cannot find product with id = " + id, ""),
 				HttpStatus.NOT_FOUND);
 	}
-	
-	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 
+	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@PostMapping("/api/supplier")
 	@ResponseBody
 	public ResponseEntity<ResponseObject> saveSupplier(@Valid @RequestBody Supplier supplier) {

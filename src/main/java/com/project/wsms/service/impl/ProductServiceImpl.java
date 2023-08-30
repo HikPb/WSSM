@@ -82,8 +82,13 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.existsById(productId);
 	}
 
-	// @Override
-	// public Page<Product> searchProducts(String key, Pageable paging) {
-	// 	return productRepository.searchBy(key, paging);
-	// }
+	@Override
+	public Page<Product> searchProducts(String key, Pageable paging) {
+		return productRepository.searchBy(key, paging);
+	}
+
+	@Override
+	public List<Product> getByCategoryId(Integer id) {
+		return productRepository.findProductsByCategoriesId(id);
+	}
 }

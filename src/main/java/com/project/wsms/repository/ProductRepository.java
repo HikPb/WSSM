@@ -22,6 +22,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
 	
     Page<Product> findByProductNameStartingWith(String productName, Pageable pageable);
 
-	// @Query("SELECT p FROM products p WHERE LOWER(p.productName) LIKE %?1% OR p.productName LIKE %?1% OR LOWER(p.barcode) LIKE %?1% OR  p.barcode LIKE %?1% OR CONCAT(s.id, '') LIKE %?1%")
-    // Page<Product> searchBy(String search, Pageable pageable);
+	@Query(value = "SELECT * FROM products p WHERE LOWER(p.product_name) LIKE %?1% OR p.product_name LIKE %?1% " 
+	+ "OR LOWER(p.barcode) LIKE %?1% OR  p.barcode LIKE %?1% OR CONCAT(p.id, '') LIKE %?1%", nativeQuery=true)
+    Page<Product> searchBy(String search, Pageable pageable);
 }

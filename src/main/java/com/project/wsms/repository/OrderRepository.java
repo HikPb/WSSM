@@ -3,6 +3,8 @@ package com.project.wsms.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +17,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     
     List<Order> findByCustomer_id(Integer id);
     List<Order> findByStatusIn(List<Integer> listStatus);
+    Page<Order> findByCustomer_nameContainsOrCustomer_phoneContainsOrAddressContains(String key1, String key2, String key3, Pageable pageable);
 
     @Query(value = "SELECT DATE_TRUNC('day', created_at) AS day,"
     + "SUM(profit) AS tprofit ,"

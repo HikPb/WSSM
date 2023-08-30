@@ -38,9 +38,10 @@ const table = $("#orderTable").DataTable( {
     processing: true,
     responsive: true,
     fixedHeader: true,
-
+    serverSide: true,
+    searchDelay: 1000,
     ajax: {
-        url: "/api/order",
+        url: "/api/order2",
         dataSrc: 'data',
         type: "GET",
         dataType: "json",

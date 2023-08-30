@@ -25,6 +25,7 @@ import com.project.wsms.payload.request.CategoryRequest;
 import com.project.wsms.payload.response.ResponseObject;
 import com.project.wsms.repository.ProductRepository;
 import com.project.wsms.service.CategoryService;
+import com.project.wsms.service.ProductService;
 
 import jakarta.validation.Valid;
 
@@ -35,7 +36,7 @@ public class CategoryController {
 	private CategoryService categoryService;
 	
 	@Autowired
-	private ProductRepository productRepository;
+	private ProductService productService;
 	
 	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/category/search")
@@ -48,7 +49,7 @@ public class CategoryController {
 	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/api/category")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> listAllCategory(){
+	public ResponseEntity<ResponseObject> getAll(){
 		List<Category> listCategory= categoryService.getAll();
 		return new ResponseEntity<>(
 				new ResponseObject("ok", "Query successfully", listCategory), 
@@ -58,7 +59,7 @@ public class CategoryController {
 	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('WAREHOUSE_EMPLOYEE')")
 	@GetMapping("/api/category/search")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> searchCategory(@RequestParam("key") String key){
+	public ResponseEntity<ResponseObject> getByKey(@RequestParam("key") String key){
 		try {
 			List<Category> listCategory = categoryService.getByKeyword(key);
 			return new ResponseEntity<>( 
@@ -91,7 +92,7 @@ public class CategoryController {
 	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@PostMapping("/api/category")
 	@ResponseBody
-	public ResponseEntity<ResponseObject> saveCategory(@Valid @RequestBody String category) {
+	public ResponseEntity<ResponseObject> create(@Valid @RequestBody String category) {
 		try {
 			Category newCategory = new Category();
 			newCategory.setCateName(category);
@@ -109,7 +110,7 @@ public class CategoryController {
 	
 	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@PutMapping("/api/category")
-	public ResponseEntity<ResponseObject> updateCategory(@RequestBody CategoryRequest category) {
+	public ResponseEntity<ResponseObject> update(@RequestBody CategoryRequest category) {
 		if(!categoryService.existsById(category.getId())){
 			throw new NotFoundException("Not found category with id = " + category.getId());
 		}
@@ -122,14 +123,14 @@ public class CategoryController {
 	
 	@PreAuthorize("hasRole('WAREHOUSE_ADMIN')")
 	@DeleteMapping("/api/category/{id}")
-	public ResponseEntity<ResponseObject> deleteCategory(@PathVariable(value = "id") Integer id) {
+	public ResponseEntity<ResponseObject> delete(@PathVariable(value = "id") Integer id) {
 	    if(!categoryService.existsById(id)) {
 	    	return new ResponseEntity<>(
 					new ResponseObject("failed", "Cannot find it to delete", ""),
 					HttpStatus.NOT_FOUND);
 	    }
 
-		List<Product> listProducts = productRepository.findProductsByCategoriesId(id);
+		List<Product> listProducts = productService.getByCategoryId(id);
 		if(!listProducts.isEmpty()){
 			listProducts.forEach(p->{
 				p.removeCategory(id);

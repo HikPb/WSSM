@@ -1,162 +1,208 @@
-<div class="container px-1 py-5">
-    <div class="row">
-        <div class="col">
-            <div class="text-center mb-5">
-                <span class="fw-bold fs-3">PHIẾU NHẬP KHO</span>
-                <br>
-                <span class="fst-italic">Mã phiếu: #
-                    <span>${obj.id}</span>
-                </span>
-            </div>
-            <div class="row gx-5 pb-1">
-                <div class="col">
-                    <span class="fw-bold">Người tạo phiếu:
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>[[${pageTitle}]]</title>
+    <!-- GLOBAL MAINLY STYLES-->
+    <link th:href="@{/img/favicon.ico}" rel="icon">
+    <th:block th:insert="~{fragments/assets :: assets}"></th:block>
+</head>
+
+
+
+<body class="fixed-navbar">
+    <div class="page-wrapper">
+        <!-- HEADER AND SIDEBAR -->
+        <div th:replace="~{fragments/header.html :: header}"></div>
+        <div th:replace="~{fragments/sidebar.html :: sidebar}"></div>
+
+		<!-- START TOOLBAR -->
+        <div class="tools-container">
+            <div class="d-flex flex-row justify-content-between">
+                <div id="action-tools" style="display: inline-flex;">
+                    <div th:unless="${#lists.contains(user.roles, 'ROLE_WAREHOUSE_ADMIN')}" style="display: inline-block;">
+                        <button type="button" class="btn-tools" id="btnCreate" disabled>
+                            <span><i class="fa-solid fa-plus"></i></span>
+                        </button>
+                    </div>
+                    <div th:if="${#lists.contains(user.roles, 'ROLE_WAREHOUSE_ADMIN')}" style="display: inline-block;">
+                        <button type="button" class="btn-tools" id="btnCreate">
+                            <span><i class="fa-solid fa-plus"></i></span>
+                        </button>
+                    </div>
+                    <div id="dt-buttons"></div>
+                    <span th:if="${#lists.contains(user.roles, 'ROLE_WAREHOUSE_ADMIN')}" id="categoryBtn">
+                        <div style="display: inline-block;">
+                            <button type="button" class="btn-tools">
+                                <i class="fa-solid fa-tags"></i>
+                                <span>Danh mục SP</span>
+                            </button>
+                        </div>
                     </span>
-                    <span>${obj.employee.username}</span>
-                </div>
-                <div class="col">
-                    <span class="fw-bold">Ngày tạo phiếu:
+
+                    <span id="multi_delete" style="display: inline-block;">
+                        <div style="display: inline-block;">
+                            <button type="button" class="btn-tools">
+                                <i class="fa-solid fa-trash"></i>
+                                <span>Xóa</span>
+                            </button>
+                        </div>
                     </span>
-                    <span></span>
                 </div>
-            </div>
-            <div class="row gx-5 pb-1">
-                <div class="col">
-                    <span class="fw-bold">Kho hàng:
-                    </span>
-                    <span>${obj.warehouse.name}</span>
+
+                <div class="filter">
+                    <div>
+                        <button id="btn-filter" tabindex="0" type="button" class="btn-tools">
+                            <i class="fa-solid fa-filter"></i>
+                            <span>Thêm lọc</span>
+                            </span>
+                        </button>
+                    </div>
                 </div>
-                <div class="col">
-                    <span class="fw-bold">Sđt:
-                    </span>
-                    <span>${obj.warehouse.phone}</span>
-                </div>
-            </div>
-            <div class="row pb-4">
-                <span class="fw-bold">Địa chỉ:
-                </span>
-                <span>${obj.warehouse.address}</span>
             </div>
         </div>
-    </div>
+        <!-- END TOOLBAR -->
+        <!-- PAGE CONTENT -->
+        <div class="content-wrapper">
+            
 
-    <div class="row">
-        <div class="col">
-            <div class="table-responsive">
-                <table class="table table-bordered border-primary">
-                    <thead class="table-active">
+            <div class="table-container">
+                <table class="table table-hover table-responsive-xl" id="pTable">
+                    <thead class="thead-light">
                         <tr>
-                            <td>
-                                <strong>#</strong>
-                            </td>
-                            <td class="text-center">
-                                <strong>Tên sản phẩm</strong>
-                            </td>
-                            <td class="text-center">
-                                <strong>Barcode</strong>
-                            </td>
-                            <td class="text-center">
-                                <strong>Giá nhập</strong>
-                            </td>
-                            <td class="text-center">
-                                <strong>Số lượng</strong>
-                            </td>
-                            <td class="text-center">
-                                <strong>Thành tiền</strong>
-                            </td>
+                            <th style="text-align: center"><input type="checkbox" id="select_all" /></th>
+                            <th>Id</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Barcode</th>
+                            <th>Danh mục</th>
+                            <th>Khối lượng</th>
+                            <th>Ngày tạo</th>
+                            <th>Cập nhật cuối</th>
+                            <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td class="text-center">CHieu lejk dlaks dklsd</td>
-                            <td class="text-center">$10.99</td>
-                            <td class="text-center">$10.99</td>
-                            <td class="text-center">$10.99</td>
-                            <td class="text-center">$10.99</td>
-                        </tr>
-                    </tbody>
-                    <tfooter>
-                        <tr>
-                            <td colspan="3" class="text-center fw-bold">Phí vận chuyển</td>
-                            <td></td>
-                            <td></td>
-                            <td class="text-center">@twitter</td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" class="text-center fw-bold">Tổng cộng</td>
-                            <td></td>
-                            <td></td>
-                            <td class="text-center">@twitter</td>
-                        </tr>
-                    </tfooter>
                 </table>
             </div>
-            <div class="row mb-4">
-                <span>Tổng tiền bằng chữ:
-                </span>
-                <span>${numberToWords(obj.totalMoney)}</span>
-            </div>
-            <div class="d-flex flex-row-reverse">
-                <div class="col-sm-4 text-end">
-                    <span>Ngày 11 tháng 02 năm 2023</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-3 text-center">
-                    <span class="fw-bold">Người lập phiếu</span>
-                    <br>
-                    <span class="fst-italic">(Ký họ tên)</span>
-                </div>
-                <div class="col-sm-3 text-center">
-                    <span class="fw-bold">Người lập phiếu</span>
-                    <br>
-                    <span class="fst-italic">(Ký họ tên)</span>
-                </div>
-
-                <div class="col-sm-3 text-center">
-                    <span class="fw-bold">Người lập phiếu</span>
-                    <br>
-                    <span class="fst-italic">(Ký họ tên)</span>
-                </div>
-
-                <div class="col-sm-3 text-center">
-                    <span class="fw-bold">Người lập phiếu</span>
-                    <br>
-                    <span class="fst-italic">(Ký họ tên)</span>
-                </div>
-            </div>
         </div>
+
+        <!-- FOOTER -->
+        <div th:replace="~{fragments/setting :: setting-modal}"></div>
+        <div th:replace="~{fragments/footer.html :: footer}"></div>
     </div>
-</div>
 
-<div class="customer-info-container">
-    <div class="close-box"><i class="fa-regular fa-circle-xmark" style="color: #ff0000;"></i></div>
-    <div class="customer-profile">
-        <div class="customer-profile-info">
-            <span><i class="fa-solid fa-user"></i>
-                Nguyen Van A</span>
-            <span><i class="fa-solid fa-phone"></i>
-                01923484398</span>
-        </div>
-        <div class="customer-profile-dob">
-            <span>20/11/2000</span>
-        </div>
-    </div>
-    <hr>
-    <div class="customer-info-history">
-        <div>
-            <span>
-                Tong: <span>1000</span> d
-                </soan>
-        </div>
-        <div>
-            <span>
-                Thanh cong:
-                <span>2</span>/
-                <span>2</span>
-            </span>
-        </div>
-    </div>
-</div>
+     <!-- BEGIN PAGA BACKDROPS-->
+     <div class="sidenav-backdrop backdrop"></div>
+     <div class="preloader-backdrop">
+         <div class="page-preloader">Loading</div>
+     </div>
+     <!-- END PAGA BACKDROPS-->
+    <!-- SCRIPT -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+            const user = /*[[${user}]]*/ 'default';
+        /*]]>*/
 
+        var table = $("#pTable").DataTable( {
+            processing: true,
+            responsive: true,
+            serverSide: true,
+            ajax: {
+                url: "/api/products2",
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                dataSrc: 'data.data'
+                },
+            columns: [
+                {
+                    defaultContent: '',
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    className: 'select-checkbox',
+                },
+                { 
+                    data: 'id',
+                    className: 'td-data'
+                },
+                { 
+                    data: 'productName',
+                    className: 'td-data'
+                },
+                { 
+                    data: 'barcode', 
+                    className: 'td-data'
+                },
+                { 
+                    data: 'categories', 
+                    className: 'td-data',
+                    render: function(data, type, row){
+                        buttons='';
+                        if(data){
+                            data.forEach(c => {buttons += '<span class="badge badge-primary badge-pill m-r-5 m-b-5">' + c.cateName +' </span>'});
+                        }
+                        return buttons;
+                    }
+                },
+                { 
+                    data: 'weight', 
+                    className: 'td-data'
+                },
+                { 
+                    data: 'createdAt',
+                    className: 'td-data',
+                    render: function(data, type, row){
+                        return moment(data).format('HH:mm DD-MM-YYYY')
+                    }
+                },
+                { 
+                    data: 'updatedAt',
+                    className: 'td-data',
+                    render: function(data, type, row){
+                        return moment(data).format('HH:mm DD-MM-YYYY')
+                    }
+                },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row){
+                        if(user.roles.includes("ROLE_WAREHOUSE_ADMIN")){
+                            return `<div>
+                                        <button class="btn btn-default btn-xs btn-delete" data-toggle="tooltip" data-original-title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                    </div>`
+                        }
+                        return "";
+                    }
+                },
+            ],
+            paging: true, 
+            pagingType: 'numbers',
+            lengthMenu: [ [20, 30, 50, -1], [20, 30, 50, "All"] ],
+            language: {
+                "search": "_INPUT_",            
+                "searchPlaceholder": "Tìm kiếm",
+                "lengthMenu": "_MENU_/trang",
+                "zeroRecords": "Không có sản phẩm nào!",
+                "info": "Trang _PAGE_/_PAGES_",
+                "infoEmpty": "Không có sản phẩm",
+                "infoFiltered": "(lọc từ _MAX_ kết quả)"
+            },
+            dom: 'B<"tabletop"if>tr<"pagetable"lp><"clear">',
+            search: {
+                "addClass": 'form-control input-lg col-xs-12'
+            },
+            select: {
+                style:    'multi',
+                selector: 'td:first-child'
+            },
+            order: [1, 'desc' ]
+        });
+
+    </script>
+</body>
+
+</html>

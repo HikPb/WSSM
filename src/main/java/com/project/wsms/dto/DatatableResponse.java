@@ -2,13 +2,11 @@ package com.project.wsms.dto;
 
 import java.util.List;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 //@Builder
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter
 public class DatatableResponse <T> {
     private int draw;
 

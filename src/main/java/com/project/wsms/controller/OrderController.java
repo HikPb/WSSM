@@ -6,6 +6,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.project.wsms.dto.DatatableResponse;
 import com.project.wsms.dto.EmployeeDto;
 import com.project.wsms.dto.OrderDto;
 import com.project.wsms.dto.OrderItemDto;
@@ -30,6 +35,7 @@ import com.project.wsms.model.Item;
 import com.project.wsms.model.Message;
 import com.project.wsms.model.Order;
 import com.project.wsms.model.OrderItem;
+import com.project.wsms.model.Product;
 import com.project.wsms.model.Warehouse;
 import com.project.wsms.payload.response.ResponseObject;
 import com.project.wsms.repository.MessageRepository;
@@ -115,6 +121,38 @@ public class OrderController {
 		}	
 	}
 
+	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('DELIVERY_MAN') or hasRole('WAREHOUSE_EMPLOYEE')")
+	@GetMapping("/api/order2")
+	@ResponseBody
+	public ResponseEntity<DatatableResponse<Order>> searchProducts(HttpServletRequest request) {
+		String[] columns = ",id,deliveryUnitId,customer_name,customer_phone,internalNote,address,orderItems,createdAt,revenue".split(",");
+
+        int start = Integer.parseInt(request.getParameter("start"));
+        int length = Integer.parseInt(request.getParameter("length"));
+        int draw = Integer.parseInt(request.getParameter("draw"));
+		int collIndex = Integer.parseInt(request.getParameter("order[0][column]"));
+		String orderDir = request.getParameter("order[0][dir]");
+        String keyword = request.getParameter("search[value]");
+
+        Sort.Direction direction = orderDir.equals("asc")? Sort.Direction.ASC : Sort.Direction.DESC ;
+
+        Page<Order> list;
+        Pageable pageable = PageRequest.of(start/length, length, Sort.by(direction,columns[collIndex]));
+
+        if(keyword.equals("")){
+
+            list = (Page<Order>)  orderService.getAll(pageable);
+        } else { 
+            list = orderService.search(keyword, pageable);
+        }
+        DatatableResponse<Order> response = new DatatableResponse<>();
+        response.setDraw(draw);
+        response.setData(list.getContent());
+        response.setRecordsTotal(list.getTotalElements());
+        response.setRecordsFiltered(list.getTotalElements());
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 	@PreAuthorize("hasRole('SALES_EMPLOYEE') or hasRole('DELIVERY_MAN') or hasRole('SALES_EMPLOYEE') ")
 	@GetMapping("/api/order/status")
 	@ResponseBody

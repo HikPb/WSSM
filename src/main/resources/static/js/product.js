@@ -2,15 +2,29 @@ const toast = new bootstrap.Toast($("#toast"));
 var table = $("#productTable").DataTable( {
     processing: true,
     responsive: true,
-    //serverSide: true,
+    serverSide: true,
     ajax: {
-        url: "/api/products",
-        dataSrc: '',
+        url: "/api/products2",
         type: "GET",
         dataType: "json",
         contentType: "application/json",
         dataSrc: 'data'
-        },
+    },
+    // ajax: function(data, callback, settings) {
+    //     // make a regular ajax request using data.start and data.length
+    //     $.get('/api/products2', {
+    //         limit: data.length,
+    //         offset: data.start,
+    //         dept_name__icontains: data.search.value
+    //     }, function(res) {
+    //         callback({
+    //             recordsTotal: res.data.recordsTotal,
+    //             recordsFiltered: res.data.recordsFiltered,
+    //             data: res.data.data
+    //         });
+    //     });
+    // },
+    deferRender : true,
     columns: [
         {
             defaultContent: '',
@@ -120,7 +134,8 @@ var table = $("#productTable").DataTable( {
         style:    'multi',
         selector: 'td:first-child'
     },
-    order: [[ 1, 'desc' ]]
+    // order: [[ 1, 'desc' ]]
+    order: [ 1, 'desc' ]
 });
 
 $(document).ready(function () {

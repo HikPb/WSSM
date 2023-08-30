@@ -295,37 +295,36 @@ public class ProductController {
 			);
 	}
 
-	// @PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
-	// @GetMapping("/api/products2")
-	// @ResponseBody
-	// public ResponseEntity<ResponseObject> searchProducts(HttpServletRequest request) {
-	// 	String[] columns = "id,name,email,dept".split(",");
+	@PreAuthorize("hasRole('WAREHOUSE_EMPLOYEE') or hasRole('SALES_EMPLOYEE')")
+	@GetMapping("/api/products2")
+	@ResponseBody
+	public ResponseEntity<DatatableResponse<Product>> searchProducts(HttpServletRequest request) {
+		String[] columns = ",id,productName,barcode,categories,weight,createdAt,updatedAt".split(",");
 
-    //     int start = Integer.parseInt(request.getParameter("start"));
-    //     int length = Integer.parseInt(request.getParameter("length"));
-    //     int draw = Integer.parseInt(request.getParameter("draw"));
-    //     String search = request.getParameter("search[value]");
+        int start = Integer.parseInt(request.getParameter("start"));
+        int length = Integer.parseInt(request.getParameter("length"));
+        int draw = Integer.parseInt(request.getParameter("draw"));
+		int collIndex = Integer.parseInt(request.getParameter("order[0][column]"));
+		String orderDir = request.getParameter("order[0][dir]");
+        String search = request.getParameter("search[value]");
 
-    //     Sort.Direction direction = request.getParameter("order[0][dir]").equals("asc")? Sort.Direction.ASC : Sort.Direction.DESC ;
-    //     int collIndex = Integer.parseInt(request.getParameter("order[0][column]"));
+        Sort.Direction direction = orderDir.equals("asc")? Sort.Direction.ASC : Sort.Direction.DESC ;
 
-    //     Page<Product> productList;
-    //     Pageable pageable = PageRequest.of(start/length, length, Sort.by(direction,columns[collIndex]));
+        Page<Product> productList;
+        Pageable pageable = PageRequest.of(start/length, length, Sort.by(direction,columns[collIndex]));
 
-    //     if(search.equals("")){
+        if(search.equals("")){
 
-    //         productList = (Page<Product>)  productService.getAll(pageable);
-    //     } else { 
-    //         productList = productService.searchProducts(search, pageable);
-    //     }
-    //     DatatableResponse<Product> dataTableResponse = new DatatableResponse<>();
-    //     dataTableResponse.setDraw(draw);
-    //     dataTableResponse.setData(productList.getContent());
-    //     dataTableResponse.setRecordsTotal(productList.getTotalElements());
-    //     dataTableResponse.setRecordsFiltered(productList.getTotalElements());
+            productList = (Page<Product>)  productService.getAll(pageable);
+        } else { 
+            productList = productService.searchProducts(search, pageable);
+        }
+        DatatableResponse<Product> response = new DatatableResponse<>();
+        response.setDraw(draw);
+        response.setData(productList.getContent());
+        response.setRecordsTotal(productList.getTotalElements());
+        response.setRecordsFiltered(productList.getTotalElements());
 
-	// 	return new ResponseEntity<>(
-	// 			new ResponseObject("ok", "Query successfully", dataTableResponse), 
-	// 			HttpStatus.OK);
-	// }
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 }
